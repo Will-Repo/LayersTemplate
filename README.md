@@ -6,6 +6,7 @@ C++ code template that provides a starting point for cross plateform C++ project
 ## Set-up & Dependencies
 
 ## File Structure
+```bash
 LayersTemplate
 -app
     -shaders
@@ -22,7 +23,7 @@ LayersTemplate
             Application.cpp
     Window.cpp
     CMakeLists.txt
-
+```
 
 ## Intended Application Structure
 This is the intended structure for an application utilising this template.
