@@ -9,6 +9,7 @@ To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the
 ### User required dependencies:
 
 ### CMake automatic dependencies:
+OpenGL - required for sucessful compilation
 
 ## File Structure
 ```bash
@@ -41,7 +42,7 @@ LayersTemplate
             stb_image.h
 
 ## Intended Application Structure
-This is the intended structure for an application utilising this template.
+This is the intended structure of an application utilising this template.
 
 ## Naming Conventions
 
