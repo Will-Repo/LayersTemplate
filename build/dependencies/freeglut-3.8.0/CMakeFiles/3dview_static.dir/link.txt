@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -pedantic -Wl,--dependency-file=CMakeFiles/3dview_static.dir/link.d CMakeFiles/3dview_static.dir/progs/demos/3dview/3dview.c.o -o bin/3dview_static  /usr/lib/x86_64-linux-gnu/libGLU.so lib/libglut.a /usr/lib/x86_64-linux-gnu/libX11.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so -lm
