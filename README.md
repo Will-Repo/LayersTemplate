@@ -3,34 +3,42 @@ C++ code template that provides a starting point for cross plateform C++ project
 
 ## Features
 
-## Set-up & Dependencies
+## Set-up, Dependencies & Build
+To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the project.
+
+### User required dependencies:
+
+### CMake automatic dependencies:
 
 ## File Structure
 ```bash
 LayersTemplate
--app
-    -shaders
-    -assets
-    -layers
-    -scripts
-        release_build.bat
-        debug_build.bat
+    CMakeLists.txt                          # File that manages project wide dependencies - mostly OpenGL - and combines app and core (two subdirectories).
+    Depencencies.cmake                      # Fetches and compiles external dependencies.
     -build
-    Main
-    CMakeLists.txt                      # Requires core sub-project to be valid, controls whole project compilation.
-    .gitignore
--core                                   # Encapsulates code necessary for apps implentating the template.
-    -utility
-    -extern
-    -build
-    Application
-    Window
-    Layer
-    Event
-    AudioManager
-    CMakeLists.txt                      # For standalone compilation, and being built as part of an application.
-    .gitignore
-```
+    -app
+        -shaders
+        -assets
+            -audio
+            -textures
+        -layers
+        Main
+        CMakeLists.txt                      # Requires core sub-project to be valid, controls whole project compilation.
+        .gitignore
+    -core                                   # Seperate project that encapsulates code necessary for apps implentating the template.
+        -src
+            -utility
+            -extern
+            -build
+            Application
+            Window
+            Layer
+            Event
+            AudioManager
+            CMakeLists.txt                      # For standalone compilation, and being built as part of an application.
+            .gitignore
+        -vendor
+            stb_image.h
 
 ## Intended Application Structure
 This is the intended structure for an application utilising this template.
