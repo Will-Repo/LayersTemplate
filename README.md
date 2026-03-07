@@ -7,9 +7,13 @@ C++ code template that provides a starting point for cross plateform C++ project
 To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the project.
 
 ### User required dependencies:
+*OpenGL - Minimum Version:
 
 ### CMake automatic dependencies:
-OpenGL - required for sucessful compilation
+CMake will fetch these dependencies if they are not already on your system at the minumum required level.
+*GLM - Minimum Version: 1.0.3
+*GLEW - Minimum Version: 2.3.1
+*freeglut- Minimum Version: 3.8.0
 
 ## File Structure
 ```bash
