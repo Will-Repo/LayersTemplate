@@ -20,7 +20,9 @@ CMake will fetch these dependencies if they are not already on your system at th
 LayersTemplate
     CMakeLists.txt                          # File that manages project wide dependencies - mostly OpenGL - and combines app and core (two subdirectories).
     Depencencies.cmake                      # Fetches and compiles external dependencies.
+    .gitignore
     -build
+        -dependencies
     -app
         -shaders
         -assets
