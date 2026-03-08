@@ -1,3 +1,5 @@
+include(Dependencies.cmake)
+
 file(GLOB CORE_SRC
     src/*.cpp
 )

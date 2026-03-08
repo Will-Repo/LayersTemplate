@@ -12,6 +12,7 @@ To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
 *GLM - Minimum Version: 1.0.3
+
 *GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
 *freeglut- Minimum Version: 3.8.0 (same as above).
 
@@ -19,10 +20,6 @@ CMake will fetch these dependencies if they are not already on your system at th
 ```bash
 LayersTemplate
     CMakeLists.txt                          # File that manages project wide dependencies - mostly OpenGL - and combines app and core (two subdirectories).
-    Depencencies.cmake                      # Fetches and compiles external dependencies.
-    -dependencies
-        -glew-2.3.1
-        -freeglut-3.8.0
     .gitignore
     -build
     -app
@@ -35,18 +32,19 @@ LayersTemplate
         CMakeLists.txt                      # Requires core sub-project to be valid, controls whole project compilation.
         .gitignore
     -core                                   # Seperate project that encapsulates code necessary for apps implentating the template.
+        Depencencies.cmake                      # Fetches and compiles external dependencies.
+        CMakeLists.txt                      # For standalone compilation, and being built as part of an application.
+        .gitignore
         -src
             -utility
-            -extern
-            -build
             Application
             Window
             Layer
             Event
             AudioManager
-            CMakeLists.txt                      # For standalone compilation, and being built as part of an application.
-            .gitignore
         -vendor
+            -glew-2.3.1
+            -freeglut-3.8.0
             stb_image.h
 
 ## Intended Application Structure

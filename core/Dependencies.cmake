@@ -23,7 +23,7 @@ endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies") # Only affects IDE folder placement, not actual file location, so not really necessary for me.
 
 # GLEW - Version 2.3.1
-add_subdirectory(dependencies/glew-2.3.1/build/cmake)
+add_subdirectory(vendor/glew-2.3.1/build/cmake)
 
 # Freeglut - Version 3.8.0
-add_subdirectory(dependencies/freeglut-3.8.0)
+add_subdirectory(vendor/freeglut-3.8.0)
