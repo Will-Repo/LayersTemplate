@@ -31,7 +31,7 @@ LayersTemplate
             -audio
             -textures
         -layers
-        Main
+        main
         CMakeLists.txt                      # Requires core sub-project to be valid, controls whole project compilation.
         .gitignore
     -core                                   # Seperate project that encapsulates code necessary for apps implentating the template.

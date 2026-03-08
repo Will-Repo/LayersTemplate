@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 4.1.1) # May change later, probably don't need such an update version.
+set(CMAKE_CXX_STANDARD 17)  
+set(CMAKE_CXX_STANDARD_REQUIRED ON)  
 
 project(Template)
 
 include(Dependencies.cmake)
 
-add_subdirectory(app)
 add_subdirectory(core)
+add_subdirectory(app) # Links with core so must be done secondarily.
