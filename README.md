@@ -37,6 +37,7 @@ LayersTemplate
         .gitignore
         -src
             -utility
+                shaderLoader
             Application
             Window
             Layer
