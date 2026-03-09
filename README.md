@@ -48,11 +48,21 @@ LayersTemplate
             -freeglut-3.8.0
             stb_image.h
 
-## Intended Application Structure
-This is the intended structure of an application utilising this template.
+## Core abstraction
+The app project is intended to interact with the core libarary primarily through the Application and Layers classes, with additional functions being provided by other utility classes (e.g. compiling shaders).
+The application should:
+*create an Application object
+*modify the objects config struct
+*create one or more Window objects
+*modify the window objects' config structs
+*add some layers to the Application object's layer stack, assigning each layer to a specific window
+*run the application
+
 
 ## Naming Conventions
 
 ## To-do
 Update CMakeFile contents and structure after reading up on modern cmake.
 Create test application (using imgui and basic rendering), add template as upstream remote and can fetch and merge changes as I update the template.
+Ensure onUpdate function calaculates deltatime to ensure consistent frame times (actually, let user do this on an app-basis, instead just give access to timestep. Also: https://vodacek.zvb.cz/archiv/681.html). Perhaps not actually, perhaps this should be in the applicatons run method.
+Change each window to be multithreaded, or let app control how threads are split.
