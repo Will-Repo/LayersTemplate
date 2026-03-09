@@ -55,4 +55,4 @@ This is the intended structure of an application utilising this template.
 
 ## To-do
 Update CMakeFile contents and structure after reading up on modern cmake.
-
+Create test application (using imgui and basic rendering), add template as upstream remote and can fetch and merge changes as I update the template.

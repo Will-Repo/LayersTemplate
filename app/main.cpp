@@ -1,14 +1,14 @@
 #include "Application.h"
-#inlcude "Window.h"
+//#include "Window.h"
 
 int main() {
     //Make application object, set up attributes.
-    Application app = new Application();
-    app.config = {};
+    Application app = Application();
+    //app.config = {};
 
     //Make window object belonging to the application, set up its attributes.
-    Window window = new Window();
-    window.config = {};
+    //Window window = new Window();
+    //window.config = {};
 
-    app.addWindow(window);
+    //app.addWindow(window);
 }
