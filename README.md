@@ -66,3 +66,4 @@ Update CMakeFile contents and structure after reading up on modern cmake.
 Create test application (using imgui and basic rendering), add template as upstream remote and can fetch and merge changes as I update the template.
 Ensure onUpdate function calaculates deltatime to ensure consistent frame times (actually, let user do this on an app-basis, instead just give access to timestep. Also: https://vodacek.zvb.cz/archiv/681.html). Perhaps not actually, perhaps this should be in the applicatons run method.
 Change each window to be multithreaded, or let app control how threads are split.
+Seperate application framerate and window framerate - check with OS how many available, join rendering if not. Min 2 threads needed, one for logic and one for rendering.
