@@ -29,5 +29,5 @@ int main() {
     app.addWindow(window1);
     app.addWindow(window2);
 
-    //app.run();
+    app.run();
 }

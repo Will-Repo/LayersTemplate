@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 #include "Window.h"
+#include <memory>
+#include "Layer.h"
 
 #pragma once
 
@@ -14,8 +16,13 @@ class Application {
         };
         configuration config;
         void addWindow(Window window);
-        //Add layer
+        template<class L> void addLayer(L* layer) {
+            static_assert(std::is_base_of<Layer, L>::value, "The added layer must be derived from Layer");
+            layerStack.push_back(layer);
+        }
+        void run();
     private:
-        //Layer stack
+        std::vector<std::unique_ptr<Layer>> layerStack;
         std::vector<Window> windowStack;
+        bool running = true;
 };

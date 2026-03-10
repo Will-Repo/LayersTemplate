@@ -1,6 +1,3 @@
-//framebuffer
-//Seperate thread, if available, and in config.
-
 #include <string>
 
 #pragma once
@@ -17,6 +14,7 @@ class Window {
             bool running = false;
         };
         configuration config;
-
+        void start(); //Manages which thread window is displayed on, and adds it to that threads queue.
     private:
+        //Framebuffer
 };

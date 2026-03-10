@@ -8,5 +8,15 @@ Application::Application() {
 
 void Application::addWindow(Window window) {
     windowStack.push_back(window);
-    std::cout << "Added window";
+    window.start();
+    std::cout << "Added and started window: " << window.config.windowName << "." << std::endl;
+}
+
+void Application::run() {
+    while (running) {
+        // Update each layer.
+        for (auto& layer : layerStack) {
+            //layer->
+        }
+    }
 }
