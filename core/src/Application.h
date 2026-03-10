@@ -1,4 +1,8 @@
 #include <string>
+#include <vector>
+#include "Window.h"
+
+#pragma once
 
 class Application {
     public: 
@@ -9,7 +13,9 @@ class Application {
             std::string appDesc = "Application description"; //Might remove later.
         };
         configuration config;
+        void addWindow(Window window);
         //Add layer
     private:
         //Layer stack
+        std::vector<Window> windowStack;
 };

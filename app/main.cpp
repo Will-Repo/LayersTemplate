@@ -17,15 +17,17 @@ int main() {
     win1conf->windowDesc = "Window 1 description";
     win1conf->independentThread = false;
     win1conf->vsync = false;
+    win1conf->running = true;
 
     Window window2 = Window();
     struct Window::configuration* win2conf = &window1.config;
     win2conf->windowName = "Window 2";
     win2conf->windowDesc = "Window 2 description";
+    win2conf->running = true;
     // Others remain as default. Same as window 1 values.
 
-    //app.addWindow(window1);
-    //app.addWindow(window2);
+    app.addWindow(window1);
+    app.addWindow(window2);
 
     //app.run();
 }

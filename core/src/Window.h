@@ -3,6 +3,8 @@
 
 #include <string>
 
+#pragma once
+
 class Window {  
     public:
         Window();
@@ -12,6 +14,7 @@ class Window {
             std::string windowDesc = "Window description";
             bool independentThread = false; //If false, will join main rendering thread. Else, will have new thread created for it. If only one window, main thread is used regardless.
             bool vsync = false; //If true, will override framerate.
+            bool running = false;
         };
         configuration config;
 
