@@ -13,9 +13,11 @@ Thread::~Thread() {
 }
 
 void Thread::renderWindows() {
+    std::cout << "Started rendering" << std::endl;
     while (true) {
         //std::cout << "Rendering window";
     }
+    std::cout << "Ended rendering" << std::endl;
 }
 
 void Thread::addWindow(Window* window) {
