@@ -3,6 +3,7 @@
 #include "Window.h"
 #include <memory>
 #include "Layer.h"
+#include "ThreadManager.h"
 
 #pragma once
 
@@ -25,4 +26,5 @@ class Application {
         std::vector<std::unique_ptr<Layer>> layerStack;
         std::vector<Window> windowStack;
         bool running = true;
+        ThreadManager threadManager;
 };

@@ -15,7 +15,7 @@ int main() {
     win1conf->framerate = 60;
     win1conf->windowName = "Window 1";
     win1conf->windowDesc = "Window 1 description";
-    win1conf->independentThread = false;
+    win1conf->threadGroup = 0;
     win1conf->vsync = false;
     win1conf->running = true;
 
@@ -23,10 +23,11 @@ int main() {
     struct Window::configuration* win2conf = &window1.config;
     win2conf->windowName = "Window 2";
     win2conf->windowDesc = "Window 2 description";
+    win1conf->threadGroup = 1;
     win2conf->running = true;
     // Others remain as default. Same as window 1 values.
 
-    app.addWindow(window1);
+    app.addWindow(window1); //Added window1 to thread group 0 for rendering.
     app.addWindow(window2);
 
     app.run();
