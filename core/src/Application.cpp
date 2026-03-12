@@ -5,12 +5,18 @@
 #include <chrono>
 #include <thread>
 #include "ThreadManager.h"
+#include <GLFW/glfw3.h>
 
 Application::Application() {
     std::cout << "Hello world";
+
+    if (!glfwInit()) {
+        //TODO: Error handling
+    }
 }
 
 void Application::addWindow(Window window) {
+    window.createWindow();
     windowStack.push_back(window);
     threadManager.startWindow(&window);
     std::cout << "Added and started window: " << window.config.windowName << "." << std::endl;

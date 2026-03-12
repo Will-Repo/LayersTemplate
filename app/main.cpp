@@ -18,6 +18,8 @@ int main() {
     win1conf->threadGroup = 0;
     win1conf->vsync = false;
     win1conf->running = true;
+    win1conf->width = 1920;
+    win1conf->height = 1080;
 
     Window window2 = Window();
     struct Window::configuration* win2conf = &window1.config;

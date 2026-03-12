@@ -5,3 +5,9 @@
 Window::Window() {
     std::cout << "Hello window";
 }
+
+void Window::createWindow() {
+    window = glfwCreateWindow(config.width, config.height, config.windowName.c_str(), NULL, NULL);
+
+    //TODO: Error check
+}
