@@ -15,7 +15,7 @@ CMake will fetch these dependencies if they are not already on your system at th
 *GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
 *freeglut- Minimum Version: 3.8.0 (same as above).
 
-## File Structure
+## File Structure - UPDATE THIS
 ```bash
 LayersTemplate
     CMakeLists.txt                          # File that manages project wide dependencies - mostly OpenGL - and combines app and core (two subdirectories).
@@ -46,7 +46,7 @@ LayersTemplate
             -glew-2.3.1
             -freeglut-3.8.0
             stb_image.h
-
+```
 ## Core abstraction
 The app project is intended to interact with the core libarary primarily through the Application and Layers classes, with additional functions being provided by other utility classes (e.g. compiling shaders).
 The application should:
@@ -57,6 +57,9 @@ The application should:
 *add some layers to the Application object's layer stack, assigning each layer to a specific window
 *run the application
 
+## Multi-threading
+All windows render on the same thread, though the app project can implement other OpenGL setup on seperate threads.
+The app can get updates for different layers on different threads, this allows for seperate frame amounts and higher performance.
 
 ## Naming Conventions
 

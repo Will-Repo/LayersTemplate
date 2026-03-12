@@ -4,7 +4,7 @@
 #include "Layer.h"
 #include <chrono>
 #include <thread>
-#include "ThreadManager.h"
+#include "LogicThreadManager.h"
 #include <GLFW/glfw3.h>
 
 Application::Application() {
@@ -15,39 +15,41 @@ Application::Application() {
     }
 }
 
-void Application::addWindow(Window window) {
+void Application::addWindow(Window& window) {
     window.createWindow();
-    windowStack.push_back(window);
-    threadManager.startWindow(&window);
-    std::cout << "Added and started window: " << window.config.windowName << "." << std::endl;
+    windowStack.push_back(&window);
+    std::cout << "Added window: " << window.config.windowName << "." << std::endl;
 }
 
 void Application::run() {
-    float frameTime = 1.0 / config.framerate;
+    // Add each window to its thread for layer updating.
+    for (Window* window : windowStack) {
+        threadManager.startWindow(window);
+    }
 
-    // Timestep and deltatime are completely seperate.
-    //Deltatime variables.
-    float deltaTime;
-    std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
+    // Start logic update threads.
+    threadManager.startThreads();
 
-    //Timestep variables.
-    float timestep;
-    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
+    // Begin rendering.
+    while (true) {
+        int numWindows = windowStack.size();
+        int i = 0;
 
-    while (running) {
-        //Calculating timestep.
-        timestep = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - lastTime).count();
-        lastTime = std::chrono::high_resolution_clock::now();
-        // Update each layer.
-        for (auto& layer : layerStack) {
-            layer->onUpdate(timestep);
+        glfwPollEvents();
+        while (i < numWindows) {
+            GLFWwindow* window = windowStack[i]->getWindow();
+
+            if (glfwWindowShouldClose(window)) {
+                //TODO: Fix memory leak here. Window only removed from rendering, not destroyed.
+                windowStack.erase(windowStack.begin() + i);
+                --numWindows;
+                std::cout << "Closed window." << std::endl;
+                continue;
+            }
+            glfwMakeContextCurrent(window);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glfwSwapBuffers(window);
+            ++i;
         }
-
-        // Calculating deltatime, in seconds.
-        deltaTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - oldDelta).count();
-        if (frameTime - deltaTime > 0) {
-            std::this_thread::sleep_for(std::chrono::duration<float> (frameTime - deltaTime));
-        }
-        oldDelta = std::chrono::high_resolution_clock::now();
     }
 }

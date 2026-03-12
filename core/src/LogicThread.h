@@ -4,12 +4,13 @@
 #include <vector>
 #include <thread>
 
-class Thread {
+class LogicThread {
     public:
-        Thread(); // Loops through all windows on this thread group.
-        ~Thread();
+        LogicThread(); // Loops through all windows on this thread group.
+        ~LogicThread();
         void addWindow(Window* window);
-        void renderWindows();
+        void startUpdating();
+        void updateWindows();
     private:
         std::vector<Window*> windows;
         std::thread thread;
