@@ -23,6 +23,9 @@ void Thread::renderWindows() {
             }
         }
     }
+    for (Window* window : windows) {
+        std::cout << "Window: " << window->getWindow() << std::endl;
+    }
 
     std::cout << "Started rendering" << std::endl;
     // Start rendering.
@@ -30,11 +33,11 @@ void Thread::renderWindows() {
         int numWindows = windows.size();
         int i = 0;
 
-        glfwPollEvents();
+        //glfwPollEvents();
         while (i < numWindows) {
             GLFWwindow* window = windows[i]->getWindow();
 
-            std::cout << "Hi" << glfwWindowShouldClose(window) << std::endl;
+            std::cout << "Hi" <<std::endl;
             if (glfwWindowShouldClose(window)) {
                 //TODO: Fix memory leak here. Window only removed from rendering, not destroyed.
                 windows.erase(windows.begin() + i);
@@ -42,7 +45,7 @@ void Thread::renderWindows() {
                 std::cout << "Closed window." << std::endl;
                 continue;
             }
-
+            std::cout << "ello" <<std::endl;
             glfwMakeContextCurrent(window);
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers(window);
