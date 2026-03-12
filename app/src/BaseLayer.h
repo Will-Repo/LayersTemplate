@@ -7,4 +7,6 @@ class BaseLayer : public Layer {
         void onUpdate(float timestep) override;
         void onEvent(Event& event) override;
         void onRender() override;
+    private:
+        
 };

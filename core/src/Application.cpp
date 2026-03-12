@@ -10,16 +10,15 @@
 
 
 Application::Application() {
-    std::cout << "Hello world";
-
     if (!glfwInit()) {
         //TODO: Error handling
         std::cout << "GLFW initialisation failed." << std::endl;
     }
 
-    if (glewInit() != GLEW_OK) {
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
         //TODO: Error handling.
-        std::cout << "GLEW initialisation failed." << std::endl;
+        std::cout << "GLEW initialisation failed: " << glewGetErrorString(err) << "." << std::endl;
     }
 }
 

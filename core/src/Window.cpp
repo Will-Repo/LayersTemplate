@@ -2,9 +2,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-Window::Window() {
-    std::cout << "Hello window";
-}
+Window::Window() {}
 
 void Window::createWindow() {
     std::cout << "Creating window." << std::endl;
