@@ -12,5 +12,5 @@ target_link_libraries(core PUBLIC
 )
 
 target_include_directories(core PUBLIC 
-    src vendor ${GLMW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR}
+    src src/utility vendor ${GLMW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR}
 )

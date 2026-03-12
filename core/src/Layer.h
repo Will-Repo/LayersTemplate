@@ -11,6 +11,7 @@ class Layer {
     public:
         Layer() {};
         virtual ~Layer() {}; //Close resourses.
+        virtual void loadData() {};
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(Event& event) {};
         virtual void onRender() {};

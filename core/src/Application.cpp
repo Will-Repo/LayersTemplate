@@ -8,7 +8,6 @@
 #include <thread>
 #include "LogicThreadManager.h"
 
-
 Application::Application() {
     if (!glfwInit()) {
         //TODO: Error handling
@@ -37,6 +36,13 @@ void Application::run() {
         //TODO: Error handling.
         std::cout << "GLEW initialisation failed: " << glewGetErrorString(err) << "." << std::endl;
         exit(1);
+    }
+
+    // Load the data for each layer with the correct context.
+    for (Window* window : windowStack) {
+        for (auto& layer : window->layerStack) {
+            layer->loadData();
+        }
     }
 
     // Add each window to its thread for layer updating.

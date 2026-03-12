@@ -1,10 +1,40 @@
-#include "BaseLayer.h"
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "BaseLayer.h"
+#include <iostream>
+#include "Shaders.h"
 
-BaseLayer::BaseLayer() {
-    //glGenVertexArrays(NumVAOs, VAOs);
+// Base layer code from Addison Wesley OpenGL Redbook.
+
+BaseLayer::BaseLayer() {}
+
+void BaseLayer::loadData() {
+    glGenVertexArrays(NumVAOs, VAOs);
+    glBindVertexArray(VAOs[Triangles]);
+
+    GLfloat vertices[NumVertices][2] = {
+        {-0.9 -0.9},
+        {0.85, -0.9},
+        {-0.9, 0.85},
+        {0.9 -0.85},
+        {0.9, 0.9},
+        {-0.85, 0.9}
+    };
+
+    glGenBuffers(NumBuffers, Buffers);
+    glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    ShaderInfo shaders[] = {
+        {GL_VERTEX_SHADER, "../shaders/BaseLayer/triangles.vert"},
+        {GL_FRAGMENT_SHADER, "../shaders/BaseLayer/triangles.frag"},
+        {GL_NONE, NULL},
+    };
+
+    GLuint program = loadShaders(shaders);
+
+    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(vPosition);
 }
 
 BaseLayer::~BaseLayer() {
@@ -20,5 +50,6 @@ void BaseLayer::onEvent(Event& event) {
 }
 
 void BaseLayer::onRender() {
-
+    glBindVertexArray(VAOs[Triangles]);
+    glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 }
