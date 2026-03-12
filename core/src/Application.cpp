@@ -44,6 +44,7 @@ void Application::run() {
             if (glfwWindowShouldClose(window)) {
                 //TODO: Fix memory leak here. Window only removed from rendering, not destroyed.
                 windowStack.erase(windowStack.begin() + i);
+                glfwDestroyWindow(window);
                 --numWindows;
                 std::cout << "Closed window." << std::endl;
                 continue;
