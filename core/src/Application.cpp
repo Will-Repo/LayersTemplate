@@ -15,11 +15,8 @@ Application::Application() {
         std::cout << "GLFW initialisation failed." << std::endl;
     }
 
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        //TODO: Error handling.
-        std::cout << "GLEW initialisation failed: " << glewGetErrorString(err) << "." << std::endl;
-    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 }
 
 void Application::addWindow(Window& window) {
@@ -29,6 +26,19 @@ void Application::addWindow(Window& window) {
 }
 
 void Application::run() {
+    if (windowStack.size() == 0) {
+        std::cout << "The application requires at least one window to run." << std::endl;
+        exit(1);
+    }
+    glfwMakeContextCurrent(windowStack[0]->getWindow());
+    glewExperimental = true; // Expose all extensions with valid entry points.
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        //TODO: Error handling.
+        std::cout << "GLEW initialisation failed: " << glewGetErrorString(err) << "." << std::endl;
+        exit(1);
+    }
+
     // Add each window to its thread for layer updating.
     for (Window* window : windowStack) {
         for (auto& layer : window->layerStack) {
@@ -56,6 +66,12 @@ void Application::run() {
                 std::cout << "Closed window." << std::endl;
                 continue;
             }
+
+
+            for (auto& layer : windowStack[i]->layerStack) {
+                layer->onRender();
+            }
+
             glfwMakeContextCurrent(window);
             glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers(window);
