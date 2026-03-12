@@ -19,11 +19,26 @@ if (NOT glm_FOUND)
     #    add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
     #endif()a
     FetchContent_MakeAvailable(glm)
+    set(GLM_INCLUDE_DIR ${glm_SOURCE_DIR}/include)
 endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies") # Only affects IDE folder placement, not actual file location, so not really necessary for me.
 
 # GLEW - Version 2.3.1
-add_subdirectory(vendor/glew-2.3.1/build/cmake)
+#add_subdirectory(vendor/glew-2.3.1/build/cmake)
+find_package(GLEW 2.3.1 QUIET) # Module modea
+if (NOT GLEW_FOUND)
+    FetchContent_Declare(
+    	glew
+        #GIT_REPOSITORY	https://github.com/nigels-com/glew.git
+        #GIT_TAG 	glew-2.3.1
+        URL https://github.com/nigels-com/glew/releases/download/glew-2.3.1/glew-2.3.1.tgz
+        SOURCE_SUBDIR  build/cmake
+    )
+
+    FetchContent_MakeAvailable(glew)  
+    set(GLEW_INCLUDE_DIR ${glew_SOURCE_DIR}/include)
+endif()
+set_target_properties(glew_s PROPERTIES FOLDER "Dependencies")
 
 # Freeglut - Version 3.8.0
 #add_subdirectory(vendor/freeglut-3.8.0)
@@ -43,5 +58,6 @@ if (NOT glfw_FOUND)
     #    add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
     #endif()a
     FetchContent_MakeAvailable(glfw)
+    set(GLFW_INCLUDE_DIR ${glfw_SOURCE_DIR}/include)
 endif()
 set_target_properties(glfw PROPERTIES FOLDER "Dependencies")

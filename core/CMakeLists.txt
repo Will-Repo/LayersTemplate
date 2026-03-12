@@ -8,9 +8,9 @@ file(GLOB CORE_SRC
 add_library(core STATIC ${CORE_SRC})
 
 target_link_libraries(core PUBLIC 
-    glm glew glfw
+    glm glew_s glfw
 )
 
 target_include_directories(core PUBLIC 
-    src vendor vendor/glew-2.3.1/include
+    src vendor ${GLMW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR}
 )
