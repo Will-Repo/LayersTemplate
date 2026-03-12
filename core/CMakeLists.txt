@@ -12,5 +12,5 @@ target_link_libraries(core PUBLIC
 )
 
 target_include_directories(core PUBLIC 
-    src vendor
+    src vendor vendor/glew-2.3.1/include
 )

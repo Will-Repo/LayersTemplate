@@ -1,8 +1,10 @@
 #include "BaseLayer.h"
 #include <iostream>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 BaseLayer::BaseLayer() {
-
+    //glGenVertexArrays(NumVAOs, VAOs);
 }
 
 BaseLayer::~BaseLayer() {

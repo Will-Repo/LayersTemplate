@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include "Application.h"
 #include <iostream>
 #include "Window.h"
@@ -5,13 +7,19 @@
 #include <chrono>
 #include <thread>
 #include "LogicThreadManager.h"
-#include <GLFW/glfw3.h>
+
 
 Application::Application() {
     std::cout << "Hello world";
 
     if (!glfwInit()) {
         //TODO: Error handling
+        std::cout << "GLFW initialisation failed." << std::endl;
+    }
+
+    if (glewInit() != GLEW_OK) {
+        //TODO: Error handling.
+        std::cout << "GLEW initialisation failed." << std::endl;
     }
 }
 
