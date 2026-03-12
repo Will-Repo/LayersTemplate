@@ -21,7 +21,7 @@ class Window {
         GLFWwindow* getWindow();
         template<class L> void addLayer(L* layer) {
             static_assert(std::is_base_of<Layer, L>::value, "The added layer must be derived from Layer");
-            layerStack.push_back(layer);
+            layerStack.emplace_back(layer);
         }
         std::vector<std::unique_ptr<Layer>> layerStack;
     private:

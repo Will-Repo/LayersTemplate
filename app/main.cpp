@@ -1,6 +1,8 @@
 #include "Application.h"
 #include "Window.h"
 
+#include "BaseLayer.h"
+
 int main() {
     //Make application object, set up attributes.
     Application app = Application();
@@ -20,6 +22,10 @@ int main() {
     win1conf->width = 1920;
     win1conf->height = 1080;
     // Add layers to window 1.
+    BaseLayer base;
+    base.config.framerate = 60; // layer logic framerate.
+    base.config.threadGroup = 0;
+    window1.addLayer(&base);
 
     Window window2 = Window();
     struct Window::configuration* win2conf = &window1.config;
