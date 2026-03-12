@@ -14,10 +14,8 @@ int main() {
     //Make window object belonging to the application, set up its attributes.
     Window window1 = Window();
     struct Window::configuration* win1conf = &window1.config;
-    win1conf->framerate = 120;
     win1conf->windowName = "Window 1";
     win1conf->windowDesc = "Window 1 description";
-    win1conf->threadGroup = 0; // Thread group for updating layers.
     win1conf->running = true;
     win1conf->width = 1920;
     win1conf->height = 1080;
@@ -25,10 +23,8 @@ int main() {
 
     Window window2 = Window();
     struct Window::configuration* win2conf = &window1.config;
-    win2conf->framerate = 5;
     win2conf->windowName = "Window 2";
     win2conf->windowDesc = "Window 2 description";
-    win2conf->threadGroup = 2;
     win2conf->running = true;
     // Others remain as default. Same as window 1 values.
     // Add layers to window 2

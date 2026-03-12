@@ -42,6 +42,8 @@ LayersTemplate
             Layer
             Event
             AudioManager
+            LogicThreadManager              # Class for managing thread allocations
+            LogicThread                     # Thread that runs layer logic for app defined layers with same frame rate.
         -vendor
             -glew-2.3.1
             -freeglut-3.8.0
@@ -69,3 +71,4 @@ Create test application (using imgui and basic rendering), add template as upstr
 Ensure onUpdate function calaculates deltatime to ensure consistent frame times (actually, let user do this on an app-basis, instead just give access to timestep. Also: https://vodacek.zvb.cz/archiv/681.html). Perhaps not actually, perhaps this should be in the applicatons run method.
 Change each window to be multithreaded, or let app control how threads are split.
 Seperate application framerate and window framerate - check with OS how many available, join rendering if not. Min 2 threads needed, one for logic and one for rendering.
+Have extra layers join main thread if no threads available? Might not be good idea, should probably just throw error.

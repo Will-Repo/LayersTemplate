@@ -24,7 +24,9 @@ void Application::addWindow(Window& window) {
 void Application::run() {
     // Add each window to its thread for layer updating.
     for (Window* window : windowStack) {
-        threadManager.startWindow(window);
+        for (auto& layer : window->layerStack) {
+            threadManager.addLayer(layer.get());
+        }
     }
 
     // Start logic update threads.

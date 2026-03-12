@@ -19,10 +19,10 @@ void LogicThread::startUpdating() {
 void LogicThread::updateWindows() {
     // Check all windows in the thread group share the same framerate.
 
-    int framerate = windows[0]->config.framerate;
-    for (int i = 1; i < windows.size(); ++i) {
-        if (windows[i]->config.framerate != framerate) {
-            std::cout << "Windows on same thread have different framerates." << std::endl;
+    int framerate = layers[0]->config.framerate;
+    for (int i = 1; i < layers.size(); ++i) {
+        if (layers[i]->config.framerate != framerate) {
+            std::cout << "Layers on same thread have different framerates." << std::endl;
             //TODO: Error handling.
         }
     }
@@ -45,10 +45,8 @@ void LogicThread::updateWindows() {
         lastTime = std::chrono::high_resolution_clock::now();
 
         // Update each layer.
-        for (Window* window : windows) {
-            for (auto& layer : window->layerStack) {
-                layer->onUpdate(timestep);
-            }
+        for (auto& layer : layers) {
+            layer->onUpdate(timestep);
         }
 
         // Calculating deltatime, in seconds.
@@ -102,6 +100,6 @@ void LogicThread::updateWindows() {
     std::cout << "Ended rendering" << std::endl;*/
 }
 
-void LogicThread::addWindow(Window* window) {
-    windows.push_back(window);
+void LogicThread::addLayer(Layer* layer) {
+    layers.push_back(layer);
 }

@@ -11,10 +11,8 @@ class Window {
         Window();
         void createWindow();
         struct configuration {
-            int framerate = 60; //Rendering framerate.
             std::string windowName = "Window"; //Should be overwritten, or else issues can occur in multiwindowed software.
             std::string windowDesc = "Window description";
-            int threadGroup = 0; // If higher than available threads, will join main thread group 0.
             bool running = false;
             int width = 1920;
             int height = 1080;

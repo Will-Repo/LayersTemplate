@@ -8,10 +8,10 @@ class LogicThread {
     public:
         LogicThread(); // Loops through all windows on this thread group.
         ~LogicThread();
-        void addWindow(Window* window);
+        void addLayer(Layer* layer);
         void startUpdating();
         void updateWindows();
     private:
-        std::vector<Window*> windows;
+        std::vector<Layer*> layers;
         std::thread thread;
 };

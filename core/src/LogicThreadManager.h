@@ -6,7 +6,7 @@
 
 class LogicThreadManager {
     public:
-        void startWindow(Window* window);
+        void addLayer(Layer* layer);
         void startThreads();
     private:
         std::map<int, std::unique_ptr<LogicThread>> threadGroups;
