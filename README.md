@@ -12,7 +12,6 @@ To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
 *GLM - Minimum Version: 1.0.3
-
 *GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
 *freeglut- Minimum Version: 3.8.0 (same as above).
 
