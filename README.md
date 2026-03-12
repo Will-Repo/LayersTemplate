@@ -13,7 +13,7 @@ To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
 *GLM - Minimum Version: 1.0.3
 *GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
-*freeglut- Minimum Version: 3.8.0 (same as above).
+*GLFW - Minimum Version: 3.4
 
 ## File Structure - UPDATE THIS
 ```bash
@@ -56,7 +56,9 @@ The application should:
 *modify the objects config struct
 *create one or more Window objects
 *modify the window objects' config structs
-*add some layers to the Application object's layer stack, assigning each layer to a specific window
+*create one or more layer objects
+*modify the layer objects' config structrs
+*add the layers to each Window object's layer stack
 *run the application
 
 ## Multi-threading
