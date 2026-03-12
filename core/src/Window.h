@@ -18,6 +18,7 @@ class Window {
             int height = 1080;
         };
         configuration config;
+        GLFWwindow* getWindow();
     private:
         //Framebuffer
         GLFWwindow* window;
