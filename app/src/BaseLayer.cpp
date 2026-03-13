@@ -26,12 +26,12 @@ void BaseLayer::loadData() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "../shaders/BaseLayer/triangles.vert"},
-        {GL_FRAGMENT_SHADER, "../shaders/BaseLayer/triangles.frag"},
+        {GL_VERTEX_SHADER, "BaseLayer/triangles.vert"},
+        {GL_FRAGMENT_SHADER, "BaseLayer/triangles.frag"},
         {GL_NONE, NULL},
     };
 
-    GLuint program = loadShaders(shaders);
+    program = loadShaders(shaders);
 
     glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(vPosition);
@@ -50,6 +50,7 @@ void BaseLayer::onEvent(Event& event) {
 }
 
 void BaseLayer::onRender() {
+    glUseProgram(program);
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 }

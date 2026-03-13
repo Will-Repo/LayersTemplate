@@ -12,6 +12,7 @@ class BaseLayer : public Layer {
         GLuint VAOs[NumVAOs];
         GLuint Buffers[NumBuffers];
         const GLuint NumVertices = 6;
+        GLuint program;
     public:
         BaseLayer();
         ~BaseLayer();
