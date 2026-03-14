@@ -8,13 +8,15 @@ To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the
 The app file must be run from its build location, in build/app for relative paths in shader setup to work correctly.
 
 ### User required dependencies:
-*OpenGL - Minimum Version:
+*OpenGL - Minimum Version: 4.3
 
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
 *GLM - Minimum Version: 1.0.3
 *GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
 *GLFW - Minimum Version: 3.4
+*OpenAL-Soft - Minimum Version: 1.25.1
+*FreeType - Minimum Version: 2.14.2
 
 ## File Structure - UPDATE THIS
 ```bash
@@ -46,8 +48,6 @@ LayersTemplate
             LogicThreadManager              # Class for managing thread allocations
             LogicThread                     # Thread that runs layer logic for app defined layers with same frame rate.
         -vendor
-            -glew-2.3.1
-            -freeglut-3.8.0
             stb_image.h
 ```
 ## Core abstraction
@@ -75,3 +75,6 @@ Ensure onUpdate function calaculates deltatime to ensure consistent frame times 
 Change each window to be multithreaded, or let app control how threads are split.
 Seperate application framerate and window framerate - check with OS how many available, join rendering if not. Min 2 threads needed, one for logic and one for rendering.
 Have extra layers join main thread if no threads available? Might not be good idea, should probably just throw error.
+Add relative paths config struct accessible to app.
+Add text rendering support.
+Check CMake, if user has older version installed it may not register this and cause issues.
