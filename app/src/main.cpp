@@ -37,7 +37,7 @@ int main() {
 
 
     app.addWindow(window1); //Added window1 to thread group 0 for rendering.
-    app.addWindow(window2);
+    //app.addWindow(window2);
 
     app.run();
 }

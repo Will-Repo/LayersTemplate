@@ -13,10 +13,10 @@ void BaseLayer::loadData() {
     glBindVertexArray(VAOs[Triangles]);
 
     GLfloat vertices[NumVertices][2] = {
-        {-0.9 -0.9},
+        {-0.9, -0.9},
         {0.85, -0.9},
         {-0.9, 0.85},
-        {0.9 -0.85},
+        {0.9, -0.85},
         {0.9, 0.9},
         {-0.85, 0.9}
     };
