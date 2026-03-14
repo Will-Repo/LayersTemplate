@@ -6,7 +6,7 @@
 #include <fstream>
 
 GLuint loadShaders(ShaderInfo* info) {
-    GLuint program;
+    GLuint program = glCreateProgram();
     std::cout << "Entered" << std::endl;
     for (int enumType = 0; info[enumType].type != GL_NONE; enumType++) {
         const char* filePath = info[enumType].filePath;
@@ -16,15 +16,18 @@ GLuint loadShaders(ShaderInfo* info) {
     }
     glLinkProgram(program);
     //TODO: Error check.
+    
     return program;
 }
 
 GLuint compileShader(GLenum type, const char* filePath) {
-    const char* source = getFileContents(filePath);
+    std::string sourceString = getFileContents(filePath);
+    const char* source = sourceString.c_str();
     int success;
     char infoLog[512];
     
-    GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+    //std::cout << source << std::endl;
+    GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
     
@@ -38,18 +41,18 @@ GLuint compileShader(GLenum type, const char* filePath) {
 }
 
 //File path is from shaders directory.
-const char* getFileContents(const char* filePath) {
+std::string getFileContents(const char* filePath) {
     std::string contents;
-    std::ifstream inputStream(std::string("../app/shaders/") + filePath);
+    std::ifstream inputStream(std::string("../../app/shaders/") + filePath);
 
     std::string line;
     while (getline (inputStream, line)) {
         contents += line + "\n";
     }
 
-    std::cout << contents << std::endl;
+    //std::cout << contents << std::endl;
 
     inputStream.close();
-    
-    return contents.c_str();
+
+    return contents;
 }

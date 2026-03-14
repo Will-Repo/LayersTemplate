@@ -54,3 +54,4 @@ void BaseLayer::onRender() {
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 }
+

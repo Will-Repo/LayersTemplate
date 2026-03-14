@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <string>
 
 struct ShaderInfo {
     GLenum type;
@@ -10,4 +11,4 @@ struct ShaderInfo {
 
 GLuint loadShaders(ShaderInfo* info);
 GLuint compileShader(GLenum type, const char* filePath);
-const char* getFileContents(const char* filePath);
+std::string getFileContents(const char* filePath);

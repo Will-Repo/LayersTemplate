@@ -73,13 +73,13 @@ void Application::run() {
                 continue;
             }
 
+            glfwMakeContextCurrent(window);
+            glClear(GL_COLOR_BUFFER_BIT);
 
             for (auto& layer : windowStack[i]->layerStack) {
                 layer->onRender();
             }
 
-            glfwMakeContextCurrent(window);
-            glClear(GL_COLOR_BUFFER_BIT);
             glfwSwapBuffers(window);
             ++i;
         }
