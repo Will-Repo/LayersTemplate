@@ -26,8 +26,8 @@ void BaseLayer::loadData() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "BaseLayer/triangles.vert"},
-        {GL_FRAGMENT_SHADER, "BaseLayer/triangles.frag"},
+        {GL_VERTEX_SHADER, "example/passthrough.vert"},
+        {GL_FRAGMENT_SHADER, "example/red.frag"},
         {GL_NONE, NULL},
     };
 

@@ -40,6 +40,7 @@ void Application::run() {
 
     // Load the data for each layer with the correct context.
     for (Window* window : windowStack) {
+        glfwMakeContextCurrent(window->getWindow());
         for (auto& layer : window->layerStack) {
             layer->loadData();
         }

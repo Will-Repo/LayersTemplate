@@ -1,7 +1,8 @@
 #include "Application.h"
 #include "Window.h"
 
-#include "BaseLayer.h"
+#include "example/BaseLayer.h"
+#include "example/SecondaryLayer.h"
 
 int main() {
     //Make application object, set up attributes.
@@ -26,18 +27,24 @@ int main() {
     base.config.framerate = 60; // layer logic framerate.
     base.config.threadGroup = 0;
     window1.addLayer(&base);
+    SecondaryLayer second;
+    second.config.framerate = 60; // layer logic framerate.
+    second.config.threadGroup = 0;
+    window1.addLayer(&second);
+
 
     Window window2 = Window();
-    struct Window::configuration* win2conf = &window1.config;
+    struct Window::configuration* win2conf = &window2.config;
     win2conf->windowName = "Window 2";
     win2conf->windowDesc = "Window 2 description";
     win2conf->running = true;
     // Others remain as default. Same as window 1 values.
     // Add layers to window 2
+    window2.addLayer(&base);
 
 
     app.addWindow(window1); //Added window1 to thread group 0 for rendering.
-    //app.addWindow(window2);
+    app.addWindow(window2);
 
     app.run();
 }

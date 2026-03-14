@@ -1,6 +1,8 @@
 file(GLOB APP_SRC
     *.cpp
     src/*.cpp
+
+    src/example/*.cpp
 )
 
 add_executable(app ${APP_SRC})
