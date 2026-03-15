@@ -11,4 +11,3 @@ struct ShaderInfo {
 
 GLuint loadShaders(ShaderInfo* info);
 GLuint compileShader(GLenum type, const char* filePath);
-std::string getFileContents(const char* filePath);

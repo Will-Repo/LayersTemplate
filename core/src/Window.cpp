@@ -5,6 +5,7 @@
 #include <AL/alc.h>
 
 Window::Window() {
+    //TODO: Set up text renderer object here.
     audioDevice = alcOpenDevice(NULL);
     //TODO: Device enumeration
 }

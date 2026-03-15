@@ -3,7 +3,7 @@
 #include "shaderLoader.h"
 #include <iostream>
 #include <string>
-#include <fstream>
+#include "fileReading.h"
 
 GLuint loadShaders(ShaderInfo* info) {
     GLuint program = glCreateProgram();
@@ -21,7 +21,7 @@ GLuint loadShaders(ShaderInfo* info) {
 }
 
 GLuint compileShader(GLenum type, const char* filePath) {
-    std::string sourceString = getFileContents(filePath);
+    std::string sourceString = getFileContents((std::string("shaders/") + filePath).c_str());
     const char* source = sourceString.c_str();
     int success;
     char infoLog[512];
@@ -38,21 +38,4 @@ GLuint compileShader(GLenum type, const char* filePath) {
     };
 
     return shader;
-}
-
-//File path is from shaders directory.
-std::string getFileContents(const char* filePath) {
-    std::string contents;
-    std::ifstream inputStream(std::string("../../app/shaders/") + filePath);
-
-    std::string line;
-    while (getline (inputStream, line)) {
-        contents += line + "\n";
-    }
-
-    //std::cout << contents << std::endl;
-
-    inputStream.close();
-
-    return contents;
 }

@@ -5,7 +5,7 @@ C++ code template that provides a starting point for cross plateform C++ project
 
 ## Set-up, Dependencies & Build
 To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the project.
-The app file must be run from its build location, in build/app for relative paths in shader setup to work correctly.
+The app file must be run from the build directory root, for relative paths in shader setup to work correctly (this will be configurable in later versions).
 
 ### User required dependencies:
 *OpenGL - Minimum Version: 4.3
