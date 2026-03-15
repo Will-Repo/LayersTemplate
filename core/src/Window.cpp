@@ -1,8 +1,13 @@
 #include "Window.h"
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
-Window::Window() {}
+Window::Window() {
+    audioDevice = alcOpenDevice(NULL);
+    //TODO: Device enumeration
+}
 
 void Window::createWindow() {
     std::cout << "Creating window." << std::endl;
@@ -13,7 +18,10 @@ void Window::createWindow() {
     }
 }
 
-
 GLFWwindow* Window::getWindow() {
     return window;
+}
+
+ALCdevice* Window::getAudioDevice() {
+    return audioDevice;
 }

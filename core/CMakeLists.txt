@@ -8,7 +8,7 @@ file(GLOB CORE_SRC
 add_library(core STATIC ${CORE_SRC})
 
 target_link_libraries(core PUBLIC 
-    glm glew_s glfw
+    glm glew_s glfw OpenAL freetype
 )
 
 target_include_directories(core PUBLIC 

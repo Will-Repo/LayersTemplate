@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "BaseLayer.h"
 #include <iostream>
-#include "Shaders.h"
+#include "shaderLoader.h"
 
 // Base layer code from Addison Wesley OpenGL Redbook.
 

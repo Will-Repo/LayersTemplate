@@ -4,6 +4,8 @@
 #include <memory>
 #include "Layer.h"
 #include <vector>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 #pragma once
 
@@ -11,6 +13,7 @@ class Window {
     public:
         Window();
         void createWindow();
+        ALCdevice* getAudioDevice();
         struct configuration {
             std::string windowName = "Window"; //Should be overwritten, or else issues can occur in multiwindowed software.
             std::string windowDesc = "Window description";
@@ -28,4 +31,5 @@ class Window {
     private:
         //Framebuffer
         GLFWwindow* window;
+        ALCdevice* audioDevice;
 };

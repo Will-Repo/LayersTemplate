@@ -40,11 +40,11 @@ LayersTemplate
         -src
             -utility
                 shaderLoader
+                TextRenderer
             Application
             Window
             Layer
             Event
-            AudioManager
             LogicThreadManager              # Class for managing thread allocations
             LogicThread                     # Thread that runs layer logic for app defined layers with same frame rate.
         -vendor
