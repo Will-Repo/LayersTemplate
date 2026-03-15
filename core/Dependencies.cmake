@@ -53,7 +53,7 @@ endif()
 set_target_properties(glfw PROPERTIES FOLDER "Dependencies")
 
 # OpenAL-Soft - Version 1.21.5
-#find_package(OpenAL-Soft 1.25.1 QUIET) # Can't really differentiate between OpenAL and OpenAL soft, both use same target name.
+find_package(OpenAL 1.25.1 QUIET) # Can't really differentiate between OpenAL and OpenAL soft, both use same target name.
 if (NOT OpenAL-Soft_FOUND)
     FetchContent_Declare(
         OpenAL-Soft

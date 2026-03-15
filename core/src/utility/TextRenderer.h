@@ -6,9 +6,16 @@
 class TextRenderer {
     public:
         TextRenderer();
-        void addFace(std::string name, std::string filePath);
-        void renderText(FT_Face face, std::string text, int posX, int posY, int pixelSize);
+        static void addFace(std::string name, std::string filePath);
+        static std::map<char, Character> getCharacters(FT_Face face);
+        static void renderText(std::string faceName, std::string text, int posX, int posY, int pixelSize);
     private:
-        FT_Library library;
-        std::map<std::string, FT_Face> faces;
+        static FT_Library library;
+        struct Character {
+            unsigned int TextureID;
+            glm::ivec2   Size;
+            glm::ivec2   Bearing;
+            unsigned int NextOffset;    // Offset to advance to next glyph
+        };
+        static std::map<std::string, std::pair(FT_Face, std::map<char, Character>)> faces;
 };

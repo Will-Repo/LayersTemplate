@@ -3,12 +3,17 @@
 #include "BaseLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
+#include "TextRenderer.h"
 
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 BaseLayer::BaseLayer() {}
 
 void BaseLayer::loadData() {
+    // Load fonts. Function automatically checks if layer has been loaded already.
+    TextRenderer::addFace("bitcount", "example/Bitcount.ttf");
+
+    // Other data - should probably move this elsewhere if the data changes.
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
 
@@ -53,5 +58,6 @@ void BaseLayer::onRender() {
     glUseProgram(program);
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+    TextRenderer:renderText("bitcount", "Application Template", 0, 0, 1, glm::vec3(0, 255, 0));
 }
 

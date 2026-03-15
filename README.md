@@ -66,6 +66,10 @@ The application should:
 All windows render on the same thread, though the app project can implement other OpenGL setup on seperate threads.
 The app can get updates for different layers on different threads, this allows for seperate frame amounts and higher performance.
 
+~~The following classes require a seperate instance per thread, and have data stored in the thread class:
+- TextRendering, freetype face objects can only be used from a single thread at a time, so duplicate objects are required.
+Use of these objects should be done through querying the thread manager using the thread group in the layers config, and the name of the class required.~~ This is not necessary as rendering is currently on one thread.
+
 ## Naming Conventions
 
 ## To-do
@@ -78,3 +82,4 @@ Have extra layers join main thread if no threads available? Might not be good id
 Add relative paths config struct accessible to app.
 Add text rendering support.
 Check CMake, if user has older version installed it may not register this and cause issues.
+Update base classes based on how they are used in the app - e.g. add data loading to base layer class.
