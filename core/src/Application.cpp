@@ -7,6 +7,7 @@
 #include <chrono>
 #include <thread>
 #include "LogicThreadManager.h"
+#include "TextRenderer.h"
 
 Application::Application() {
     if (!glfwInit()) {
@@ -16,6 +17,8 @@ Application::Application() {
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+    TextRenderer textRenderer;
 }
 
 void Application::addWindow(Window& window) {
@@ -42,7 +45,7 @@ void Application::run() {
     for (Window* window : windowStack) {
         glfwMakeContextCurrent(window->getWindow());
         for (auto& layer : window->layerStack) {
-            layer->loadData();
+            layer->loadData(window); //Pass in window pointer so the layer can access window specific data.
         }
     }
 
@@ -78,7 +81,7 @@ void Application::run() {
             glClear(GL_COLOR_BUFFER_BIT);
 
             for (auto& layer : windowStack[i]->layerStack) {
-                layer->onRender();
+                layer->onRender(windowStack[i]);
             }
 
             glfwSwapBuffers(window);

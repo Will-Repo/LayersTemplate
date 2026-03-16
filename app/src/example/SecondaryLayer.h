@@ -16,8 +16,8 @@ class SecondaryLayer : public Layer {
     public:
         SecondaryLayer();
         ~SecondaryLayer();
-        void loadData() override;
+        void loadData(Window* window) override;
         void onUpdate(float timestep) override;
         void onEvent(Event& event) override;
-        void onRender() override;
+        void onRender(Window* window) override;
 };  

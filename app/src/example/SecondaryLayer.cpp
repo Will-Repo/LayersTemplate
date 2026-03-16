@@ -8,7 +8,7 @@
 
 SecondaryLayer::SecondaryLayer() {}
 
-void SecondaryLayer::loadData() {
+void SecondaryLayer::loadData(Window* window) {
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
 
@@ -56,7 +56,7 @@ void SecondaryLayer::onEvent(Event& event) {
 
 }
 
-void SecondaryLayer::onRender() {
+void SecondaryLayer::onRender(Window* window) {
     glUseProgram(program);
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);

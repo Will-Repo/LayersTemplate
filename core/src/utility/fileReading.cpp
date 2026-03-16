@@ -6,7 +6,7 @@
 std::string getFileContents(const char* filePath) {
     std::string contents;
     //From build dir, exit out to app root, then concatenate passed filePath.
-    std::ifstream inputStream(std::string("../app/") + filePath);
+    std::ifstream inputStream(filePath);
 
     std::string line;
     while (getline (inputStream, line)) {

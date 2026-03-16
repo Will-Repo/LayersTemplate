@@ -10,4 +10,6 @@ struct ShaderInfo {
 };
 
 GLuint loadShaders(ShaderInfo* info);
-GLuint compileShader(GLenum type, const char* filePath);
+GLuint compileShader(GLenum type, std::string sourceString);
+
+GLuint loadShaders(ShaderInfo* info, std::string check);

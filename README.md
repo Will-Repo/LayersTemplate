@@ -83,3 +83,6 @@ Add relative paths config struct accessible to app.
 Add text rendering support.
 Check CMake, if user has older version installed it may not register this and cause issues.
 Update base classes based on how they are used in the app - e.g. add data loading to base layer class.
+Make consistent whether i use getter functions or public - think more on specific instances what is appropriate.
+Add opengl debugging.
+Rewrite text renderering myself, moving more into initialisation rather than current inefficient implementation.

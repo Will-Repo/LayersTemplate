@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -6,8 +8,7 @@
 #include <vector>
 #include <AL/al.h>
 #include <AL/alc.h>
-
-#pragma once
+#include "TextRenderer.h"
 
 class Window {  
     public:
@@ -28,6 +29,7 @@ class Window {
             layerStack.emplace_back(layer);
         }
         std::vector<std::unique_ptr<Layer>> layerStack;
+        TextRenderer textRenderer;
     private:
         //Framebuffer
         GLFWwindow* window;
