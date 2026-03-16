@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1.1) # May change later, probably don't need such an update version.
+cmake_minimum_required(VERSION 3.1.2)
 set(CMAKE_CXX_STANDARD 17)  
 set(CMAKE_CXX_STANDARD_REQUIRED ON)  
 
