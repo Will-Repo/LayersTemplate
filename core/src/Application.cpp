@@ -45,7 +45,7 @@ void Application::run() {
     for (Window* window : windowStack) {
         glfwMakeContextCurrent(window->getWindow());
         for (auto& layer : window->layerStack) {
-            layer->loadData(window); //Pass in window pointer so the layer can access window specific data.
+            layer->loadData(window, &config.paths); //Pass in window pointer so the layer can access window specific data.
         }
     }
 
@@ -81,7 +81,7 @@ void Application::run() {
             glClear(GL_COLOR_BUFFER_BIT);
 
             for (auto& layer : windowStack[i]->layerStack) {
-                layer->onRender(windowStack[i]);
+                layer->onRender(windowStack[i], &config.paths);
             }
 
             glfwSwapBuffers(window);

@@ -13,6 +13,11 @@ int main() {
     appconf->appDesc = "App description";
     appconf->vsync = false;
     appconf->running = true;
+    //Set up data about file locations for the project - multiple reads are thread safe, don't combining reading and writing on multiple threads. Relatve to executable location.
+    appconf->paths.srcPath = "../../app/src";
+    appconf->paths.shadersPath = "../../app/shaders";
+    appconf->paths.fontsPath = "../../app/fonts";
+    appconf->paths.corePath = "../../core";
 
     //Make window object belonging to the application, set up its attributes.
     Window window1 = Window();

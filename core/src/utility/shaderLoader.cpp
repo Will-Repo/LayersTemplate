@@ -4,13 +4,13 @@
 #include <iostream>
 #include <string>
 #include "fileReading.h"
+#include "FilePaths.h"
 
-GLuint loadShaders(ShaderInfo* info) {
+GLuint loadShaders(ShaderInfo* info, FilePaths* filePaths) {
     GLuint program = glCreateProgram();
-    std::cout << "Entered" << std::endl;
     for (int enumType = 0; info[enumType].type != GL_NONE; enumType++) {
         const char* filePath = info[enumType].filePath;
-        std::string sourceString = getFileContents((std::string("../app/shaders/") + filePath).c_str());
+        std::string sourceString = getFileContents((filePaths->executablePath + "/" + filePaths->shadersPath + "/" + filePath).c_str());
         GLuint shader = compileShader(info[enumType].type, sourceString);
         glAttachShader(program, shader);
         glDeleteShader(shader);
@@ -41,7 +41,7 @@ GLuint compileShader(GLenum type, std::string sourceString) {
 }
 
 // If calling from core, use fixed core path instead.
-GLuint loadShaders(ShaderInfo* info, std::string check) {
+GLuint loadShaders(ShaderInfo* info, FilePaths* filePaths, std::string check) {
     if (check != "core") {
         std::cout << "This function uses the core file path, use loadShaders without the second parameter to use the app/ user defined path" << std::endl;
         exit(1);
@@ -49,7 +49,7 @@ GLuint loadShaders(ShaderInfo* info, std::string check) {
     GLuint program = glCreateProgram();
     for (int enumType = 0; info[enumType].type != GL_NONE; enumType++) {
         const char* filePath = info[enumType].filePath;
-        std::string sourceString = getFileContents((std::string("../core/shaders/") + filePath).c_str());
+        std::string sourceString = getFileContents((filePaths->executablePath + "/" + filePaths->corePath + "/shaders/" + filePath).c_str());
         GLuint shader = compileShader(info[enumType].type, sourceString);
         glAttachShader(program, shader);
         glDeleteShader(shader);

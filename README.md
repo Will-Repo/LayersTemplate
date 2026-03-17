@@ -5,8 +5,7 @@ C++ code template that provides a starting point for cross plateform C++ project
 
 ## Set-up, Dependencies & Build
 To build, run 'cmake -S . -B build/ && cmake --build build' from the root of the project.
-The app file must be run from the build directory root, for relative paths in shader setup to work correctly (this will be configurable in later versions).
-
+By default, the app file must be run from the build directory root, for relative paths in shader setup to work correctly. The app can modify the default file paths to change this behaviour.
 ### User required dependencies:
 *OpenGL - Minimum Version: 4.3
 
@@ -86,3 +85,8 @@ Update base classes based on how they are used in the app - e.g. add data loadin
 Make consistent whether i use getter functions or public - think more on specific instances what is appropriate.
 Add opengl debugging.
 Rewrite text renderering myself, moving more into initialisation rather than current inefficient implementation.
+Move unecessary member functions out of their classes.
+Set up release guidelines - e.g. tag naming scheme.
+Stop working on main thread after 1st release.
+Clean up getExecutablePath() in FilePaths.cpp
+Store pointers to filePaths in class, rather than passing it in always.

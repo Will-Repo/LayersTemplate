@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Layer.h"
+#include "FilePaths.h"
 
 #pragma once 
 
@@ -16,8 +17,8 @@ class BaseLayer : public Layer {
     public:
         BaseLayer();
         ~BaseLayer();
-        void loadData(Window* window) override;
+        void loadData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(Event& event) override;
-        void onRender(Window* window) override;
+        void onRender(Window* window, FilePaths* filePaths) override;
 };  

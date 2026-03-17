@@ -3,12 +3,13 @@
 #include "SecondaryLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
+#include "FilePaths.h"
 
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 SecondaryLayer::SecondaryLayer() {}
 
-void SecondaryLayer::loadData(Window* window) {
+void SecondaryLayer::loadData(Window* window, FilePaths* filePaths) {
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
 
@@ -38,7 +39,7 @@ void SecondaryLayer::loadData(Window* window) {
         {GL_NONE, NULL},
     };
 
-    program = loadShaders(shaders);
+    program = loadShaders(shaders, filePaths);
 
     glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(vPosition);
@@ -56,7 +57,7 @@ void SecondaryLayer::onEvent(Event& event) {
 
 }
 
-void SecondaryLayer::onRender(Window* window) {
+void SecondaryLayer::onRender(Window* window, FilePaths* filePaths) {
     glUseProgram(program);
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);

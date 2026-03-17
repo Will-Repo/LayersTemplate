@@ -3,6 +3,7 @@
 #include "Window.h"
 #include <memory>
 #include "LogicThreadManager.h"
+#include "FilePaths.h"
 
 #pragma once
 
@@ -15,6 +16,7 @@ class Application {
             std::string appDesc = "Application description"; //Might remove later.
             bool vsync = false;
             bool running = true;
+            FilePaths paths;
         };
         configuration config;
         void addWindow(Window& window);

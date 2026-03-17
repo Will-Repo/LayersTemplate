@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "shaderLoader.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "FilePaths.h"
 
 TextRenderer::TextRenderer() {
     int error = FT_Init_FreeType(&library);
@@ -20,13 +21,13 @@ TextRenderer::TextRenderer() {
 }
 
 //File path is from fonts directory.
-void TextRenderer::addFace(std::string name, std::string filePath) {
+void TextRenderer::addFace(std::string name, std::string filePath, FilePaths* filePaths) {
     if (faces.find(name) != faces.end()) {
         std::cout << "Font already loaded" << std::endl;
         return;
     }
     FT_Face face;
-    filePath = "../app/fonts/" + filePath;
+    filePath = filePaths->executablePath + "/" +  filePaths->fontsPath + "/" + filePath;
     int error = FT_New_Face(library, filePath.c_str(), 0, &face); //TODO: switch this to config struct filepath.
     //TODO: error handiling
     if (error == FT_Err_Unknown_File_Format) {
@@ -87,7 +88,7 @@ std::map<char, TextRenderer::Character> TextRenderer::getCharacters(FT_Face face
 }
 
 //TODO: Perhaps alert app if invalid face, or just log error and change to default face.
-void TextRenderer::renderText(std::string faceName, std::string text, float x, float y, float scale, glm::vec3 colour) {
+void TextRenderer::renderText(std::string faceName, std::string text, float x, float y, float scale, glm::vec3 colour, FilePaths* filePaths) {
     // Code here from https://learnopengl.com/In-Practice/Text-Rendering, will write my own once verified working.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
@@ -109,7 +110,7 @@ void TextRenderer::renderText(std::string faceName, std::string text, float x, f
         {GL_NONE, NULL},
     };
 
-    GLuint program = loadShaders(shaders, "core");
+    GLuint program = loadShaders(shaders, filePaths, "core");
     glUseProgram(program);
     glUniform3f(glGetUniformLocation(program, "textColor"), colour.x, colour.y, colour.z);
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));

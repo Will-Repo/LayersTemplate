@@ -2,6 +2,7 @@
 
 #include "Event.h"
 //#include "Window.h" //Using forward declaration instead, as there is a circular dependency, and this gets skipped if included already so layer doesn't know about window.
+#include "FilePaths.h"
 
 class Window;
 
@@ -14,10 +15,10 @@ class Layer {
     public:
         Layer() {};
         virtual ~Layer() {}; //Close resourses.
-        virtual void loadData(Window* window) {};
+        virtual void loadData(Window* window, FilePaths* filePaths) {};
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(Event& event) {};
-        virtual void onRender(Window* window) {};
+        virtual void onRender(Window* window, FilePaths* filePaths) {};
         configuration config;
     private:
 };
