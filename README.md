@@ -11,11 +11,11 @@ By default, the app file must be run from the build directory root, for relative
 
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
-*GLM - Minimum Version: 1.0.3
-*GLEW - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
-*GLFW - Minimum Version: 3.4
-*OpenAL-Soft - Minimum Version: 1.25.1
-*FreeType - Minimum Version: 2.14.2
+* **GLM** - Minimum Version: 1.0.3
+* **GLEW** - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
+* **GLFW** - Minimum Version: 3.4
+* **OpenAL-Soft** - Minimum Version: 1.25.1
+* **FreeType** - Minimum Version: 2.14.2
 
 ## File Structure - UPDATE THIS
 ```bash
@@ -52,22 +52,31 @@ LayersTemplate
 ## Core abstraction
 The app project is intended to interact with the core libarary primarily through the Application and Layers classes, with additional functions being provided by other utility classes (e.g. compiling shaders).
 The application should:
-*create an Application object
-*modify the objects config struct
-*create one or more Window objects
-*modify the window objects' config structs
-*create one or more layer objects
-*modify the layer objects' config structrs
-*add the layers to each Window object's layer stack
-*run the application
+* create an Application object
+* modify the objects config struct
+* create one or more Window objects
+* modify the window objects' config structs
+* create one or more layer objects
+* modify the layer objects' config structrs
+* add the layers to each Window object's layer stack
+* run the application
 
 ## Multi-threading
-All windows render on the same thread, though the app project can implement other OpenGL setup on seperate threads.
+All windows render on the main thread, though the app project can implement other OpenGL setup on seperate threads.
 The app can get updates for different layers on different threads, this allows for seperate frame amounts and higher performance.
 
-~~The following classes require a seperate instance per thread, and have data stored in the thread class:
-- TextRendering, freetype face objects can only be used from a single thread at a time, so duplicate objects are required.
-Use of these objects should be done through querying the thread manager using the thread group in the layers config, and the name of the class required.~~ This is not necessary as rendering is currently on one thread.
+~~The following classes require a seperate instance per thread, and have data stored in the thread class:~~
+~~- TextRendering, freetype face objects can only be used from a single thread at a time, so duplicate objects are required.~~
+~~Use of these objects should be done through querying the thread manager using the thread group in the layers config, and the name of the class required.~~ This is not necessary as rendering is currently on one thread.
+
+## Framerate
+The core project handles the framerate as follows:
+* **Each windows' logic** - defined on a per layer basis, layers can choose to do this logic on a seperate thread (other layers can choose to join this thread group too)
+* **Each windows' rendering** - rendering happens on the main thread, but layers can specify what framerate they want to render at.
+    *Currently only the main thread can render, due to OpenGL only allowing one context to be current at once (app-wide), I might look into this more at a later date.*
+* **Input events** - these are recieved by polling on the main thread, at a framerate defined in the app config (can be uncapped), but seperate from other app logic. Each window defines a frame rate for its events to be passed to its layers. it is up to the implementation of each layer to decide whether it delays the effect of this event until onUpdate is called, or changes are applied immediately.
+
+~~For example, the app can define a window that runs at 60fps, that handles inputs at 120fps, with layers that update state at 30, 40 and 60fps respectively (this requires holding the results of the handled input event until onUpdate is called for the layer, or the layer could update state immediately for inputs and make other changes (such as applying gravity to a player) whenever the layer updates).~~
 
 ## Naming Conventions
 
@@ -90,3 +99,5 @@ Set up release guidelines - e.g. tag naming scheme.
 Stop working on main thread after 1st release.
 Clean up getExecutablePath() in FilePaths.cpp
 Store pointers to filePaths in class, rather than passing it in always.
+Fix memory leak.
+Need better framerate title name.
