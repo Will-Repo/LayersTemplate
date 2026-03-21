@@ -60,7 +60,7 @@ void Application::run() {
     threadManager.startThreads();
 
     // Begin rendering.
-    while (true) {
+    while (config.running) {
         int numWindows = windowStack.size();
         int i = 0;
 

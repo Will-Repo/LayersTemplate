@@ -7,8 +7,10 @@
 class Window;
 
 struct configuration {
-    int framerate = 60; // Logic framerate
-    int threadGroup = 0; // Thread group must all have same framerate, and if value higher than available threads, will join main thread.
+    int updateFrameLimit = 60; // Times onUpdate called per second.    
+    int updateThreadGroup = 0; // Thread group must all have same framerate, and if value higher than available threads, will join main thread.
+    int renderingFrameLimit = 60;  
+    int renderingThreadGroup = 0;
 };
 
 class Layer {

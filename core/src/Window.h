@@ -21,6 +21,7 @@ class Window {
             bool running = false;
             int width = 1920;
             int height = 1080;
+            int inputHandlingRate = 60; // Rate at which the window handles the inputs it recieves from the appliction callbacks.
         };
         configuration config;
         GLFWwindow* getWindow();

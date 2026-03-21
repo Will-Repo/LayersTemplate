@@ -155,5 +155,3 @@ void TextRenderer::renderText(std::string faceName, std::string text, float x, f
         x += (ch.NextOffset >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
     }
 }
-
-//TODO: Add character vectors, link with faces data structure.

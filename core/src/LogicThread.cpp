@@ -19,9 +19,9 @@ void LogicThread::startUpdating() {
 void LogicThread::updateWindows() {
     // Check all windows in the thread group share the same framerate.
 
-    int framerate = layers[0]->config.framerate;
+    int framerate = layers[0]->config.updateFrameLimit;
     for (int i = 1; i < layers.size(); ++i) {
-        if (layers[i]->config.framerate != framerate) {
+        if (layers[i]->config.updateFrameLimit != framerate) {
             std::cout << "Layers on same thread have different framerates." << std::endl;
             //TODO: Error handling.
         }

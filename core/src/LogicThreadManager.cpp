@@ -8,7 +8,7 @@
 void LogicThreadManager::addLayer(Layer* layer) {
     //std::cout << "Window started" << std::endl;
     // Check if thread group exists in the map.
-    int group = layer->config.threadGroup;
+    int group = layer->config.updateThreadGroup;
     //std::cout << "Thread group: " << group << std::endl;
     auto it = threadGroups.find(group);
     if (it != threadGroups.end()) { //If found, add window to group.

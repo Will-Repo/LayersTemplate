@@ -11,10 +11,12 @@ class Application {
     public: 
         Application();
         struct configuration {
-            int framerate = 60; //This is the framerate game logic runs at, not rendering rate.
+            int mainThreadLimit = 240; //This is the framerate of the main thread loop, which controls (the maximum rate of) rendering and input recieving.
+            int recieveInputsLimit = -1; // -1 is no limit, runs as fast as mainThreadLimit
+            int renderingCallsLimit = -1;
             std::string appName = "Application";
             std::string appDesc = "Application description"; //Might remove later.
-            bool vsync = false;
+            //bool vsync = false;
             bool running = true;
             FilePaths paths;
         };
