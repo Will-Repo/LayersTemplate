@@ -3,6 +3,7 @@
 #include "Event.h"
 //#include "Window.h" //Using forward declaration instead, as there is a circular dependency, and this gets skipped if included already so layer doesn't know about window.
 #include "FilePaths.h"
+#include <chrono>
 
 class Window;
 
@@ -21,5 +22,6 @@ class Layer {
         virtual void onEvent(Event& event) {};
         virtual void onRender(Window* window, FilePaths* filePaths) {};
         configuration config;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
     private:
 };

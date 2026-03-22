@@ -76,7 +76,7 @@ Each layer has its own framebuffer (rendered to texture, which are rendered sequ
 
 ## Framerate
 The core project handles the framerate as follows:
-* **Each windows' logic** - defined on a per layer basis, layers can choose to do this logic on a seperate thread (other layers can choose to join this thread group too)
+* **Each windows' logic** - defined on a per layer basis, layers can choose to do this logic on a seperate thread (other layers can choose to join this thread group too). The application can cap this framerate.
 * **Each windows' rendering** - rendering happens on the window specific threads (or window groups), but layers can specify what framerate they want to render at.
     ~~*Currently only the main thread can render, due to OpenGL only allowing one context to be current at once (app-wide), I might look into this more at a later date.*~~
 * **Input events** - these are recieved by polling on the main thread, at a framerate defined in the app config (can be uncapped), but seperate from other app logic. Each window defines a frame rate for its events to be passed to its layers. it is up to the implementation of each layer to decide whether it delays the effect of this event until onUpdate is called, or changes are applied immediately.
@@ -107,5 +107,9 @@ Note: Limiting framerate values can reduce system usage.
 * Fix memory leak.
 * Need better framerate title name.
 * Add warning when assigning layer to thread where thread limit is lower than layers value (e.g. when a layer's rendering framerate is higher than its window's).
+* The update thread has no limit - so uses much more processing power than necessary - add max limit, perhaps in app config, or on a thread group basis - new config?
+* Multiple references to same layer across windows? Surely not great idea, but perhaps useful and should be accounted for. Add to docs, updating where multiple windows reference one layer can have issues - take into account.
+* How can layers be deleted, all references going out of scope? But then if multiple one will keep updating even after closed.
+* Change Inputs to Events in InputThread - as it handles events, not just user inputs.
 
 ## Bugs and known issues

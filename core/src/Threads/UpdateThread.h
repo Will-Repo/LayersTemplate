@@ -10,7 +10,7 @@ class LogicThread {
         ~LogicThread();
         void addLayer(Layer* layer);
         void startUpdating();
-        void updateWindows();
+        void updateLayers();
     private:
         std::vector<Layer*> layers;
         std::thread thread;

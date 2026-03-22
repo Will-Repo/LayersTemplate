@@ -9,6 +9,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include "TextRenderer.h"
+#include <chrono>
 
 class Window {  
     public:
@@ -34,6 +35,7 @@ class Window {
         }
         std::vector<std::unique_ptr<Layer>> layerStack;
         TextRenderer textRenderer;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
     private:
         //Framebuffer
         GLFWwindow* window;
