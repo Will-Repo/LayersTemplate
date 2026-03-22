@@ -27,7 +27,7 @@ void ThreadManager::addUpdateLayer(Layer* layer) {
 }
 
 // Add window to any thread group. Window added must be unique.
-void ThreadManager::addRenderingWindow(Window* window) {
+void ThreadManager::addRenderingWindow(Window* window, FilePaths* filePaths) {
     // Check if thread group exists already. 
     int group = window->config.renderingThreadGroup;
     auto it = renderingThreadGroups.find(group);
@@ -36,7 +36,7 @@ void ThreadManager::addRenderingWindow(Window* window) {
         // Get update thread and assign layer to it.
         it->second->addWindow(window);
     } else {        
-        std::unique_ptr<RenderingThread> threadPtr = std::make_unique<RenderingThread>();
+        std::unique_ptr<RenderingThread> threadPtr = std::make_unique<RenderingThread>(filePaths);
         threadPtr->addWindow(window);
         renderingThreadGroups[group] = std::move(threadPtr);
     }
@@ -44,7 +44,7 @@ void ThreadManager::addRenderingWindow(Window* window) {
 
 void ThreadManager::addInputWindow(Window* window) {
     // Check if thread group exists already. 
-    int group = layer->config.inputHandlingGroup;
+    int group = window->config.inputHandlingGroup;
     auto it = inputThreadGroups.find(group);
     //If found, add window to group. If not, create group and assign layer to new group.
     if (it != inputThreadGroups.end()) {
@@ -64,7 +64,7 @@ void ThreadManager::startAllThreads() {
 }
 
 void ThreadManager::startLayerUpdating() {
-    for (auto& [id, thread] : updateThreadGroups) {
+    for (auto& [id, group] : updateThreadGroups) {
         // Start all update threads.
         group->startUpdating();
     }
@@ -80,6 +80,6 @@ void ThreadManager::startWindowRendering() {
 void ThreadManager::startHandlingInputs() {
     for (auto& [id, group] : inputThreadGroups) {
         // Start each thread group's input handling.
-        group->startInputHandling();
+        group->startEventHandling();
     }
 }

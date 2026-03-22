@@ -2,7 +2,7 @@
 #include <vector>
 #include "Window.h"
 #include <memory>
-#include "LogicThreadManager.h"
+#include "ThreadManager.h"
 #include "FilePaths.h"
 
 #pragma once
@@ -26,5 +26,5 @@ class Application {
     private:
         std::vector<Window*> windowStack;
         bool running = true;
-        LogicThreadManager threadManager;
+        ThreadManager threadManager;
 };

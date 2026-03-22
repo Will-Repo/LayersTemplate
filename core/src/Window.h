@@ -36,6 +36,7 @@ class Window {
         std::vector<std::unique_ptr<Layer>> layerStack;
         TextRenderer textRenderer;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastHandledInputs;
     private:
         //Framebuffer
         GLFWwindow* window;

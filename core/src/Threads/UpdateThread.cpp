@@ -1,22 +1,22 @@
-#include "LogicThread.h"
+#include "UpdateThread.h"
 #include <thread>
 #include <iostream>
 #include "Layer.h"
 
-LogicThread::LogicThread() {
+UpdateThread::UpdateThread() {
 }
 
-LogicThread::~LogicThread() {
+UpdateThread::~UpdateThread() {
     if (thread.joinable()) {
         thread.join(); // Wait for thread to finish before destroying class object to prevent core dump.
     }
 }
 
-void LogicThread::startUpdating() {
-    thread = std::thread(&LogicThread::updateLayers, this);
+void UpdateThread::startUpdating() {
+    thread = std::thread(&UpdateThread::updateLayers, this);
 }
 
-void LogicThread::updateLayers() {
+void UpdateThread::updateLayers() {
     float deltaTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
 
@@ -30,7 +30,7 @@ void LogicThread::updateLayers() {
             // See if enough time has elapsed to call for update.
             now = std::chrono::high_resolution_clock::now();
             timestep = std::chrono::duration<float>(now - layer->lastUpdated).count();
-            if (timestep >= (1.0 / layer->updateFrameLimit)) {
+            if (timestep >= (1.0 / layer->config.updateFrameLimit)) {
                 layer->lastUpdated = now;
                 layer->onUpdate(timestep);
             }
@@ -45,6 +45,6 @@ void LogicThread::updateLayers() {
     }
 }
 
-void LogicThread::addLayer(Layer* layer) {
+void UpdateThread::addLayer(Layer* layer) {
     layers.push_back(layer);
 }

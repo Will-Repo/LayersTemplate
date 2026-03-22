@@ -4,7 +4,7 @@
 #include "Window.h"
 #include "FilePaths.h"
 
-RenderingThread::RenderingThread(FilePaths* paths) filePaths(paths) {
+RenderingThread::RenderingThread(FilePaths* paths) : filePaths(paths) {
 }
 
 RenderingThread::~RenderingThread() {
@@ -21,8 +21,8 @@ void RenderingThread::startRendering() {
 void RenderingThread::renderWindows() {
     int maxFrameLimit = 0;
     for (Window* window : windows) {
-        if (window->renderingFrameLimit > maxFrameLimit) {
-            maxFrameLimit = window->renderingFrameLimit;
+        if (window->config.renderingFrameLimit > maxFrameLimit) {
+            maxFrameLimit = window->config.renderingFrameLimit;
         }
     }
     float frameTime = 1.0 / maxFrameLimit;
@@ -36,23 +36,25 @@ void RenderingThread::renderWindows() {
 
     while (windows.size() > 0) {
         for (Window* window : windows) {
-            float windowFrameTime = 1.0 / window->renderingFrameLimit;
+            float windowFrameTime = 1.0 / window->config.renderingFrameLimit;
             now = std::chrono::high_resolution_clock::now();
             if (std::chrono::duration<float>(now - window->lastRendered).count() >= windowFrameTime) {            
-                glfwMakeContextCurrent(window);
+                //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
+                //std::cout << "Window: " << window->getWindow() << "." << std::endl;
+                glfwMakeContextCurrent(window->getWindow());
                 glClear(GL_COLOR_BUFFER_BIT);
 
                 // Render each layer, if its passed their frame time.
-                for (auto& layer : layers) {
+                for (auto& layer : window->layerStack) {
                     // See if enough time has elapsed to call for update.
                     now = std::chrono::high_resolution_clock::now();
                     timestep = std::chrono::duration<float>(now - layer->lastRendered).count();
-                    if (timestep >= (1.0 / layer->renderingFrameLimit)) {
+                    if (timestep >= (1.0 / layer->config.renderingFrameLimit)) {
                         layer->lastRendered = now;
                         layer->onRender(window, filePaths); 
                     }
                 }
-                glfwSwapBuffers(window);
+                glfwSwapBuffers(window->getWindow());
             }
         }
 

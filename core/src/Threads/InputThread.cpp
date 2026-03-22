@@ -4,8 +4,7 @@
 #include "Window.h"
 #include "FilePaths.h"
 
-InputThread::InputThread(FilePaths* paths) filePaths(paths) {
-}
+InputThread::InputThread() {}
 
 InputThread::~InputThread() {
     if (thread.joinable()) {
@@ -21,8 +20,8 @@ void InputThread::startEventHandling() {
 void InputThread::handleEvents() {
     int maxHandlingLimit = 0;
     for (Window* window : windows) {
-        if (window->inputHandlingRate > maxHandlingLimit) {
-            maxHandlingLimit = window->inputHandlingRate;
+        if (window->config.inputHandlingRate > maxHandlingLimit) {
+            maxHandlingLimit = window->config.inputHandlingRate;
         }
     }
     float frameTime = 1.0 / maxHandlingLimit;
@@ -36,7 +35,7 @@ void InputThread::handleEvents() {
 
     while (windows.size() > 0) {
         for (Window* window : windows) {
-            float windowHandlingTime = 1.0 / window->inputHandlingRate;
+            float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
             now = std::chrono::high_resolution_clock::now();
             if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
 

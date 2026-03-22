@@ -7,7 +7,7 @@
 
 class RenderingThread {
     public:
-        RenderingThread(); // Loops through all windows on this thread group.
+        RenderingThread(FilePaths* paths); // Loops through all windows on this thread group.
         ~RenderingThread();
         void addWindow(Window* window);
         void startRendering();

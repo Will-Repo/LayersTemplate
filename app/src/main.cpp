@@ -35,8 +35,8 @@ int main() {
     win1conf->height = 1080;
     win1conf->inputHandlingRate = 120;
     win1conf->inputHandlingGroup = 0;
-    win1conf->config.renderingFrameLimit = 120;
-    win1conf->config.renderingThreadGroup = 0;
+    win1conf->renderingFrameLimit = 120;
+    win1conf->renderingThreadGroup = 0;
 
     // Declare and add layers to window 1.
     BaseLayer base;

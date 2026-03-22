@@ -6,7 +6,7 @@
 #include "Layer.h"
 #include <chrono>
 #include <thread>
-#include "LogicThreadManager.h"
+#include "ThreadManager.h"
 #include "TextRenderer.h"
 
 Application::Application() {
@@ -40,6 +40,7 @@ void Application::run() {
         std::cout << "GLEW initialisation failed: " << glewGetErrorString(err) << "." << std::endl;
         exit(1);
     }
+    glfwMakeContextCurrent(NULL);
 
     // Load the data for each layer with the correct context. Basic rendering data. TODO: Check if necessary.
     for (Window* window : windowStack) {
@@ -48,6 +49,7 @@ void Application::run() {
             layer->loadData(window, &config.paths); //Pass in window pointer so the layer can access window specific data.
         }
     }
+    glfwMakeContextCurrent(NULL); // Make sure contexts are released for use in multithreaded rendering.
 
     // Add each window to its thread for layer updating.
     for (Window* window : windowStack) {
@@ -58,15 +60,15 @@ void Application::run() {
 
     // Add each window for rendering and input handling.
     for (Window* window : windowStack) {
-        threadManager.addRenderingWindow(window);
-        threadManger.addInputWindow(window);
+        threadManager.addRenderingWindow(window, &config.paths);
+        threadManager.addInputWindow(window);
     }
 
     // Start logic update threads.
     threadManager.startAllThreads();
 
 
-    float frameTime = 1.0 / config->recieveInputsLimit;
+    float frameTime = 1.0 / config.recieveInputsLimit;
     float deltaTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
     // Poll events, and check if each window has closed.

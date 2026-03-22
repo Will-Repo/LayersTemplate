@@ -3,6 +3,7 @@ include(Dependencies.cmake)
 file(GLOB CORE_SRC
     src/*.cpp
     src/utility/*.cpp
+    src/Threads/*.cpp
     ${whereami_SOURCE_DIR}/src/whereami.c
 )
 
@@ -13,5 +14,5 @@ target_link_libraries(core PUBLIC
 )
 
 target_include_directories(core PUBLIC 
-    src src/utility vendor ${GLM_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${OPENALSOFT_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${WHEREAMI_INCLUDE_DIR}
+    src src/utility src/Threads vendor ${GLM_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${OPENALSOFT_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${WHEREAMI_INCLUDE_DIR}
 )

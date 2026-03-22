@@ -23,5 +23,6 @@ class Layer {
         virtual void onRender(Window* window, FilePaths* filePaths) {};
         configuration config;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
     private:
 };

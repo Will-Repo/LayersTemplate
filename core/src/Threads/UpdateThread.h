@@ -4,10 +4,10 @@
 #include <vector>
 #include <thread>
 
-class LogicThread {
+class UpdateThread {
     public:
-        LogicThread(); // Loops through all windows on this thread group.
-        ~LogicThread();
+        UpdateThread(); // Loops through all windows on this thread group.
+        ~UpdateThread();
         void addLayer(Layer* layer);
         void startUpdating();
         void updateLayers();
