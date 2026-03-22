@@ -5,6 +5,7 @@
 #include "example/SecondaryLayer.h"
 
 int main() {
+    //TODO: Make config values make sense - base doesnt even update lol, doesnt need 120 fps.
     //Note: This is an example of what you can do, not what you should do (in terms of frame groups etc), this is dependent on the application being created.
     /* APPLICATION SETUP */
     //Make application object, set up attributes.
@@ -33,19 +34,20 @@ int main() {
     win1conf->width = 1920;
     win1conf->height = 1080;
     win1conf->inputHandlingRate = 120;
+    win1conf->inputHandlingGroup = 0;
+    win1conf->config.renderingFrameLimit = 120;
+    win1conf->config.renderingThreadGroup = 0;
 
     // Declare and add layers to window 1.
     BaseLayer base;
-    base.config.updateFrameLimit = 60; // layer logic framerate.
+    base.config.updateFrameLimit = 120; // layer logic framerate.
     base.config.updateThreadGroup = 0; 
     base.config.renderingFrameLimit = 60; // layer logic framerate.
-    base.config.renderingThreadGroup = 0;
     window1.addLayer(&base);
 
     SecondaryLayer second;
-    second.config.updateFrameLimit = 120; // layer logic framerate.
-    second.config.renderingFrameLimit = 120;
-    second.config.renderingThreadGroup = 1;
+    second.config.updateFrameLimit = 30; // layer logic framerate.
+    second.config.renderingFrameLimit = 30;
     window1.addLayer(&second);
 
     /* WINDOW 2 SETUP */
@@ -55,6 +57,10 @@ int main() {
     win2conf->windowDesc = "Window 2 description";
     win2conf->running = true;
     win2conf->inputHandlingRate = 30;
+    win2conf->inputHandlingGroup = 1;
+    win2conf->renderingFrameLimit = 60;
+    win2conf->renderingThreadGroup = 1;
+
     // Others remain as default. Same as window 1 values.
     // Add layers to window 2
     window2.addLayer(&base);

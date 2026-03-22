@@ -8,7 +8,7 @@ To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the r
 By default, the app file must be run from the build directory root, for relative paths in shader setup to work correctly. The app can modify the default file paths to change this behaviour.
 
 ### User required dependencies:
-* OpenGL - Minimum Version: 4.3
+* **OpenGL** - Minimum Version: 4.3
 
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
@@ -63,9 +63,9 @@ The application should:
 * run the application
 
 ## Multi-threading
-**Windows** can **render** on seperate threads, or join with others in a frame group. All rendering for each window will be done within its thread group, as each OpenGL context will only be made current on a single thread.
-**Events** are recieved on the main thread, but passed to window specific threads to be managed. Again, each window can have its own thread, or join with others in a frame group.
-**Layers** can **update** on seperate threads, or join with others in a thread group.
+* **Windows** can **render** on seperate threads, or join with others in a frame group. All rendering for each window will be done within its thread group, as each OpenGL context will only be made current on a single thread.
+* **Events** are recieved on the main thread, but passed to window specific threads to be managed. Again, each window can have its own thread, or join with others in a frame group.
+* **Layers** can **update** on seperate threads, or join with others in a thread group.
 
 Thread groups can handle processes with different frame rates perfectly fine.
 Each layer has its own framebuffer (rendered to texture, which are rendered sequentially), so each pass can have some windows not render anything and still retain their previous state.
@@ -77,7 +77,7 @@ Each layer has its own framebuffer (rendered to texture, which are rendered sequ
 ## Framerate
 The core project handles the framerate as follows:
 * **Each windows' logic** - defined on a per layer basis, layers can choose to do this logic on a seperate thread (other layers can choose to join this thread group too)
-* **Each windows' rendering** - rendering happens on the main thread, but layers can specify what framerate they want to render at.
+* **Each windows' rendering** - rendering happens on the window specific threads (or window groups), but layers can specify what framerate they want to render at.
     ~~*Currently only the main thread can render, due to OpenGL only allowing one context to be current at once (app-wide), I might look into this more at a later date.*~~
 * **Input events** - these are recieved by polling on the main thread, at a framerate defined in the app config (can be uncapped), but seperate from other app logic. Each window defines a frame rate for its events to be passed to its layers. it is up to the implementation of each layer to decide whether it delays the effect of this event until onUpdate is called, or changes are applied immediately.
 
@@ -106,3 +106,6 @@ Note: Limiting framerate values can reduce system usage.
 * Store pointers to filePaths in class, rather than passing it in always.
 * Fix memory leak.
 * Need better framerate title name.
+* Add warning when assigning layer to thread where thread limit is lower than layers value (e.g. when a layer's rendering framerate is higher than its window's).
+
+## Bugs and known issues

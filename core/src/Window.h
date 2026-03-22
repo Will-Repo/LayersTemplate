@@ -22,6 +22,9 @@ class Window {
             int width = 1920;
             int height = 1080;
             int inputHandlingRate = 60; // Rate at which the window handles the inputs it recieves from the appliction callbacks.
+            int inputHandlingGroup = 0;
+            int renderingFrameLimit = 60;
+            int renderingThreadGroup = 0;
         };
         configuration config;
         GLFWwindow* getWindow();
