@@ -39,6 +39,9 @@ void RenderingThread::renderWindows() {
             float windowFrameTime = 1.0 / window->renderingFrameLimit;
             now = std::chrono::high_resolution_clock::now();
             if (std::chrono::duration<float>(now - window->lastRendered).count() >= windowFrameTime) {            
+                glfwMakeContextCurrent(window);
+                glClear(GL_COLOR_BUFFER_BIT);
+
                 // Render each layer, if its passed their frame time.
                 for (auto& layer : layers) {
                     // See if enough time has elapsed to call for update.
@@ -49,6 +52,7 @@ void RenderingThread::renderWindows() {
                         layer->onRender(window, filePaths); 
                     }
                 }
+                glfwSwapBuffers(window);
             }
         }
 

@@ -57,6 +57,12 @@ void ThreadManager::addInputWindow(Window* window) {
     }
 }
 
+void ThreadManager::startAllThreads() {
+    startLayerUpdating();
+    startWindowRendering();
+    startHandlingInputs();
+}
+
 void ThreadManager::startLayerUpdating() {
     for (auto& [id, thread] : updateThreadGroups) {
         // Start all update threads.

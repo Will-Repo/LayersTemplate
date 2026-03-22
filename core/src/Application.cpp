@@ -41,7 +41,7 @@ void Application::run() {
         exit(1);
     }
 
-    // Load the data for each layer with the correct context.
+    // Load the data for each layer with the correct context. Basic rendering data. TODO: Check if necessary.
     for (Window* window : windowStack) {
         glfwMakeContextCurrent(window->getWindow());
         for (auto& layer : window->layerStack) {
@@ -52,14 +52,24 @@ void Application::run() {
     // Add each window to its thread for layer updating.
     for (Window* window : windowStack) {
         for (auto& layer : window->layerStack) {
-            threadManager.addLayer(layer.get());
+            threadManager.addUpdateLayer(layer.get());
         }
     }
 
-    // Start logic update threads.
-    threadManager.startThreads();
+    // Add each window for rendering and input handling.
+    for (Window* window : windowStack) {
+        threadManager.addRenderingWindow(window);
+        threadManger.addInputWindow(window);
+    }
 
-    // Begin rendering.
+    // Start logic update threads.
+    threadManager.startAllThreads();
+
+
+    float frameTime = 1.0 / config->recieveInputsLimit;
+    float deltaTime;
+    std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
+    // Poll events, and check if each window has closed.
     while (config.running) {
         int numWindows = windowStack.size();
         int i = 0;
@@ -76,16 +86,14 @@ void Application::run() {
                 std::cout << "Closed window." << std::endl;
                 continue;
             }
-
-            glfwMakeContextCurrent(window);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            for (auto& layer : windowStack[i]->layerStack) {
-                layer->onRender(windowStack[i], &config.paths);
-            }
-
-            glfwSwapBuffers(window);
+            
             ++i;
         }
+
+        deltaTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - oldDelta).count();
+        if (frameTime - deltaTime > 0) {
+            std::this_thread::sleep_for(std::chrono::duration<float> (frameTime - deltaTime));
+        }
+        oldDelta = std::chrono::high_resolution_clock::now();
     }
 }

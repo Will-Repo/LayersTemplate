@@ -16,6 +16,8 @@ class ThreadManager {
         //Windows' input handling - recieves event objects from callbacks and polling on main thread, multiple windows can be assigned to a thread group, but each window must be assigned to only one thread group. Thread group identifies window event belongs to, and passes event down layers until its been handled.
         addInputWindow();
 
+        void startAllThreads();
+
         void startLayerUpdating();
         void startWindowRendering();
         void startHandlingInputs();

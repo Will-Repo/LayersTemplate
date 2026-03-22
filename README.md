@@ -111,5 +111,7 @@ Note: Limiting framerate values can reduce system usage.
 * Multiple references to same layer across windows? Surely not great idea, but perhaps useful and should be accounted for. Add to docs, updating where multiple windows reference one layer can have issues - take into account.
 * How can layers be deleted, all references going out of scope? But then if multiple one will keep updating even after closed.
 * Change Inputs to Events in InputThread - as it handles events, not just user inputs.
+* Need way to close windows from the proper thread for it - or perhaps its fine on the main thread?
+* -1 means no limit for framerate, but application and threads dont take this into account yet.
 
 ## Bugs and known issues
