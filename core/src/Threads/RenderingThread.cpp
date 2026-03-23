@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Window.h"
 #include "FilePaths.h"
+#include "shaderLoader.h"
 
 RenderingThread::RenderingThread(FilePaths* paths) : filePaths(paths) {
 }
@@ -33,6 +34,53 @@ void RenderingThread::renderWindows() {
     //Timestep variables.
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
+    //TODO: Make dynamic for multiple windows, atm if more than one window assinged to thread one wont work.
+    glfwMakeContextCurrent(windows[0]->getWindow());
+    // Make program object for rendering quad with textures to screen.
+    ShaderInfo shaders[] = {
+        {GL_VERTEX_SHADER, "quad.vert"},
+        {GL_FRAGMENT_SHADER, "quad.frag"},
+        {GL_NONE, NULL},
+    };
+
+    unsigned int quadProgram = loadShadersCore(shaders, filePaths);
+
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    float textureCoords[] = {
+        // OpenGL coords, texture coords.
+        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom left
+        -1.0f, 1.0f, 0.0f, 1.0f,  // Top left
+        1.0f, -1.0f, 1.0f, 0.0f,  // Bottom right
+        1.0f, 1.0f, 1.0f, 1.0f,    // Top right
+    };
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
+
+    unsigned int indices[] = {
+        0, 1, 2, // Bottom left triangle
+        1, 2, 3 // Top right triangle
+    };
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
+
+    // Vertices
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Texture coords
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     while (windows.size() > 0) {
         for (Window* window : windows) {
@@ -42,6 +90,9 @@ void RenderingThread::renderWindows() {
                 //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
                 //std::cout << "Window: " << window->getWindow() << "." << std::endl;
                 glfwMakeContextCurrent(window->getWindow());
+    
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT);
 
                 // Render each layer, if its passed their frame time.
@@ -51,8 +102,39 @@ void RenderingThread::renderWindows() {
                     timestep = std::chrono::duration<float>(now - layer->lastRendered).count();
                     if (timestep >= (1.0 / layer->config.renderingFrameLimit)) {
                         layer->lastRendered = now;
+                        // Update the stored texture of the layer.
                         layer->onRender(window, filePaths); 
                     }
+                }
+
+                // Prevent layers overwriting other layers. TODO: Move out of loop if possible.
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                // Render all textures to the screen.
+                glUseProgram(quadProgram);
+                glDisable(GL_DEPTH_TEST);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glViewport(0, 0, 1920, 1080); //TODO: Make window dimensions.
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                for (auto& layer : window->layerStack) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, layer->renderTexture);
+                    glUniform1i(glGetUniformLocation(quadProgram, "ourTexture"), 0);  
+                    glBindVertexArray(VAO);
+                    // Draw quad, shaders will ensure texture is drawn to screen.
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+
+/*glBindFramebuffer(GL_READ_FRAMEBUFFER, layer->framebuffer);
+glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+glBlitFramebuffer(
+    0, 0, 1920, 1080,
+    0, 0, 1920, 1080,    
+    GL_COLOR_BUFFER_BIT,
+    GL_LINEAR 
+);*/
                 }
                 glfwSwapBuffers(window->getWindow());
             }

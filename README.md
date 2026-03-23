@@ -113,5 +113,7 @@ Note: Limiting framerate values can reduce system usage.
 * Change Inputs to Events in InputThread - as it handles events, not just user inputs.
 * Need way to close windows from the proper thread for it - or perhaps its fine on the main thread?
 * -1 means no limit for framerate, but application and threads dont take this into account yet.
+* Make framebuffer texture size same as window automatically. Currently using fixed values (1920x1080).
+* Currently can only have one window per thread as only one context makes the quad for rendering textures, fix this.
 
 ## Bugs and known issues

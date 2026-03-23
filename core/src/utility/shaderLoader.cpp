@@ -41,11 +41,7 @@ GLuint compileShader(GLenum type, std::string sourceString) {
 }
 
 // If calling from core, use fixed core path instead.
-GLuint loadShaders(ShaderInfo* info, FilePaths* filePaths, std::string check) {
-    if (check != "core") {
-        std::cout << "This function uses the core file path, use loadShaders without the second parameter to use the app/ user defined path" << std::endl;
-        exit(1);
-    }
+GLuint loadShadersCore(ShaderInfo* info, FilePaths* filePaths) {
     GLuint program = glCreateProgram();
     for (int enumType = 0; info[enumType].type != GL_NONE; enumType++) {
         const char* filePath = info[enumType].filePath;

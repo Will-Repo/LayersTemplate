@@ -14,6 +14,8 @@ class BaseLayer : public Layer {
         GLuint Buffers[NumBuffers];
         const GLuint NumVertices = 6;
         GLuint program;
+        //GLuint framebuffer; //Provided by layer.
+        //GLuint renderTexture;
     public:
         BaseLayer();
         ~BaseLayer();

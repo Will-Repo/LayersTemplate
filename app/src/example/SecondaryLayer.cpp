@@ -4,12 +4,15 @@
 #include <iostream>
 #include "shaderLoader.h"
 #include "FilePaths.h"
+#include "renderingUtilities.h"
 
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 SecondaryLayer::SecondaryLayer() {}
 
 void SecondaryLayer::loadData(Window* window, FilePaths* filePaths) {
+    setUpFramebuffer(&framebuffer, &renderTexture);
+
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
 
@@ -59,7 +62,14 @@ void SecondaryLayer::onEvent(Event& event) {
 
 void SecondaryLayer::onRender(Window* window, FilePaths* filePaths) {
     glUseProgram(program);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    glViewport(0, 0, 1920, 1080);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glBindVertexArray(VAOs[Triangles]);
-    glDrawArrays(GL_TRIANGLES, 0, NumVertices);
+    glDrawArrays(GL_TRIANGLES, 0, NumVertices); 
 }
 

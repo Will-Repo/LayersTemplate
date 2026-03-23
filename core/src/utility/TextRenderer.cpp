@@ -110,7 +110,7 @@ void TextRenderer::renderText(std::string faceName, std::string text, float x, f
         {GL_NONE, NULL},
     };
 
-    GLuint program = loadShaders(shaders, filePaths, "core");
+    GLuint program = loadShadersCore(shaders, filePaths);
     glUseProgram(program);
     glUniform3f(glGetUniformLocation(program, "textColor"), colour.x, colour.y, colour.z);
     glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));

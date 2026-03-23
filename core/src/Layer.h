@@ -24,5 +24,7 @@ class Layer {
         configuration config;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
+        GLuint renderTexture;
+        GLuint framebuffer;
     private:
 };
