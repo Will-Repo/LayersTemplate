@@ -120,3 +120,10 @@ Note: Limiting framerate values can reduce system usage.
 * Currently no proper exit method (as threads still running, just calls exit(1)).
 
 ## Bugs and known issues
+
+## License
+This project is licensed under the MIT license.
+
+## Third-Party Licenses
+This project uses some dependencies (named above) under permissive licences. Thank you to the authors and maintainers of these projects!
+License requirements are included in LICENSE.
