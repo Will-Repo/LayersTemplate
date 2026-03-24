@@ -19,6 +19,12 @@ CMake will fetch these dependencies if they are not already on your system at th
 * **OpenAL-Soft** - Minimum Version: 1.25.1
 * **FreeType** - Minimum Version: 2.14.2
 
+## Example Project
+This project is included with the default template.
+It consists of two windwos:
+* A simple car sandbox arena with basic physics.
+* A project introduction page, features a button that can be used to alter shader or object.
+
 ## File Structure - UPDATE THIS
 ```bash
 LayersTemplate
@@ -71,10 +77,6 @@ The application should:
 Thread groups can handle processes with different frame rates perfectly fine.
 Each layer has its own framebuffer (rendered to texture, which are rendered sequentially), so each pass can have some windows not render anything and still retain their previous state.
 
-~~The following classes require a seperate instance per thread, and have data stored in the thread class:~~
-~~- TextRendering, freetype face objects can only be used from a single thread at a time, so duplicate objects are required.~~
-~~Use of these objects should be done through querying the thread manager using the thread group in the layers config, and the name of the class required.~~ This is not necessary as rendering is currently on one thread.
-
 ## Framerate
 The core project handles the framerate as follows:
 * **Each windows' logic** - defined on a per layer basis, layers can choose to do this logic on a seperate thread (other layers can choose to join this thread group too). The application can cap this framerate.
@@ -124,6 +126,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * There is currently no way to copy layers to other windows, and reusing pointers will result in rendering issues, perhaps add deep copy of layers, for use in main.cpp when initialising windows.
 * Currently no proper exit method (as threads still running, just calls exit(1)).
 * Add type enum to base event class, allowing using switch to easily get and cast to correct event type.
+* Add screenshots to example project section, and clean up text.
 
 ## Bugs and known issues
 

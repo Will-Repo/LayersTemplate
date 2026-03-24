@@ -8,7 +8,7 @@
 #include <thread>
 #include "ThreadManager.h"
 #include "TextRenderer.h"
-#include "inputSetup.h"
+#include "eventsSetup.h"
 
 Application::Application() {
     if (!glfwInit()) {
@@ -44,7 +44,7 @@ void Application::run() {
     glfwMakeContextCurrent(NULL);
 
     // Set up input callbacks.
-    setCallbacks();
+    setCallbacks(windowStack);
 
     // Load the data for each layer with the correct context. Basic rendering data. TODO: Check if necessary.
     for (const auto& window : windowStack) {
