@@ -84,6 +84,10 @@ The core project handles the framerate as follows:
 
 Note: Limiting framerate values can reduce system usage.
 
+## Events
+Events are polled on the main thread. 
+Each window has a default set of callbacks, that pass event objects to the InputThread which holds the window where the event happened. The InputThread handles the event by dispatching it down the layer stack until it has been handled.
+
 ## Naming Conventions
 
 ## To-do
@@ -119,6 +123,7 @@ Note: Limiting framerate values can reduce system usage.
 * Make sure window open and running booleans functions correctly - if not running, inputs, updates and rendering should be paused, but window should still be shown.
 * There is currently no way to copy layers to other windows, and reusing pointers will result in rendering issues, perhaps add deep copy of layers, for use in main.cpp when initialising windows.
 * Currently no proper exit method (as threads still running, just calls exit(1)).
+* Add type enum to base event class, allowing using switch to easily get and cast to correct event type.
 
 ## Bugs and known issues
 

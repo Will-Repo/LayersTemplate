@@ -56,7 +56,7 @@ void BaseLayer::onUpdate(float timestep) {
 
 }
 
-void BaseLayer::onEvent(Event& event) {
+void BaseLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 

@@ -19,6 +19,6 @@ class SecondaryLayer : public Layer {
         ~SecondaryLayer();
         void loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
-        void onEvent(Event& event) override;
+        void onEvent(std::shared_ptr<Event> event) override;
         void onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
 };  

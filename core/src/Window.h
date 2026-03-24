@@ -10,6 +10,9 @@
 #include <AL/alc.h>
 #include "TextRenderer.h"
 #include <chrono>
+#include <queue>
+#include <mutex>
+#include "Event.h"
 
 class Window {  
     public:
@@ -39,8 +42,31 @@ class Window {
         TextRenderer textRenderer;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastHandledInputs;
+
+        template<class E> void enqueueEvent(std::shared_ptr<E> event) {
+            std::lock_guard<std::mutex> lock(mutex); // Locks thread whilst this is in scope.
+            static_assert(std::is_base_of<Event, E>::value, "The added event must be derived from Event");
+            eventQueue.push(std::move(event));
+        }
+        std::shared_ptr<Event> dequeueEvent() {
+            std::lock_guard<std::mutex> lock(mutex); 
+            if (eventQueue.empty()) {
+                return nullptr;
+            } else {
+               //TODO: Check if best code practice followed here. 
+                auto event = eventQueue.front();
+                eventQueue.pop();
+                return event;            
+            }
+        }
+        bool eventQueueIsEmpty() {
+            std::lock_guard<std::mutex> lock(mutex); 
+            return eventQueue.empty();
+        }
     private:
         //Framebuffer
         GLFWwindow* window;
         ALCdevice* audioDevice;
+        std::queue<std::shared_ptr<Event>> eventQueue;
+        std::mutex mutex;
 };

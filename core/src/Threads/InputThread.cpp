@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Window.h"
 #include "FilePaths.h"
+#include "Event.h"
 
 InputThread::InputThread() {}
 
@@ -44,7 +45,15 @@ void InputThread::handleEvents() {
                 float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
                 now = std::chrono::high_resolution_clock::now();
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
-                    // Pass event down all running layers until handled.
+                    // Check for new events, If so, pass event down all running layers until handled.
+                    while(!window->eventQueueIsEmpty()) {
+                        // Dequeue an event
+                        auto event = window->dequeueEvent();
+                        // Handle the event
+                        for (auto& layer : window->layerStack) {
+                            layer->onEvent(event);
+                        }
+                    }
                 }
                 ++it; // Move onto next element.
             } else {

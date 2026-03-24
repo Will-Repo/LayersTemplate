@@ -56,7 +56,7 @@ void SecondaryLayer::onUpdate(float timestep) {
 
 }
 
-void SecondaryLayer::onEvent(Event& event) {
+void SecondaryLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 
