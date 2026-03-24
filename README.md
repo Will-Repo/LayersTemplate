@@ -2,6 +2,7 @@
 C++ code template that provides a starting point for cross plateform C++ projects (linux & windows). Offers layers, window and application management, audio, and more (see readme). OpenGL based.
 
 ## Features
+In development, will update at initial release.
 
 ## Set-up, Dependencies & Build
 To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.
