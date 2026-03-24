@@ -115,5 +115,8 @@ Note: Limiting framerate values can reduce system usage.
 * -1 means no limit for framerate, but application and threads dont take this into account yet.
 * Make framebuffer texture size same as window automatically. Currently using fixed values (1920x1080).
 * Currently can only have one window per thread as only one context makes the quad for rendering textures, fix this.
+* Make sure window open and running booleans functions correctly - if not running, inputs, updates and rendering should be paused, but window should still be shown.
+* There is currently no way to copy layers to other windows, and reusing pointers will result in rendering issues, perhaps add deep copy of layers, for use in main.cpp when initialising windows.
+* Currently no proper exit method (as threads still running, just calls exit(1)).
 
 ## Bugs and known issues

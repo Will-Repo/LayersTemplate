@@ -26,13 +26,19 @@ void UpdateThread::updateLayers() {
 
     while (layers.size() > 0) {
         // Update each layer.
-        for (auto& layer : layers) {
-            // See if enough time has elapsed to call for update.
-            now = std::chrono::high_resolution_clock::now();
-            timestep = std::chrono::duration<float>(now - layer->lastUpdated).count();
-            if (timestep >= (1.0 / layer->config.updateFrameLimit)) {
-                layer->lastUpdated = now;
-                layer->onUpdate(timestep);
+        for (auto it = layers.begin(); it != layers.end();) {
+            // If window is not destroyed, handle its events. Else, destroy the window pointer.
+            if (auto layer = it->lock()) {
+                // See if enough time has elapsed to call for update.
+                now = std::chrono::high_resolution_clock::now();
+                timestep = std::chrono::duration<float>(now - layer->lastUpdated).count();
+                if (timestep >= (1.0 / layer->config.updateFrameLimit)) {
+                    layer->lastUpdated = now;
+                    layer->onUpdate(timestep);
+                }
+                ++it;
+            } else {
+                layers.erase(it);
             }
         }
 
@@ -45,6 +51,6 @@ void UpdateThread::updateLayers() {
     }
 }
 
-void UpdateThread::addLayer(Layer* layer) {
+void UpdateThread::addLayer(std::weak_ptr<Layer> layer) {
     layers.push_back(layer);
 }

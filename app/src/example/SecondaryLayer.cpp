@@ -10,7 +10,7 @@
 
 SecondaryLayer::SecondaryLayer() {}
 
-void SecondaryLayer::loadData(Window* window, FilePaths* filePaths) {
+void SecondaryLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     setUpFramebuffer(&framebuffer, &renderTexture);
 
     glGenVertexArrays(NumVAOs, VAOs);
@@ -60,7 +60,7 @@ void SecondaryLayer::onEvent(Event& event) {
 
 }
 
-void SecondaryLayer::onRender(Window* window, FilePaths* filePaths) {
+void SecondaryLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     glUseProgram(program);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

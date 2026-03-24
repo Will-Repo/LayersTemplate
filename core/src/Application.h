@@ -21,10 +21,10 @@ class Application {
             FilePaths paths;
         };
         configuration config;
-        void addWindow(Window& window);
+        void addWindow(std::shared_ptr<Window> window);
         void run();
     private:
-        std::vector<Window*> windowStack;
+        std::vector<std::shared_ptr<Window>> windowStack;
         bool running = true;
         ThreadManager threadManager;
 };

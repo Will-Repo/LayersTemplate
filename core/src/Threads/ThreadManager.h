@@ -12,11 +12,11 @@ class ThreadManager {
 
         //naming: add - action - passed type
         //Layer updating - layers can be assigned to any thread group, no limitations except sticking to a single thread group.
-        void addUpdateLayer(Layer* layer);
+        void addUpdateLayer(std::shared_ptr<Layer> layer);
         //Window rendering - layers must be assigned to the thread group for their window, as the context for that layer will only be current on a single thread group.
-        void addRenderingWindow(Window* window, FilePaths* filePaths);
+        void addRenderingWindow(std::shared_ptr<Window> window, FilePaths* filePaths);
         //Windows' input handling - recieves event objects from callbacks and polling on main thread, multiple windows can be assigned to a thread group, but each window must be assigned to only one thread group. Thread group identifies window event belongs to, and passes event down layers until its been handled.
-        void addInputWindow(Window* window);
+        void addInputWindow(std::shared_ptr<Window> window);
 
         void startAllThreads();
 

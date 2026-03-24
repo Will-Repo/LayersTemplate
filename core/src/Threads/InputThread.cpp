@@ -19,9 +19,12 @@ void InputThread::startEventHandling() {
 // Loop at max window render limit, but limit each window to its own, and each layer to its own limit.
 void InputThread::handleEvents() {
     int maxHandlingLimit = 0;
-    for (Window* window : windows) {
-        if (window->config.inputHandlingRate > maxHandlingLimit) {
-            maxHandlingLimit = window->config.inputHandlingRate;
+    for (const auto& windowPtr : windows) {
+        // Make shared pointer from weak pointer, if window has not closed.
+        if (auto window = windowPtr.lock()) {
+            if (window->config.inputHandlingRate > maxHandlingLimit) {
+                maxHandlingLimit = window->config.inputHandlingRate;
+            }
         }
     }
     float frameTime = 1.0 / maxHandlingLimit;
@@ -33,12 +36,19 @@ void InputThread::handleEvents() {
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
 
+    //TODO: Best way? Perhaps just iterate through events and handle them for their respective window. Revisit once event recieving is implemented.
     while (windows.size() > 0) {
-        for (Window* window : windows) {
-            float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
-            now = std::chrono::high_resolution_clock::now();
-            if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
-
+        for (auto it = windows.begin(); it != windows.end();) {
+            // If window is not destroyed, handle its events. Else, destroy the window pointer.
+            if (auto window = it->lock()) {
+                float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
+                now = std::chrono::high_resolution_clock::now();
+                if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
+                    // Pass event down all running layers until handled.
+                }
+                ++it; // Move onto next element.
+            } else {
+                windows.erase(it);
             }
         }
 
@@ -51,6 +61,6 @@ void InputThread::handleEvents() {
     }
 }
 
-void InputThread::addWindow(Window* window) {
+void InputThread::addWindow(std::weak_ptr<Window> window) {
     windows.push_back(window);
 }

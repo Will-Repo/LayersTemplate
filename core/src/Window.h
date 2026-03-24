@@ -14,12 +14,14 @@
 class Window {  
     public:
         Window();
+        ~Window();
         void createWindow();
         ALCdevice* getAudioDevice();
         struct configuration {
             std::string windowName = "Window"; //Should be overwritten, or else issues can occur in multiwindowed software.
             std::string windowDesc = "Window description";
-            bool running = false;
+            bool open = true; // True means window is displayed and data saved - if false object will be destroyed.
+            bool running = false; // When false window will stop updating, rendering and recieving inputs, saving processing.
             int width = 1920;
             int height = 1080;
             int inputHandlingRate = 60; // Rate at which the window handles the inputs it recieves from the appliction callbacks.
@@ -29,11 +31,11 @@ class Window {
         };
         configuration config;
         GLFWwindow* getWindow();
-        template<class L> void addLayer(L* layer) {
+        template<class L> void addLayer(std::shared_ptr<L> layer) {
             static_assert(std::is_base_of<Layer, L>::value, "The added layer must be derived from Layer");
-            layerStack.emplace_back(layer);
+            layerStack.push_back(std::move(layer));
         }
-        std::vector<std::unique_ptr<Layer>> layerStack;
+        std::vector<std::shared_ptr<Layer>> layerStack;
         TextRenderer textRenderer;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastHandledInputs;

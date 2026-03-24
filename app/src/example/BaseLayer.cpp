@@ -11,7 +11,7 @@
 
 BaseLayer::BaseLayer() {}
 
-void BaseLayer::loadData(Window* window, FilePaths* filePaths) {
+void BaseLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setUpFramebuffer(&framebuffer, &renderTexture);
 
@@ -60,7 +60,7 @@ void BaseLayer::onEvent(Event& event) {
 
 }
 
-void BaseLayer::onRender(Window* window, FilePaths* filePaths) {
+void BaseLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     glUseProgram(program);
 
     // Bind framebuffer - with texture as colour attachement.

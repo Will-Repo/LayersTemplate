@@ -9,11 +9,11 @@ class RenderingThread {
     public:
         RenderingThread(FilePaths* paths); // Loops through all windows on this thread group.
         ~RenderingThread();
-        void addWindow(Window* window);
+        void addWindow(std::weak_ptr<Window> window);
         void startRendering();
         void renderWindows();
     private:
-        std::vector<Window*> windows;
+        std::vector<std::weak_ptr<Window>> windows;
         std::thread thread;
         FilePaths* filePaths;
 };

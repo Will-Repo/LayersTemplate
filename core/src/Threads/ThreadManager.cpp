@@ -11,7 +11,7 @@
 ThreadManager::ThreadManager() {}
 
 // Add layer to any thread group, no limitations. Issues may occur if the same window is assigned to multiple groups. TODO: Add a check for this?
-void ThreadManager::addUpdateLayer(Layer* layer) {
+void ThreadManager::addUpdateLayer(std::shared_ptr<Layer> layer) {
     // Check if thread group exists already. 
     int group = layer->config.updateThreadGroup;
     auto it = updateThreadGroups.find(group);
@@ -27,7 +27,7 @@ void ThreadManager::addUpdateLayer(Layer* layer) {
 }
 
 // Add window to any thread group. Window added must be unique.
-void ThreadManager::addRenderingWindow(Window* window, FilePaths* filePaths) {
+void ThreadManager::addRenderingWindow(std::shared_ptr<Window> window, FilePaths* filePaths) {
     // Check if thread group exists already. 
     int group = window->config.renderingThreadGroup;
     auto it = renderingThreadGroups.find(group);
@@ -42,7 +42,7 @@ void ThreadManager::addRenderingWindow(Window* window, FilePaths* filePaths) {
     }
 }
 
-void ThreadManager::addInputWindow(Window* window) {
+void ThreadManager::addInputWindow(std::shared_ptr<Window> window) {
     // Check if thread group exists already. 
     int group = window->config.inputHandlingGroup;
     auto it = inputThreadGroups.find(group);

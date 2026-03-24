@@ -9,11 +9,11 @@ class InputThread {
     public:
         InputThread(); // Loops through all windows on this thread group.
         ~InputThread();
-        void addWindow(Window* window);
+        void addWindow(std::weak_ptr<Window> window);
         void startEventHandling();
         void handleEvents();
     private:
-        std::vector<Window*> windows;
+        std::vector<std::weak_ptr<Window>> windows;
         std::thread thread;
         FilePaths* filePaths;
 };

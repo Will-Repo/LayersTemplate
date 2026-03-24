@@ -21,10 +21,10 @@ Application::Application() {
     TextRenderer textRenderer;
 }
 
-void Application::addWindow(Window& window) {
-    window.createWindow();
-    windowStack.push_back(&window);
-    std::cout << "Added window: " << window.config.windowName << "." << std::endl;
+void Application::addWindow(std::shared_ptr<Window> window) {
+    std::cout << "Added window: " << window->config.windowName << "." << std::endl;
+    window->createWindow();
+    windowStack.push_back(std::move(window));
 }
 
 void Application::run() {
@@ -43,7 +43,7 @@ void Application::run() {
     glfwMakeContextCurrent(NULL);
 
     // Load the data for each layer with the correct context. Basic rendering data. TODO: Check if necessary.
-    for (Window* window : windowStack) {
+    for (const auto& window : windowStack) {
         glfwMakeContextCurrent(window->getWindow());
         for (auto& layer : window->layerStack) {
             layer->loadData(window, &config.paths); //Pass in window pointer so the layer can access window specific data.
@@ -52,14 +52,14 @@ void Application::run() {
     glfwMakeContextCurrent(NULL); // Make sure contexts are released for use in multithreaded rendering.
 
     // Add each window to its thread for layer updating.
-    for (Window* window : windowStack) {
-        for (auto& layer : window->layerStack) {
-            threadManager.addUpdateLayer(layer.get());
+    for (const auto& window : windowStack) {
+        for (const auto& layer : window->layerStack) {
+            threadManager.addUpdateLayer(layer); // Will be cast to weak ptr before being stored.
         }
     }
 
-    // Add each window for rendering and input handling.
-    for (Window* window : windowStack) {
+    // Add each window for rendering and input handling. Passing in weak pointer so it can automaically tell when object is destroyed.
+    for (const auto& window : windowStack) {
         threadManager.addRenderingWindow(window, &config.paths);
         threadManager.addInputWindow(window);
     }
@@ -74,6 +74,11 @@ void Application::run() {
     // Poll events, and check if each window has closed.
     while (config.running) {
         int numWindows = windowStack.size();
+        if (numWindows == 0) {
+            //config.running = false;
+            //continue; //TODO: Proper exit script, this still runs as other threads are still running.
+            exit(1);
+        }
         int i = 0;
 
         glfwPollEvents();
@@ -82,8 +87,10 @@ void Application::run() {
 
             if (glfwWindowShouldClose(window)) {
                 //TODO: Fix memory leak here. Window only removed from rendering, not destroyed.
+                //TODO: Instead pass weak pointers to other threads, and check if window has been destroyed.
+                // Destroy window once other threads stop using it. Other threads have weak pointers and will check if window has been destoyed before doing operations.
+                windowStack[i].reset();
                 windowStack.erase(windowStack.begin() + i);
-                glfwDestroyWindow(window);
                 --numWindows;
                 std::cout << "Closed window." << std::endl;
                 continue;

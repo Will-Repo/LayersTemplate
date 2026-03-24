@@ -1,8 +1,8 @@
 #include "Application.h"
 #include "Window.h"
-
 #include "example/BaseLayer.h"
 #include "example/SecondaryLayer.h"
+#include <memory>
 
 int main() {
     //TODO: Make config values make sense - base doesnt even update lol, doesnt need 120 fps.
@@ -26,11 +26,12 @@ int main() {
 
     /* WINDOW 1 SETUP */
     //Make window object belonging to the application, set up its attributes.
-    Window window1 = Window();
-    struct Window::configuration* win1conf = &window1.config;
+    auto window1 = std::make_shared<Window>();    
+    struct Window::configuration* win1conf = &window1->config;
     win1conf->windowName = "Window 1";
     win1conf->windowDesc = "Window 1 description";
     win1conf->running = true;
+    win1conf->open = true;
     win1conf->width = 1920;
     win1conf->height = 1080;
     win1conf->inputHandlingRate = 120;
@@ -39,20 +40,20 @@ int main() {
     win1conf->renderingThreadGroup = 0;
 
     // Declare and add layers to window 1.
-    BaseLayer base;
-    base.config.updateFrameLimit = 120; // layer logic framerate.
-    base.config.updateThreadGroup = 0; 
-    base.config.renderingFrameLimit = 60; // layer logic framerate.
-    window1.addLayer(&base);
+    auto base = std::make_shared<BaseLayer>();
+    base->config.updateFrameLimit = 120; // layer logic framerate.
+    base->config.updateThreadGroup = 0; 
+    base->config.renderingFrameLimit = 60; // layer logic framerate.
+    //window1->addLayer(&base); //TODO: Make layers copyable and add to both window 1 and 2, just need to copy config.
 
-    SecondaryLayer second;
-    second.config.updateFrameLimit = 30; // layer logic framerate.
-    second.config.renderingFrameLimit = 30;
-    window1.addLayer(&second);
+    auto second = std::make_shared<SecondaryLayer>();
+    second->config.updateFrameLimit = 30; // layer logic framerate.
+    second->config.renderingFrameLimit = 30;
+    window1->addLayer(std::move(second));
 
     /* WINDOW 2 SETUP */
-    Window window2 = Window();
-    struct Window::configuration* win2conf = &window2.config;
+    auto window2 = std::make_shared<Window>();    
+    struct Window::configuration* win2conf = &window2->config;
     win2conf->windowName = "Window 2";
     win2conf->windowDesc = "Window 2 description";
     win2conf->running = true;
@@ -63,11 +64,11 @@ int main() {
 
     // Others remain as default. Same as window 1 values.
     // Add layers to window 2
-    window2.addLayer(&base);
+    window2->addLayer(std::move(base));
 
     /* SETTING UP OBJECT RELATIONS AND RUNNING APP */
-    app.addWindow(window1);  
-    app.addWindow(window2);
+    app.addWindow(std::move(window1));  
+    app.addWindow(std::move(window2));
 
     app.run();
 }
