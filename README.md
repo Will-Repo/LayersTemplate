@@ -6,7 +6,7 @@ In development, will update at initial release.
 
 ## Set-up, Dependencies & Build
 To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.
-By default, the app file must be run from the build directory root, for relative paths in shader setup to work correctly. The app can modify the default file paths to change this behaviour.
+The app executable (found at ```build/app/app```) can be run from anywhere, as file path behaviour is defined relative to the executable location (this can be configured in the app config).
 
 ### User required dependencies:
 * **OpenGL** - Minimum Version: 4.3
