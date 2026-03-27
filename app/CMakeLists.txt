@@ -7,6 +7,6 @@ file(GLOB APP_SRC
 
 add_executable(app ${APP_SRC})
 
-target_link_libraries(app core)
+target_link_libraries(app PUBLIC core)
 
 target_include_directories(app PRIVATE src)

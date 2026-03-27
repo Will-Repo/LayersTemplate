@@ -3,6 +3,8 @@ C++ code template that provides a starting point for cross plateform C++ project
 
 ## Features
 In development, will update at initial release.
+Optionally, the application can use functions provided by my OpenGL utilities library by using adding the following to the CMake build command: ```-DLINK_OPENGL_UTILS```. This must be added before the path (..).
+The list of features provided by this library can be found here [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git).
 
 ## Set-up, Dependencies & Build
 To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.
@@ -111,7 +113,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Stop working on main thread after 1st release.
 * Clean up getExecutablePath() in FilePaths.cpp
 * Store pointers to filePaths in class, rather than passing it in always.
-* Fix memory leak.
+* Fix memory leak [ I believe this to be fixed, but haven't yet verified ].
 * Need better framerate title name.
 * Add warning when assigning layer to thread where thread limit is lower than layers value (e.g. when a layer's rendering framerate is higher than its window's).
 * The update thread has no limit - so uses much more processing power than necessary - add max limit, perhaps in app config, or on a thread group basis - new config?
@@ -127,6 +129,9 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Currently no proper exit method (as threads still running, just calls exit(1)).
 * Add type enum to base event class, allowing using switch to easily get and cast to correct event type.
 * Add screenshots to example project section, and clean up text.
+* Add ninja build option (faster compile times).
+* Add option to link with seperate github repo that provides utility rendering functions - e.g. drawing quads, drawing textures, etc.
+* Review and fix cmake public and private visibility mismatches.
 
 ## Bugs and known issues
 
