@@ -9,9 +9,11 @@ Here is a list of features provided by my template:
 * Thread management
 
 Optionally, the application can use functions provided by my OpenGL utilities library by using adding the following to the CMake build command: ```-DLINK_OPENGL_UTILS```. This must be added before the path (..).
-The complete list of features provided by this library can be found here [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git). To be clear, this doesn't provide any functionality not included in this repository, it just abstracts some commonly used features typical of OpenGL and OpenAL projects.
+The complete list of features provided by this library can be found here: [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git). To be clear, this doesn't provide any functionality not included in this repository, it just abstracts some commonly used features typical of OpenGL and OpenAL projects.
 Here is a basic list of features provided by this optional extention:
-* Commoon rendering abstractions - rendering quads, triangles, circles, 3d shapes, loading models, etc.
+* Common rendering abstractions - rendering quads, triangles, circles, 3d shapes, loading models, etc.
+Additionally, I also provide an optional general utilities repository that provides the following features (this can be added with ```-DLINK_GENERAL_UTILS```, in the same format as above)(the complete feature list can be found here: [General Utilities](https://github.com/Will-Repo/General-Utilities.git)):
+* File reading.
 
 ## Set-up, Dependencies & Build
 To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.

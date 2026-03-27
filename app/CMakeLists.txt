@@ -7,6 +7,15 @@ file(GLOB APP_SRC
 
 add_executable(app ${APP_SRC})
 
-target_link_libraries(app PUBLIC core)
+
+# Optionally link the app with my OpenGL and general utilities libraries.
+option(LINK_OPENGL_UTILS "Links the app executable with the opengl utilities library" OFF)
+option(LINK_GENERAL_UTILS "Links the app executable with the general utilities library" OFF)
+
+include(Dependencies.cmake)
+
+target_link_libraries(app PUBLIC 
+    core general_utils opengl_utils
+)
 
 target_include_directories(app PRIVATE src)
