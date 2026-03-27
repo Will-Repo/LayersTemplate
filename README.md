@@ -3,8 +3,15 @@ C++ code template that provides a starting point for cross plateform C++ project
 
 ## Features
 In development, will update at initial release.
+Here is a list of features provided by my template:
+* Basic rendering setup - automatically sets up OpenGL abstraction libraries and each window's OpenGL context.
+* Basic audio setup - links OpenAL-soft library.
+* Thread management
+
 Optionally, the application can use functions provided by my OpenGL utilities library by using adding the following to the CMake build command: ```-DLINK_OPENGL_UTILS```. This must be added before the path (..).
-The list of features provided by this library can be found here [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git).
+The complete list of features provided by this library can be found here [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git). To be clear, this doesn't provide any functionality not included in this repository, it just abstracts some commonly used features typical of OpenGL and OpenAL projects.
+Here is a basic list of features provided by this optional extention:
+* Commoon rendering abstractions - rendering quads, triangles, circles, 3d shapes, loading models, etc.
 
 ## Set-up, Dependencies & Build
 To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.
