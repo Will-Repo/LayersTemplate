@@ -90,3 +90,23 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(whereami)
 set(WHEREAMI_INCLUDE_DIR ${whereami_SOURCE_DIR}/src)
 #whereami doesn't define its cmake target, so must do manually, but as its a single file library, i will just add it as a source for the core library/
+
+# General utils
+FetchContent_Declare(
+    general_utils
+    GIT_REPOSITORY https://github.com/Will-Repo/General-Utilities.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(general_utils)  
+set(GENERAL_UTILS_INCLUDE_DIR ${general_utils_SOURCE_DIR}/src)
+
+# OpenGL utils
+FetchContent_Declare(
+    opengl_utils
+    GIT_REPOSITORY https://github.com/Will-Repo/OpenGL-Utilities.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(opengl_utils)  
+set(OPENGL_UTILS_INCLUDE_DIR ${opengl_utils_SOURCE_DIR}/src)

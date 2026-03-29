@@ -25,7 +25,7 @@ The app executable (found at ```build/app/app```) can be run from anywhere, as f
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.
 * **GLM** - Minimum Version: 1.0.3
-* **GLEW** - Minimum Version: 2.3.1 (note, this is incompatible with FetchContent so is instead included as a subdirectory within the build folder).
+* **GLEW** - Minimum Version: 2.3.1
 * **GLFW** - Minimum Version: 3.4
 * **OpenAL-Soft** - Minimum Version: 1.25.1
 * **FreeType** - Minimum Version: 2.14.2
@@ -141,6 +141,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Add ninja build option (faster compile times).
 * Add option to link with seperate github repo that provides utility rendering functions - e.g. drawing quads, drawing textures, etc.
 * Review and fix cmake public and private visibility mismatches.
+* Change to using modern cmake methods for adding include directories - propogation from the library.
 
 ## Bugs and known issues
 

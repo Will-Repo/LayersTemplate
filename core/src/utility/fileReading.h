@@ -1,3 +1,0 @@
-#include <string>
-
-std::string getFileContents(const char* filePath);
