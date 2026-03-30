@@ -6,4 +6,8 @@ project(Template)
 
 add_subdirectory(core)
 
-add_subdirectory(app) # Links with core so must be done secondarily.
+# Take user input of folder to add to project.
+set(DIR "app" CACHE STRING "Project directory to build")
+
+message(STATUS "Adding ${DIR} project")
+add_subdirectory(${DIR}) # Links with core so must be done secondarily.

@@ -8,16 +8,25 @@ Here is a list of features provided by my template:
 * Basic audio setup - links OpenAL-soft library.
 * Thread management
 
-Optionally, the application can use functions provided by my OpenGL utilities library by using adding the following to the CMake build command: ```-DLINK_OPENGL_UTILS```. This must be added before the path (..).
+Optionally, the application can use functions provided by my OpenGL utilities library by using adding the following to the CMake build command: ```-DLINK_OPENGL_UTILS=ON```. This must be added before the path (..).
 The complete list of features provided by this library can be found here: [OpenGL Utilities](https://github.com/Will-Repo/OpenGL-Utilities.git). To be clear, this doesn't provide any functionality not included in this repository, it just abstracts some commonly used features typical of OpenGL and OpenAL projects.
 Here is a basic list of features provided by this optional extention:
 * Common rendering abstractions - rendering quads, triangles, circles, 3d shapes, loading models, etc.
-Additionally, I also provide an optional general utilities repository that provides the following features (this can be added with ```-DLINK_GENERAL_UTILS```, in the same format as above)(the complete feature list can be found here: [General Utilities](https://github.com/Will-Repo/General-Utilities.git)):
+Additionally, I also provide an optional general utilities repository that provides the following features (this can be added with ```-DLINK_GENERAL_UTILS=ON```, in the same format as above)(the complete feature list can be found here: [General Utilities](https://github.com/Will-Repo/General-Utilities.git)):
 * File reading.
 
 ## Set-up, Dependencies & Build
-To build, run ```cmake -S . -B build/``` && ```cmake --build build``` from the root of the project.
+### General commands
+To build, run ```cmake -S (relative path to root CMakeLists.txt) -D (path to app project to build) -B (relative path to build directory) && cmake --build (relative path to buid directory)``` from anywhere on your system.
+
+### App project commands
+To build the app project from the root directory, you can simply run ```cmake build/``` followed by ```cmake --build build```, assuming the build folder it a direct child of the root (as is default).
+Note: If a different folder has been built previously, this will be built again, as this builds the default DIR value (app) only if DIR has not got a value cached. To build the app project, run ```cmake -D DIR=app -B build/``` instead, or delete CMakeCache.txt and rerun the original command.
+
 The app executable (found at ```build/app/app```) can be run from anywhere, as file path behaviour is defined relative to the executable location (this can be configured in the app config).
+
+### Example project commands 
+To build the example project from the root directory, you can simply run ```cmake -D DIR=example -B build/``` followed by ```cmake --build build```, assuming the build folder it a direct child of the root (as is default).
 
 ### User required dependencies:
 * **OpenGL** - Minimum Version: 4.3
@@ -142,6 +151,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Add option to link with seperate github repo that provides utility rendering functions - e.g. drawing quads, drawing textures, etc.
 * Review and fix cmake public and private visibility mismatches.
 * Change to using modern cmake methods for adding include directories - propogation from the library.
+* Check and update documentation - specifically build commands, and remove duplicate and complete to-do tasks.
 
 ## Bugs and known issues
 
