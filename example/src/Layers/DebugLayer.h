@@ -5,7 +5,7 @@
 
 #pragma once 
 
-class SecondaryLayer : public Layer {
+class DebugLayer : public Layer {
     private:
         enum VAO_IDs {Triangles, NumVAOs}; //Position in enum is number of VAOs.
         enum Buffer_IDs {ArrayBuffer, NumBuffers};
@@ -15,8 +15,8 @@ class SecondaryLayer : public Layer {
         const GLuint NumVertices = 12;
         GLuint program;
     public:
-        SecondaryLayer();
-        ~SecondaryLayer();
+        DebugLayer();
+        ~DebugLayer();
         void loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;

@@ -1,8 +1,7 @@
 file(GLOB APP_SRC
     *.cpp
     src/*.cpp
-
-    src/example/*.cpp
+    src/Layers/*.cpp
 )
 
 add_executable(app ${APP_SRC})

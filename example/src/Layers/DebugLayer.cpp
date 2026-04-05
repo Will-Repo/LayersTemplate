@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "SecondaryLayer.h"
+#include "DebugLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
 #include "FilePaths.h"
@@ -8,10 +8,14 @@
 
 // Base layer code from Addison Wesley OpenGL Redbook.
 
-SecondaryLayer::SecondaryLayer() {}
+DebugLayer::DebugLayer() {}
 
-void SecondaryLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void DebugLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     setUpFramebuffer(&framebuffer, &renderTexture);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer not complete." << std::endl;
+        exit(1);
+    }
 
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
@@ -37,8 +41,8 @@ void SecondaryLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "example/passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "example/red.frag"},
+        {GL_VERTEX_SHADER, "passthrough.vert"},
+        {GL_FRAGMENT_SHADER, "red.frag"},
         {GL_NONE, NULL},
     };
 
@@ -48,19 +52,19 @@ void SecondaryLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* 
     glEnableVertexAttribArray(vPosition);
 }
 
-SecondaryLayer::~SecondaryLayer() {
+DebugLayer::~DebugLayer() {
     std::cout << "Deleting base layer resources." << std::endl;
 }
 
-void SecondaryLayer::onUpdate(float timestep) {
+void DebugLayer::onUpdate(float timestep) {
 
 }
 
-void SecondaryLayer::onEvent(std::shared_ptr<Event> event) {
+void DebugLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 
-void SecondaryLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void DebugLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     glUseProgram(program);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

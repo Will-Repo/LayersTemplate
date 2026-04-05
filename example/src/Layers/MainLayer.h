@@ -5,7 +5,7 @@
 
 #pragma once 
 
-class BaseLayer : public Layer {
+class MainLayer : public Layer {
     private:
         enum VAO_IDs {Triangles, NumVAOs}; //Position in enum is number of VAOs.
         enum Buffer_IDs {ArrayBuffer, NumBuffers};
@@ -17,8 +17,8 @@ class BaseLayer : public Layer {
         //GLuint framebuffer; //Provided by layer.
         //GLuint renderTexture;
     public:
-        BaseLayer();
-        ~BaseLayer();
+        MainLayer();
+        ~MainLayer();
         void loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;

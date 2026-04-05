@@ -38,7 +38,7 @@ void UpdateThread::updateLayers() {
                 }
                 ++it;
             } else {
-                layers.erase(it);
+                it = layers.erase(it);
             }
         }
 

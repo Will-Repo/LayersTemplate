@@ -37,54 +37,7 @@ void RenderingThread::renderWindows() {
     //Timestep variables.
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
-    //TODO: Make dynamic for multiple windows, atm if more than one window assinged to thread one wont work.
-    if (auto window0 = windows[0].lock()) {
-        glfwMakeContextCurrent(window0->getWindow());
-    }
-    // Make program object for rendering quad with textures to screen.
-    ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "quad.vert"},
-        {GL_FRAGMENT_SHADER, "quad.frag"},
-        {GL_NONE, NULL},
-    };
-
-    unsigned int quadProgram = loadShadersCore(shaders, filePaths);
-
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    float textureCoords[] = {
-        // OpenGL coords, texture coords.
-        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom left
-        -1.0f, 1.0f, 0.0f, 1.0f,  // Top left
-        1.0f, -1.0f, 1.0f, 0.0f,  // Bottom right
-        1.0f, 1.0f, 1.0f, 1.0f,    // Top right
-    };
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
-
-    unsigned int indices[] = {
-        0, 1, 2, // Bottom left triangle
-        1, 2, 3 // Top right triangle
-    };
-
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Vertices
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Texture coords
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
+    
     while (windows.size() > 0) {
         for (auto it = windows.begin(); it != windows.end();) {
             // Check if window has closed.
@@ -95,7 +48,53 @@ void RenderingThread::renderWindows() {
                     //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
                     //std::cout << "Window: " << window->getWindow() << "." << std::endl;
                     glfwMakeContextCurrent(window->getWindow());
-        
+
+/* TEMP SOLUTION TODO: Come up with something, that will save this per window, rather than recreating every loop */
+                    // Make program object for rendering quad with textures to screen.
+                    ShaderInfo shaders[] = {
+                        {GL_VERTEX_SHADER, "quad.vert"},
+                        {GL_FRAGMENT_SHADER, "quad.frag"},
+                        {GL_NONE, NULL},
+                    };
+
+                    unsigned int quadProgram = loadShadersCore(shaders, filePaths);
+
+                    GLuint VAO, VBO;
+                    glGenVertexArrays(1, &VAO);
+                    glBindVertexArray(VAO);
+
+                    float textureCoords[] = {
+                        // OpenGL coords, texture coords.
+                        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom left
+                        -1.0f, 1.0f, 0.0f, 1.0f,  // Top left
+                        1.0f, -1.0f, 1.0f, 0.0f,  // Bottom right
+                        1.0f, 1.0f, 1.0f, 1.0f,    // Top right
+                    };
+
+                    glGenBuffers(1, &VBO);
+                    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
+
+                    unsigned int indices[] = {
+                        0, 1, 2, // Bottom left triangle
+                        1, 2, 3 // Top right triangle
+                    };
+
+                    unsigned int EBO;
+                    glGenBuffers(1, &EBO);
+
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+                    // Vertices
+                    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+                    glEnableVertexAttribArray(0);
+
+                    // Texture coords
+                    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+                    glEnableVertexAttribArray(1);
+
+/* TEMP SOLUTION */
                     glBindFramebuffer(GL_FRAMEBUFFER, 0);
                     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                     glClear(GL_COLOR_BUFFER_BIT);
@@ -131,10 +130,10 @@ void RenderingThread::renderWindows() {
                         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     }
                     glfwSwapBuffers(window->getWindow());
-                    ++it;
-                } else {
-                    windows.erase(it);
-                }
+                } 
+                ++it;
+            } else {
+                it = windows.erase(it);
             }
         }
 

@@ -61,7 +61,7 @@ void InputThread::handleEvents() {
                 }
                 ++it; // Move onto next element.
             } else {
-                windows.erase(it);
+                it = windows.erase(it);
             }
         }
 

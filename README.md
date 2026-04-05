@@ -156,6 +156,9 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Change to using modern cmake methods for adding include directories - propogation from the library.
 * Check and update documentation - specifically build commands, and remove duplicate and complete to-do tasks.
 * Make general commands section make sense with updated system.
+* Combine thread groups, allowing for input handling and rendering on one thread, mainy for devices with few threads.
+* Make layers copyable and add to both window 1 and 2, just need to copy config.
+* Sort these problems into issues, and to-do sections/colours.
 
 ## Bugs and known issues
 

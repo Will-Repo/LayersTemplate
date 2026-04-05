@@ -1,16 +1,10 @@
 file(GLOB APP_SRC
     *.cpp
     src/*.cpp
-
-    src/example/*.cpp
+    src/Layers/*.cpp
 )
 
 add_executable(app ${APP_SRC})
-
-
-# Optionally link the app with my OpenGL and general utilities libraries.
-option(LINK_OPENGL_UTILS "Links the app executable with the opengl utilities library" OFF)
-option(LINK_GENERAL_UTILS "Links the app executable with the general utilities library" OFF)
 
 include(Dependencies.cmake)
 

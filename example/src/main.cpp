@@ -1,12 +1,19 @@
 #include "Application.h"
 #include "Window.h"
-#include "BaseLayer.h"
-#include "SecondaryLayer.h"
+#include "Layers/MainLayer.h"
+#include "Layers/DebugLayer.h"
+#include "Layers/StatisticsLayer.h"
 #include <memory>
+
+/*
+    Car simulation game, basic physics, circular arena, single goal.
+    Second window (appears and disappears at hotkey press) showing statistics.
+*/
 
 int main() {
     //TODO: Make config values make sense - base doesnt even update lol, doesnt need 120 fps.
     //Note: This is an example of what you can do, not what you should do (in terms of frame groups etc), this is dependent on the application being created.
+    
     /* APPLICATION SETUP */
     //Make application object, set up attributes.
     Application app = Application();
@@ -14,8 +21,8 @@ int main() {
     appconf->mainThreadLimit = 120; // Limit the main number of executations of the main thread per second - main thread calls rendering functions (if framerate of that layer has been reached) and recieves inputs.
     appconf->recieveInputsLimit = -1; // Framerate for recieving inputs.
     appconf->renderingCallsLimit = -1; // Framerate for calling rendering functions (these have their own time checks so this is a maximum).
-    appconf->appName = "App";
-    appconf->appDesc = "App description";
+    appconf->appName = "Example";
+    appconf->appDesc = "App showcasing basic app setup and optional utility functions.";
     //appconf->vsync = false;
     appconf->running = true;
     //Set up data about file locations for the project - multiple reads are thread safe, don't combining reading and writing on multiple threads. Relatve to executable location.
@@ -28,8 +35,8 @@ int main() {
     //Make window object belonging to the application, set up its attributes.
     auto window1 = std::make_shared<Window>();    
     struct Window::configuration* win1conf = &window1->config;
-    win1conf->windowName = "Window 1";
-    win1conf->windowDesc = "Window 1 description";
+    win1conf->windowName = "Game";
+    win1conf->windowDesc = "Basic car game/simulation";
     win1conf->running = true;
     win1conf->open = true;
     win1conf->width = 1920;
@@ -37,34 +44,38 @@ int main() {
     win1conf->inputHandlingRate = 120;
     win1conf->inputHandlingGroup = 0;
     win1conf->renderingFrameLimit = 120;
-    win1conf->renderingThreadGroup = 0;
+    win1conf->renderingThreadGroup = 0; // Entirely seperate thread group than input handling groups.
 
     // Declare and add layers to window 1.
-    auto base = std::make_shared<BaseLayer>();
-    base->config.updateFrameLimit = 120; // layer logic framerate.
-    base->config.updateThreadGroup = 0; 
-    base->config.renderingFrameLimit = 60; // layer logic framerate.
-    //window1->addLayer(&base); //TODO: Make layers copyable and add to both window 1 and 2, just need to copy config.
+    auto main = std::make_shared<MainLayer>();
+    main->config.updateFrameLimit = 120; // layer logic framerate.
+    main->config.updateThreadGroup = 0; 
+    main->config.renderingFrameLimit = 60; // layer logic framerate.
+    window1->addLayer(std::move(main));
 
-    auto second = std::make_shared<SecondaryLayer>();
-    second->config.updateFrameLimit = 30; // layer logic framerate.
-    second->config.renderingFrameLimit = 30;
-    window1->addLayer(std::move(second));
+    auto debug = std::make_shared<DebugLayer>();
+    debug->config.updateFrameLimit = 30; // layer logic framerate.
+    debug->config.renderingFrameLimit = 30;
+    window1->addLayer(std::move(debug));
 
     /* WINDOW 2 SETUP */
     auto window2 = std::make_shared<Window>();    
     struct Window::configuration* win2conf = &window2->config;
-    win2conf->windowName = "Window 2";
-    win2conf->windowDesc = "Window 2 description";
+    win2conf->windowName = "Statistics";
+    win2conf->windowDesc = "Basic statists screen";
     win2conf->running = true;
-    win2conf->inputHandlingRate = 30;
-    win2conf->inputHandlingGroup = 1;
-    win2conf->renderingFrameLimit = 60;
-    win2conf->renderingThreadGroup = 1;
-
+    //win2conf->inputHandlingRate = 0;
+    win2conf->inputHandlingRate = 60; //TODO: CHAnge back, to 0, but make 0 work
+    win2conf->inputHandlingGroup = 0; // All interactions go through window 1, so no need for inputs.
+    win2conf->renderingFrameLimit = 5;
+    win2conf->renderingThreadGroup = 0;
     // Others remain as default. Same as window 1 values.
+    
     // Add layers to window 2
-    window2->addLayer(std::move(base));
+    auto stats = std::make_shared<StatisticsLayer>();
+    stats->config.updateFrameLimit = 5; // layer logic framerate.
+    stats->config.renderingFrameLimit = 5;
+    window2->addLayer(std::move(stats));
 
     /* SETTING UP OBJECT RELATIONS AND RUNNING APP */
     app.addWindow(std::move(window1));  

@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "BaseLayer.h"
+#include "MainLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
 #include "TextRenderer.h"
@@ -9,15 +9,19 @@
 #include "renderingUtilities.h"
 // Base layer code from Addison Wesley OpenGL Redbook.
 
-BaseLayer::BaseLayer() {}
+MainLayer::MainLayer() {}
 
-void BaseLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void MainLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setUpFramebuffer(&framebuffer, &renderTexture);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer not complete." << std::endl;
+        exit(1);
+    }
 
     // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", "example/Bitcount.ttf", filePaths);
-    window->textRenderer.addFace("iosevka", "example/Iosevka.ttf", filePaths);
+    window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
+    window->textRenderer.addFace("iosevka", "Iosevka.ttf", filePaths);
 
     // Other data - should probably move this elsewhere if the data changes.
     glGenVertexArrays(NumVAOs, VAOs);
@@ -37,8 +41,8 @@ void BaseLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* fileP
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "example/passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "example/red.frag"},
+        {GL_VERTEX_SHADER, "passthrough.vert"},
+        {GL_FRAGMENT_SHADER, "red.frag"},
         {GL_NONE, NULL},
     };
 
@@ -48,19 +52,19 @@ void BaseLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* fileP
     glEnableVertexAttribArray(vPosition);
 }
 
-BaseLayer::~BaseLayer() {
+MainLayer::~MainLayer() {
     std::cout << "Deleting base layer resources." << std::endl;
 }
 
-void BaseLayer::onUpdate(float timestep) {
+void MainLayer::onUpdate(float timestep) {
 
 }
 
-void BaseLayer::onEvent(std::shared_ptr<Event> event) {
+void MainLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 
-void BaseLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void MainLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
     glUseProgram(program);
 
     // Bind framebuffer - with texture as colour attachement.
