@@ -17,6 +17,7 @@ if (NOT glm_FOUND)
     set(GLM_INCLUDE_DIR ${glm_SOURCE_DIR}/include)
 endif()
 set_target_properties(glm PROPERTIES FOLDER "Dependencies") # Only affects IDE folder placement, not actual file location, so not really necessary for me.
+message(STATUS "Set up glm")
 
 # GLEW - Version 2.3.1
 #add_subdirectory(vendor/glew-2.3.1/build/cmake)
@@ -34,6 +35,7 @@ if (NOT GLEW_FOUND)
     set(GLEW_INCLUDE_DIR ${glew_SOURCE_DIR}/include)
 endif()
 set_target_properties(glew_s PROPERTIES FOLDER "Dependencies")
+message(STATUS "Set up GLEW")
 
 # Freeglut - Version 3.8.0
 #add_subdirectory(vendor/freeglut-3.8.0)
@@ -51,6 +53,7 @@ if (NOT glfw_FOUND)
     set(GLFW_INCLUDE_DIR ${glfw_SOURCE_DIR}/include)
 endif()
 set_target_properties(glfw PROPERTIES FOLDER "Dependencies")
+message(STATUS "Set up GLFW")
 
 # OpenAL-Soft - Version 1.21.5
 find_package(OpenAL 1.25.1 QUIET) # Can't really differentiate between OpenAL and OpenAL soft, both use same target name.
@@ -65,6 +68,7 @@ if (NOT OpenAL-Soft_FOUND)
     set(FREETYPE_INCLUDE_DIR ${OpenAL-Soft_SOURCE_DIR}/include)
 endif()
 set_target_properties(OpenAL PROPERTIES FOLDER "Dependencies")
+message(STATUS "Set up OpenAL")
 
 # FreeType - Version 2.14.1
 find_package(FreeType 2.14.1 QUIET)
@@ -79,6 +83,7 @@ if (NOT FreeType_FOUND)
     set(FREETYPE_INCLUDE_DIR ${FreeType_SOURCE_DIR}/include)
 endif()
 set_target_properties(freetype PROPERTIES FOLDER "Dependencies")
+message(STATUS "Set up FreeType")
 
 # whereami - latest - gets exe file location.
 FetchContent_Declare(
@@ -90,23 +95,27 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(whereami)
 set(WHEREAMI_INCLUDE_DIR ${whereami_SOURCE_DIR}/src)
 #whereami doesn't define its cmake target, so must do manually, but as its a single file library, i will just add it as a source for the core library/
+message(STATUS "Set up whereami")
 
 # General utils
 FetchContent_Declare(
     general_utils
     GIT_REPOSITORY https://github.com/Will-Repo/General-Utilities.git
-    GIT_TAG main
+    # GIT_TAG main
+    GIT_TAG e59e06a3aeea8139dee09bc9cae7360ee69aa026
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(general_utils)  
 set(GENERAL_UTILS_INCLUDE_DIR ${general_utils_SOURCE_DIR}/src)
+message(STATUS "Set up general_utils")
 
 # OpenGL utils
 FetchContent_Declare(
     opengl_utils
     GIT_REPOSITORY https://github.com/Will-Repo/OpenGL-Utilities.git
-    GIT_TAG main
+    GIT_TAG 3009c37c05dfc67d83fddc0d6d7cdb4fcece2235
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(opengl_utils)  
 set(OPENGL_UTILS_INCLUDE_DIR ${opengl_utils_SOURCE_DIR}/src)
+message(STATUS "Set up opengl_utils")

@@ -39,6 +39,9 @@ CMake will fetch these dependencies if they are not already on your system at th
 * **OpenAL-Soft** - Minimum Version: 1.25.1
 * **FreeType** - Minimum Version: 2.14.2
 
+### Dependency search locations
+CMake will search the default [locations](https://cmake.org/cmake/help/latest/command/find_package.html#search-procedure) for config package files. It will also search the build/_deps folder under root, allowing offline builds without installing all packages to the system (if dependencies have previously been installed).
+
 ## Example Project
 This project is included with the default template.
 It consists of two windwos:
@@ -152,6 +155,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Review and fix cmake public and private visibility mismatches.
 * Change to using modern cmake methods for adding include directories - propogation from the library.
 * Check and update documentation - specifically build commands, and remove duplicate and complete to-do tasks.
+* Make general commands section make sense with updated system.
 
 ## Bugs and known issues
 
