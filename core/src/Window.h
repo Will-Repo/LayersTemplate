@@ -20,7 +20,7 @@ class Window {
         ~Window();
         void createWindow();
         ALCdevice* getAudioDevice();
-        struct configuration {
+        struct Configuration {
             std::string windowName = "Window"; //Should be overwritten, or else issues can occur in multiwindowed software.
             std::string windowDesc = "Window description";
             bool open = true; // True means window is displayed and data saved - if false object will be destroyed.
@@ -32,7 +32,12 @@ class Window {
             int renderingFrameLimit = 60;
             int renderingThreadGroup = 0;
         };
-        configuration config;
+        // Data for rendering layers to the screen.
+        struct Quad {
+            unsigned int program, VAO, EBO;
+        };
+        Configuration config;
+        Quad quad;
         GLFWwindow* getWindow();
         template<class L> void addLayer(std::shared_ptr<L> layer) {
             static_assert(std::is_base_of<Layer, L>::value, "The added layer must be derived from Layer");

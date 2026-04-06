@@ -17,7 +17,7 @@ int main() {
     /* APPLICATION SETUP */
     //Make application object, set up attributes.
     Application app = Application();
-    struct Application::configuration* appconf = &app.config; //Or access directly.
+    struct Application::Configuration* appconf = &app.config; //Or access directly.
     appconf->mainThreadLimit = 120; // Limit the main number of executations of the main thread per second - main thread calls rendering functions (if framerate of that layer has been reached) and recieves inputs.
     appconf->recieveInputsLimit = -1; // Framerate for recieving inputs.
     appconf->renderingCallsLimit = -1; // Framerate for calling rendering functions (these have their own time checks so this is a maximum).
@@ -34,7 +34,7 @@ int main() {
     /* WINDOW 1 SETUP */
     //Make window object belonging to the application, set up its attributes.
     auto window1 = std::make_shared<Window>();    
-    struct Window::configuration* win1conf = &window1->config;
+    struct Window::Configuration* win1conf = &window1->config;
     win1conf->windowName = "Game";
     win1conf->windowDesc = "Basic car game/simulation";
     win1conf->running = true;
@@ -60,14 +60,14 @@ int main() {
 
     /* WINDOW 2 SETUP */
     auto window2 = std::make_shared<Window>();    
-    struct Window::configuration* win2conf = &window2->config;
+    struct Window::Configuration* win2conf = &window2->config;
     win2conf->windowName = "Statistics";
     win2conf->windowDesc = "Basic statists screen";
     win2conf->running = true;
     //win2conf->inputHandlingRate = 0;
     win2conf->inputHandlingRate = 60; //TODO: CHAnge back, to 0, but make 0 work
     win2conf->inputHandlingGroup = 0; // All interactions go through window 1, so no need for inputs.
-    win2conf->renderingFrameLimit = 5;
+    win2conf->renderingFrameLimit = 60;
     win2conf->renderingThreadGroup = 0;
     // Others remain as default. Same as window 1 values.
     

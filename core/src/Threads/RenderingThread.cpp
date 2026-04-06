@@ -18,6 +18,52 @@ void RenderingThread::startRendering() {
     thread = std::thread(&RenderingThread::renderWindows, this);
 }
 
+// Function for setting up shader program and VAO used for combining layer's textures. Requires to be called when context used is removed - e.g. when window is closed.
+static void setupTextureRender(Window::Quad& data, FilePaths* paths) {
+// Make program object for rendering quad with textures to screen.
+    ShaderInfo shaders[] = {
+        {GL_VERTEX_SHADER, "quad.vert"},
+        {GL_FRAGMENT_SHADER, "quad.frag"},
+        {GL_NONE, NULL},
+    };
+
+    data.program = loadShadersCore(shaders, paths);
+
+    glGenVertexArrays(1, &data.VAO);
+    glBindVertexArray(data.VAO);
+
+    float textureCoords[] = {
+        // OpenGL coords, texture coords.
+        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom left
+        -1.0f, 1.0f, 0.0f, 1.0f,  // Top left
+        1.0f, -1.0f, 1.0f, 0.0f,  // Bottom right
+        1.0f, 1.0f, 1.0f, 1.0f,    // Top right
+    };
+
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
+
+    unsigned int indices[] = {
+        0, 1, 2, // Bottom left triangle
+        1, 2, 3 // Top right triangle
+    };
+
+    glGenBuffers(1, &data.EBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Vertices
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Texture coords
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
 // Loop at max window render limit, but limit each window to its own, and each layer to its own limit.
 void RenderingThread::renderWindows() {
     int maxFrameLimit = 0;
@@ -37,7 +83,16 @@ void RenderingThread::renderWindows() {
     //Timestep variables.
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
-    
+  
+    while (!newWindowQueueIsEmpty()) {
+        auto windowPtr = dequeueNewWindow();
+        if (auto window = windowPtr.lock()) {
+            glfwMakeContextCurrent(window->getWindow());
+            setupTextureRender(window->quad, filePaths);
+            windows.push_back(window);
+        }
+    }
+
     while (windows.size() > 0) {
         for (auto it = windows.begin(); it != windows.end();) {
             // Check if window has closed.
@@ -49,52 +104,6 @@ void RenderingThread::renderWindows() {
                     //std::cout << "Window: " << window->getWindow() << "." << std::endl;
                     glfwMakeContextCurrent(window->getWindow());
 
-/* TEMP SOLUTION TODO: Come up with something, that will save this per window, rather than recreating every loop */
-                    // Make program object for rendering quad with textures to screen.
-                    ShaderInfo shaders[] = {
-                        {GL_VERTEX_SHADER, "quad.vert"},
-                        {GL_FRAGMENT_SHADER, "quad.frag"},
-                        {GL_NONE, NULL},
-                    };
-
-                    unsigned int quadProgram = loadShadersCore(shaders, filePaths);
-
-                    GLuint VAO, VBO;
-                    glGenVertexArrays(1, &VAO);
-                    glBindVertexArray(VAO);
-
-                    float textureCoords[] = {
-                        // OpenGL coords, texture coords.
-                        -1.0f, -1.0f, 0.0f, 0.0f, // Bottom left
-                        -1.0f, 1.0f, 0.0f, 1.0f,  // Top left
-                        1.0f, -1.0f, 1.0f, 0.0f,  // Bottom right
-                        1.0f, 1.0f, 1.0f, 1.0f,    // Top right
-                    };
-
-                    glGenBuffers(1, &VBO);
-                    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
-
-                    unsigned int indices[] = {
-                        0, 1, 2, // Bottom left triangle
-                        1, 2, 3 // Top right triangle
-                    };
-
-                    unsigned int EBO;
-                    glGenBuffers(1, &EBO);
-
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-                    // Vertices
-                    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-                    glEnableVertexAttribArray(0);
-
-                    // Texture coords
-                    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-                    glEnableVertexAttribArray(1);
-
-/* TEMP SOLUTION */
                     glBindFramebuffer(GL_FRAMEBUFFER, 0);
                     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                     glClear(GL_COLOR_BUFFER_BIT);
@@ -114,18 +123,18 @@ void RenderingThread::renderWindows() {
                     // Prevent layers overwriting other layers. TODO: Move out of loop if possible.
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
                     // Render all textures to the screen.
-                    glUseProgram(quadProgram);
+                    glUseProgram(window->quad.program);
                     glDisable(GL_DEPTH_TEST);
                     glBindFramebuffer(GL_FRAMEBUFFER, 0);
                     glViewport(0, 0, 1920, 1080); //TODO: Make window dimensions.
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, window->quad.EBO);
                     for (auto& layer : window->layerStack) {
                         glActiveTexture(GL_TEXTURE0);
                         glBindTexture(GL_TEXTURE_2D, layer->renderTexture);
-                        glUniform1i(glGetUniformLocation(quadProgram, "ourTexture"), 0);  
-                        glBindVertexArray(VAO);
+                        glUniform1i(glGetUniformLocation(window->quad.program, "ourTexture"), 0);  
+                        glBindVertexArray(window->quad.VAO);
                         // Draw quad, shaders will ensure texture is drawn to screen.
                         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
                     }
@@ -146,6 +155,10 @@ void RenderingThread::renderWindows() {
     }
 }
 
-void RenderingThread::addWindow(std::weak_ptr<Window> window) {
-    windows.push_back(window);
+void RenderingThread::addWindow(std::weak_ptr<Window> windowPtr) {
+    //if (auto window = windowPtr.lock()) {
+        //glfwMakeContextCurrent(window->getWindow());
+        //setupTextureRender(window->quad, filePaths);
+        enqueueNewWindow(std::move(windowPtr));
+    //}
 }

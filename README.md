@@ -159,6 +159,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Combine thread groups, allowing for input handling and rendering on one thread, mainy for devices with few threads.
 * Make layers copyable and add to both window 1 and 2, just need to copy config.
 * Sort these problems into issues, and to-do sections/colours.
+* Current rendering very inefficient, creates rect for fbos every frame.
 
 ## Bugs and known issues
 
