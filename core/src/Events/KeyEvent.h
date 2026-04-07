@@ -4,5 +4,7 @@
 
 class KeyEvent : public Event {
     public:
-        KeyEvent();
+        KeyEvent(int pKey, int pAction);
+        int key;
+        int action;
 };

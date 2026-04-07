@@ -7,6 +7,8 @@
 #include "Window.h"
 #include "FilePaths.h"
 #include "renderingUtilities.h"
+#include "Event.h"
+#include "KeyEvent.h"
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 MainLayer::MainLayer() {}
@@ -61,7 +63,19 @@ void MainLayer::onUpdate(float timestep) {
 }
 
 void MainLayer::onEvent(std::shared_ptr<Event> event) {
-
+    // If event is open statistics key, open statistics window.
+    if (event->type == EventType::KeyEvent) {
+        auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
+        if (keyEvent->action == GLFW_PRESS) {
+            switch(keyEvent->key) {
+                case (GLFW_KEY_I): 
+                    std::cout << "I pressed, stats window should open." << std::endl;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void MainLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {

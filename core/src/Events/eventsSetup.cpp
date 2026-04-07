@@ -26,13 +26,10 @@ void setCallbacks(std::vector<std::shared_ptr<Window>>& windowStack) {
 }
 
 void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-        //std::cout << "Hello world" << std::endl;
-        auto windowPtr = static_cast<std::weak_ptr<Window>*>(glfwGetWindowUserPointer(glfwWindow));
-        if (auto window = windowPtr->lock()) {
-            auto keyEvent = std::make_shared<KeyEvent>();
-            window->enqueueEvent(std::move(keyEvent));
-        }
+    auto windowPtr = static_cast<std::weak_ptr<Window>*>(glfwGetWindowUserPointer(glfwWindow));
+    if (auto window = windowPtr->lock()) {
+        auto keyEvent = std::make_shared<KeyEvent>(key, action);
+        window->enqueueEvent(std::move(keyEvent));
     }
 }
 
