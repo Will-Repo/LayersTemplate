@@ -2,6 +2,7 @@
 #include <thread>
 #include <iostream>
 #include "Layer.h"
+#include <mutex>
 
 UpdateThread::UpdateThread() {
 }
@@ -24,7 +25,15 @@ void UpdateThread::updateLayers() {
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
 
-    while (layers.size() > 0) {
+    do {
+        while (!newLayerQueueIsEmpty()) {
+            auto layerPtr = dequeueNewLayer();
+            if (auto layer = layerPtr.lock()) {
+                layers.push_back(layer);
+            }
+        }
+
+        std::lock_guard<std::mutex> lock(mutex); 
         // Update each layer.
         for (auto it = layers.begin(); it != layers.end();) {
             // If window is not destroyed, handle its events. Else, destroy the window pointer.
@@ -48,9 +57,9 @@ void UpdateThread::updateLayers() {
             std::this_thread::sleep_for(std::chrono::duration<float> (frameTime - deltaTime));
         }
         oldDelta = std::chrono::high_resolution_clock::now();*/
-    }
+    } while (layers.size() > 0);
 }
 
 void UpdateThread::addLayer(std::weak_ptr<Layer> layer) {
-    layers.push_back(layer);
+    enqueueNewLayer(std::move(layer));
 }

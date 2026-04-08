@@ -17,8 +17,8 @@ class DebugLayer : public Layer {
     public:
         DebugLayer();
         ~DebugLayer();
-        void loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
+        void loadRenderData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;
-        void onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) override;
+        void onRender(FilePaths* filePaths) override;
 };  

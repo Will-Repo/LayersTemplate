@@ -18,14 +18,16 @@ class Layer {
     public:
         Layer() {};
         virtual ~Layer() {}; //Close resourses.
-        virtual void loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {};
+        virtual void loadRenderData(Window* window, FilePaths* filePaths) {}; // Called when layer is added to window.
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(std::shared_ptr<Event> event) {};
-        virtual void onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {};
+        virtual void onRender(FilePaths* filePaths) {};
         configuration config;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
-        GLuint renderTexture;
-        GLuint framebuffer;
+        unsigned int renderTexture;
+        unsigned int framebuffer;
+        Window* window;
+        bool renderSetupComplete = false;
     private:
 };

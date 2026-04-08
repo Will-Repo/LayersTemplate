@@ -14,11 +14,16 @@
 #include <mutex>
 #include "Event.h"
 
+// Forward declare window class.
+class Application;
+
 class Window {  
     public:
         Window();
         ~Window();
         void createWindow();
+        void linkApplication(Application* app); // Links this window with an app instance, allowing this window to modify the app.
+        Application* getApplication();
         ALCdevice* getAudioDevice();
         struct Configuration {
             std::string windowName = "Window"; //Should be overwritten, or else issues can occur in multiwindowed software.
@@ -47,31 +52,18 @@ class Window {
         TextRenderer textRenderer;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastHandledInputs;
-
         template<class E> void enqueueEvent(std::shared_ptr<E> event) {
             std::lock_guard<std::mutex> lock(mutex); // Locks thread whilst this is in scope.
             static_assert(std::is_base_of<Event, E>::value, "The added event must be derived from Event");
             eventQueue.push(std::move(event));
         }
-        std::shared_ptr<Event> dequeueEvent() {
-            std::lock_guard<std::mutex> lock(mutex); 
-            if (eventQueue.empty()) {
-                return nullptr;
-            } else {
-               //TODO: Check if best code practice followed here. 
-                auto event = eventQueue.front();
-                eventQueue.pop();
-                return event;            
-            }
-        }
-        bool eventQueueIsEmpty() {
-            std::lock_guard<std::mutex> lock(mutex); 
-            return eventQueue.empty();
-        }
+        std::shared_ptr<Event> dequeueEvent();
+        bool eventQueueIsEmpty();
     private:
         //Framebuffer
         GLFWwindow* window;
         ALCdevice* audioDevice;
         std::queue<std::shared_ptr<Event>> eventQueue;
         std::mutex mutex;
+        Application* application;
 };

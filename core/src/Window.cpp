@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <AL/al.h>
 #include <AL/alc.h>
+#include "Application.h"
 
 Window::Window() {
     audioDevice = alcOpenDevice(NULL);
@@ -23,10 +24,36 @@ void Window::createWindow() {
     }
 }
 
+
+void Window::linkApplication(Application* app) {
+    application = app;
+}
+
+Application* Window::getApplication() {
+    return application;
+}  
+
 GLFWwindow* Window::getWindow() {
     return window;
 }
 
 ALCdevice* Window::getAudioDevice() {
     return audioDevice;
+}
+
+std::shared_ptr<Event> Window::dequeueEvent() {
+    std::lock_guard<std::mutex> lock(mutex); 
+    if (eventQueue.empty()) {
+        return nullptr;
+    } else {
+       //TODO: Check if best code practice followed here. 
+        auto event = eventQueue.front();
+        eventQueue.pop();
+        return event;            
+    }
+}
+
+bool Window::eventQueueIsEmpty() {
+    std::lock_guard<std::mutex> lock(mutex); 
+    return eventQueue.empty();
 }

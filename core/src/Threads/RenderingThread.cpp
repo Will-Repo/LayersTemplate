@@ -83,17 +83,17 @@ void RenderingThread::renderWindows() {
     //Timestep variables.
     float timestep;
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
-  
-    while (!newWindowQueueIsEmpty()) {
-        auto windowPtr = dequeueNewWindow();
-        if (auto window = windowPtr.lock()) {
-            glfwMakeContextCurrent(window->getWindow());
-            setupTextureRender(window->quad, filePaths);
-            windows.push_back(window);
-        }
-    }
 
-    while (windows.size() > 0) {
+    do {
+        while (!newWindowQueueIsEmpty()) {
+            auto windowPtr = dequeueNewWindow();
+            if (auto window = windowPtr.lock()) {
+                glfwMakeContextCurrent(window->getWindow());
+                setupTextureRender(window->quad, filePaths);
+                windows.push_back(window);
+            }
+        }
+
         for (auto it = windows.begin(); it != windows.end();) {
             // Check if window has closed.
             if (auto window = it->lock()) {
@@ -110,13 +110,17 @@ void RenderingThread::renderWindows() {
     
                     // Render each layer, if its passed their frame time.
                     for (auto& layer : window->layerStack) {
+                        if (!layer->renderSetupComplete) {
+                            std::cout << "Loading render data" << std::endl;
+                            layer->loadRenderData(window.get(), filePaths);
+                        }
                         // See if enough time has elapsed to call for update.
                         now = std::chrono::high_resolution_clock::now();
                         timestep = std::chrono::duration<float>(now - layer->lastRendered).count();
                         if (timestep >= (1.0 / layer->config.renderingFrameLimit)) {
                             layer->lastRendered = now;
                             // Update the stored texture of the layer.
-                            layer->onRender(window, filePaths); 
+                            layer->onRender(filePaths); 
                         }
                     }
     
@@ -152,13 +156,9 @@ void RenderingThread::renderWindows() {
             std::this_thread::sleep_for(std::chrono::duration<float> (frameTime - deltaTime));
         }
         oldDelta = std::chrono::high_resolution_clock::now();
-    }
+    } while (windows.size() > 0);
 }
 
 void RenderingThread::addWindow(std::weak_ptr<Window> windowPtr) {
-    //if (auto window = windowPtr.lock()) {
-        //glfwMakeContextCurrent(window->getWindow());
-        //setupTextureRender(window->quad, filePaths);
-        enqueueNewWindow(std::move(windowPtr));
-    //}
+    enqueueNewWindow(std::move(windowPtr));
 }

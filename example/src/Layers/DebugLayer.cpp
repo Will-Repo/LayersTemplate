@@ -10,7 +10,7 @@
 
 DebugLayer::DebugLayer() {}
 
-void DebugLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     setUpFramebuffer(&framebuffer, &renderTexture);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer not complete." << std::endl;
@@ -50,6 +50,8 @@ void DebugLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* file
 
     glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(vPosition);
+    
+    renderSetupComplete = true;
 }
 
 DebugLayer::~DebugLayer() {
@@ -64,7 +66,7 @@ void DebugLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 
-void DebugLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void DebugLayer::onRender(FilePaths* filePaths) {
     glUseProgram(program);
 
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

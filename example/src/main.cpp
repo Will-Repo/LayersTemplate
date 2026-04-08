@@ -2,7 +2,6 @@
 #include "Window.h"
 #include "Layers/MainLayer.h"
 #include "Layers/DebugLayer.h"
-#include "Layers/StatisticsLayer.h"
 #include <memory>
 
 /*
@@ -45,7 +44,7 @@ int main() {
     win1conf->inputHandlingGroup = 0;
     win1conf->renderingFrameLimit = 120;
     win1conf->renderingThreadGroup = 0; // Entirely seperate thread group than input handling groups.
-
+                                        
     // Declare and add layers to window 1.
     auto main = std::make_shared<MainLayer>();
     main->config.updateFrameLimit = 120; // layer logic framerate.
@@ -58,28 +57,10 @@ int main() {
     debug->config.renderingFrameLimit = 30;
     window1->addLayer(std::move(debug));
 
-    /* WINDOW 2 SETUP */
-    auto window2 = std::make_shared<Window>();    
-    struct Window::Configuration* win2conf = &window2->config;
-    win2conf->windowName = "Statistics";
-    win2conf->windowDesc = "Basic statists screen";
-    win2conf->running = true;
-    //win2conf->inputHandlingRate = 0;
-    win2conf->inputHandlingRate = 60; //TODO: CHAnge back, to 0, but make 0 work
-    win2conf->inputHandlingGroup = 0; // All interactions go through window 1, so no need for inputs.
-    win2conf->renderingFrameLimit = 60;
-    win2conf->renderingThreadGroup = 0;
-    // Others remain as default. Same as window 1 values.
-    
-    // Add layers to window 2
-    auto stats = std::make_shared<StatisticsLayer>();
-    stats->config.updateFrameLimit = 5; // layer logic framerate.
-    stats->config.renderingFrameLimit = 5;
-    window2->addLayer(std::move(stats));
-
     /* SETTING UP OBJECT RELATIONS AND RUNNING APP */
+    // Adding window to app also gives the window a pointer to the application.
     app.addWindow(std::move(window1));  
-    app.addWindow(std::move(window2));
+//    app.addWindow(std::move(window2));
 
     app.run();
 }

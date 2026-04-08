@@ -38,7 +38,13 @@ void InputThread::handleEvents() {
     std::chrono::time_point<std::chrono::high_resolution_clock> now;
 
     //TODO: Best way? Perhaps just iterate through events and handle them for their respective window. Revisit once event recieving is implemented.
-    while (windows.size() > 0) {
+    do {
+        while (!newWindowQueueIsEmpty()) {
+            auto windowPtr = dequeueNewWindow();
+            if (auto window = windowPtr.lock()) {
+                windows.push_back(window);
+            }
+        }
         for (auto it = windows.begin(); it != windows.end();) {
             // If window is not destroyed, handle its events. Else, destroy the window pointer.
             if (auto window = it->lock()) {
@@ -47,7 +53,7 @@ void InputThread::handleEvents() {
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
                     // Check for new events, If so, pass event down all running layers until handled.
                     while(!window->eventQueueIsEmpty()) {
-                        //std::cout << "Dequeueing event" << std::endl;
+                        std::cout << "Dequeueing event" << std::endl;
                         // Dequeue an event
                         auto event = window->dequeueEvent();
                         // Handle the event
@@ -71,9 +77,9 @@ void InputThread::handleEvents() {
             std::this_thread::sleep_for(std::chrono::duration<float> (frameTime - deltaTime));
         }
         oldDelta = std::chrono::high_resolution_clock::now();
-    }
+    } while (windows.size() > 0);
 }
 
 void InputThread::addWindow(std::weak_ptr<Window> window) {
-    windows.push_back(window);
+    enqueueNewWindow(std::move(window));
 }

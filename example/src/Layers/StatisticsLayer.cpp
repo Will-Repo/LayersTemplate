@@ -11,7 +11,7 @@
 
 StatisticsLayer::StatisticsLayer() {}
 
-void StatisticsLayer::loadData(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setUpFramebuffer(&framebuffer, &renderTexture);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -50,6 +50,8 @@ void StatisticsLayer::loadData(const std::shared_ptr<Window>& window, FilePaths*
 
     glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(vPosition);
+
+    renderSetupComplete = true;
 }
 
 StatisticsLayer::~StatisticsLayer() {
@@ -64,7 +66,7 @@ void StatisticsLayer::onEvent(std::shared_ptr<Event> event) {
 
 }
 
-void StatisticsLayer::onRender(const std::shared_ptr<Window>& window, FilePaths* filePaths) {
+void StatisticsLayer::onRender(FilePaths* filePaths) {
     glUseProgram(program);
 
     // Bind framebuffer - with texture as colour attachement.
@@ -77,7 +79,7 @@ void StatisticsLayer::onRender(const std::shared_ptr<Window>& window, FilePaths*
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
-    window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
-    window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    //window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
 }
 

@@ -1,11 +1,10 @@
+#pragma once
 #include <string>
 #include <vector>
 #include "Window.h"
 #include <memory>
 #include "ThreadManager.h"
 #include "FilePaths.h"
-
-#pragma once
 
 class Application {
     public: 

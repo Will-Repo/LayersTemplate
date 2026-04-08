@@ -25,6 +25,14 @@ Application::Application() {
 void Application::addWindow(std::shared_ptr<Window> window) {
     std::cout << "Added window: " << window->config.windowName << "." << std::endl;
     window->createWindow();
+    window->linkApplication(this);
+    for (const auto& layer : window->layerStack) {
+        threadManager.addUpdateLayer(layer); // Will be cast to weak ptr before being stored.
+    }
+    // Add each window for rendering and input handling. Passing in weak pointer so it can automaically tell when object is destroyed.
+    threadManager.addRenderingWindow(window, &config.paths);
+    threadManager.addInputWindow(window);
+
     windowStack.push_back(std::move(window));
 }
 
@@ -46,27 +54,7 @@ void Application::run() {
     // Set up input callbacks.
     setCallbacks(windowStack);
 
-    // Load the data for each layer with the correct context. Basic rendering data. TODO: Check if necessary.
-    for (const auto& window : windowStack) {
-        glfwMakeContextCurrent(window->getWindow());
-        for (auto& layer : window->layerStack) {
-            layer->loadData(window, &config.paths); //Pass in window pointer so the layer can access window specific data.
-        }
-    }
     glfwMakeContextCurrent(NULL); // Make sure contexts are released for use in multithreaded rendering.
-
-    // Add each window to its thread for layer updating.
-    for (const auto& window : windowStack) {
-        for (const auto& layer : window->layerStack) {
-            threadManager.addUpdateLayer(layer); // Will be cast to weak ptr before being stored.
-        }
-    }
-
-    // Add each window for rendering and input handling. Passing in weak pointer so it can automaically tell when object is destroyed.
-    for (const auto& window : windowStack) {
-        threadManager.addRenderingWindow(window, &config.paths);
-        threadManager.addInputWindow(window);
-    }
 
     // Start logic update threads.
     threadManager.startAllThreads();
