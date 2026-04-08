@@ -160,6 +160,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Make layers copyable and add to both window 1 and 2, just need to copy config.
 * Sort these problems into issues, and to-do sections/colours.
 * Current rendering very inefficient, creates rect for fbos every frame.
+* Currently layers must manually set window, and confirm setup is complete, either document this or make better system (this->window = window, renderSetupComplete = true).
 
 ## Bugs and known issues
 

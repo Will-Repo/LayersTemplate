@@ -11,7 +11,9 @@
 
 StatisticsLayer::StatisticsLayer() {}
 
-void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
+void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {    
+    this->window = window;
+
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setUpFramebuffer(&framebuffer, &renderTexture);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -79,7 +81,7 @@ void StatisticsLayer::onRender(FilePaths* filePaths) {
     glBindVertexArray(VAOs[Triangles]);
     glDrawArrays(GL_TRIANGLES, 0, NumVertices);
 
-    //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
-    //window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
 }
 

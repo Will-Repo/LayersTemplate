@@ -11,6 +11,8 @@
 DebugLayer::DebugLayer() {}
 
 void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
+    this->window = window;
+
     setUpFramebuffer(&framebuffer, &renderTexture);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer not complete." << std::endl;
@@ -72,10 +74,10 @@ void DebugLayer::onRender(FilePaths* filePaths) {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindVertexArray(VAOs[Triangles]);
-    glDrawArrays(GL_TRIANGLES, 0, NumVertices); 
+    //glBindVertexArray(VAOs[Triangles]);
+    //glDrawArrays(GL_TRIANGLES, 0, NumVertices); 
 }
 
