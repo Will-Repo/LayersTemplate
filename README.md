@@ -30,6 +30,7 @@ To build the example project from the root directory, you can simply run ```cmak
 
 ### User required dependencies:
 * **OpenGL** - Minimum Version: 4.3
+* C++ compiler - for C++20, required by core library.
 
 ### CMake automatic dependencies:
 CMake will fetch these dependencies if they are not already on your system at the minumum required level.

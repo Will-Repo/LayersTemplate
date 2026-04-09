@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "FilePaths.h"
 #include "Event.h"
+#include <ranges>
 
 InputThread::InputThread() {}
 
@@ -57,7 +58,8 @@ void InputThread::handleEvents() {
                         // Dequeue an event
                         auto event = window->dequeueEvent();
                         // Handle the event
-                        for (auto& layer : window->layerStack) {
+                        std::ranges::reverse_view reverse {window->layerStack};
+                        for (auto& layer : reverse) {
                             layer->onEvent(event);
                             if (event->handled) {
                                 break;

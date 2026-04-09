@@ -5,8 +5,9 @@
 #include "shaderLoader.h"
 #include "FilePaths.h"
 #include "renderingUtilities.h"
-
-// Base layer code from Addison Wesley OpenGL Redbook.
+#include "Event.h"
+#include "KeyEvent.h"
+#include "Window.h"
 
 DebugLayer::DebugLayer() {}
 
@@ -18,6 +19,8 @@ void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
         std::cout << "Framebuffer not complete." << std::endl;
         exit(1);
     }
+
+    window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
 
     glGenVertexArrays(NumVAOs, VAOs);
     glBindVertexArray(VAOs[Triangles]);
@@ -65,7 +68,23 @@ void DebugLayer::onUpdate(float timestep) {
 }
 
 void DebugLayer::onEvent(std::shared_ptr<Event> event) {
+    // If event is open statistics key, open statistics window.
+    if (event->type == EventType::KeyEvent) {
+        auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
+        if (keyEvent->action == GLFW_PRESS) {
+            switch(keyEvent->key) {
+                case (GLFW_KEY_O): {
+                    std::cout << "O pressed, stats window should open." << std::endl;
 
+                    showDebugInfo = true;
+                    keyEvent->handled = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 void DebugLayer::onRender(FilePaths* filePaths) {
@@ -79,5 +98,7 @@ void DebugLayer::onRender(FilePaths* filePaths) {
 
     //glBindVertexArray(VAOs[Triangles]);
     //glDrawArrays(GL_TRIANGLES, 0, NumVertices); 
+    if (showDebugInfo) {
+        window->textRenderer.renderText("bitcount", "Debug Info", 10, 10, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    }
 }
-

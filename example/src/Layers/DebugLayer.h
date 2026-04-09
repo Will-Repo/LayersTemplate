@@ -14,6 +14,7 @@ class DebugLayer : public Layer {
         GLuint Buffers[NumBuffers];
         const GLuint NumVertices = 12;
         GLuint program;
+        bool showDebugInfo = false;
     public:
         DebugLayer();
         ~DebugLayer();
