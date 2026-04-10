@@ -73,7 +73,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
         auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
         if (keyEvent->action == GLFW_PRESS) {
             switch(keyEvent->key) {
-                case (GLFW_KEY_O): {
+                case (GLFW_KEY_I): {
                     std::cout << "I pressed, stats window should open." << std::endl;
 
                     /* WINDOW 2 SETUP */

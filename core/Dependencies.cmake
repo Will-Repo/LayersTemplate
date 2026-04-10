@@ -113,7 +113,7 @@ message(STATUS "Set up general_utils")
 FetchContent_Declare(
     opengl_utils
     GIT_REPOSITORY https://github.com/Will-Repo/OpenGL-Utilities.git
-    GIT_TAG 3009c37c05dfc67d83fddc0d6d7cdb4fcece2235
+    GIT_TAG 342773637eee6791126dc11bba59d0826aff9a7c
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(opengl_utils)  
