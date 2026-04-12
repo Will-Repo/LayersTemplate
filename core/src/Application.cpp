@@ -37,8 +37,11 @@ void Application::addWindow(std::shared_ptr<Window> window) {
 
     // Start new threads.
     if (setup) {
-        // Start any new threads.
+        // Start any new threads, and callbacks for new windows.
+        setCallbacks(windowStack);
+        glfwMakeContextCurrent(NULL);
         threadManager.startAllThreads();
+        glfwMakeContextCurrent(NULL);
     }
 }
 

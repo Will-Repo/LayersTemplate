@@ -11,17 +11,20 @@
 void setCallbacks(std::vector<std::shared_ptr<Window>>& windowStack) {
     // Set basic callbacks for all windows. Each callback will pass the respecitve event object to the window's event queue.
     for (const auto& window : windowStack) {
-        glfwMakeContextCurrent(window->getWindow());
+        if (!window->callbacksSetup) {
+            glfwMakeContextCurrent(window->getWindow());
 
-        // Associate a pointer to the outer window object from the glfw window, allowing it to pass an event in the callback.
-        auto userData = new std::weak_ptr<Window>(window);
-        glfwSetWindowUserPointer(window->getWindow(), userData);
+            // Associate a pointer to the outer window object from the glfw window, allowing it to pass an event in the callback.
+            auto userData = new std::weak_ptr<Window>(window);
+            glfwSetWindowUserPointer(window->getWindow(), userData);
 
-        glfwSetKeyCallback(window->getWindow(), key_callback);
-        //glfwSetCursorPosCallback(window, cursor_position_callback); // Can just get cursor position through query.
-        glfwSetCursorEnterCallback(window->getWindow(), cursor_enter_callback);
-        glfwSetMouseButtonCallback(window->getWindow(), mouse_button_callback);
-        glfwSetScrollCallback(window->getWindow(), scroll_callback);
+            glfwSetKeyCallback(window->getWindow(), key_callback);
+            //glfwSetCursorPosCallback(window, cursor_position_callback); // Can just get cursor position through query.
+            glfwSetCursorEnterCallback(window->getWindow(), cursor_enter_callback);
+            glfwSetMouseButtonCallback(window->getWindow(), mouse_button_callback);
+            glfwSetScrollCallback(window->getWindow(), scroll_callback);
+            window->callbacksSetup = true;
+        }
     }
 }
 

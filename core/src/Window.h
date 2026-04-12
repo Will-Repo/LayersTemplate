@@ -59,6 +59,7 @@ class Window {
         }
         std::shared_ptr<Event> dequeueEvent();
         bool eventQueueIsEmpty();
+        bool callbacksSetup = false;
     private:
         //Framebuffer
         GLFWwindow* window;
