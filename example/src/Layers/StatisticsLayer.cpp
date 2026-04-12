@@ -56,7 +56,6 @@ void StatisticsLayer::onUpdate(float timestep) {
 }
 
 void StatisticsLayer::onEvent(std::shared_ptr<Event> event) {
-    std::cout << "EVENT" << std::endl;
     // Close window if I is pressed.
     if (event->type == EventType::KeyEvent) {
         auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
@@ -74,7 +73,6 @@ void StatisticsLayer::onEvent(std::shared_ptr<Event> event) {
             }
         }
     }
-
 }
 
 void StatisticsLayer::onRender(FilePaths* filePaths) {

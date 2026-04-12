@@ -16,6 +16,7 @@ UpdateThread::~UpdateThread() {
 void UpdateThread::startUpdating() {
     started = true;
     thread = std::thread(&UpdateThread::updateLayers, this);
+    thread.detach();
 }
 
 void UpdateThread::updateLayers() {
@@ -29,7 +30,7 @@ void UpdateThread::updateLayers() {
     do {
         while (!newLayerQueueIsEmpty()) {
             auto layerPtr = dequeueNewLayer();
-            if (auto layer = layerPtr.lock()) {
+            if (auto layer = layerPtr.lock()) {                
                 layers.push_back(layer);
             }
         }
@@ -59,6 +60,7 @@ void UpdateThread::updateLayers() {
         }
         oldDelta = std::chrono::high_resolution_clock::now();*/
     } while (layers.size() > 0);
+    started = false;
 }
 
 void UpdateThread::addLayer(std::weak_ptr<Layer> layer) {

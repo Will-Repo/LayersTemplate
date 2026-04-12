@@ -17,6 +17,7 @@ InputThread::~InputThread() {
 void InputThread::startEventHandling() {
     started = true;
     thread = std::thread(&InputThread::handleEvents, this);
+    thread.detach();
 }
 
 // Loop at max window render limit, but limit each window to its own, and each layer to its own limit.
@@ -44,12 +45,14 @@ void InputThread::handleEvents() {
         while (!newWindowQueueIsEmpty()) {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
+                std::cout << "Adding new window to event loop: " << window->config.windowName << std::endl;
                 windows.push_back(window);
             }
         }
         for (auto it = windows.begin(); it != windows.end();) {
             // If window is not destroyed, handle its events. Else, destroy the window pointer.
             if (auto window = it->lock()) {
+                //std::cout << "Checking inputs for window: " << window->config.windowName << std::endl;
                 float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
                 now = std::chrono::high_resolution_clock::now();
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
@@ -81,6 +84,7 @@ void InputThread::handleEvents() {
         }
         oldDelta = std::chrono::high_resolution_clock::now();
     } while (windows.size() > 0);
+    started = false;
 }
 
 void InputThread::addWindow(std::weak_ptr<Window> window) {

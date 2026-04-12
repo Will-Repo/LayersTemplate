@@ -17,6 +17,7 @@ RenderingThread::~RenderingThread() {
 void RenderingThread::startRendering() {
     started = true;
     thread = std::thread(&RenderingThread::renderWindows, this);
+    thread.detach();
 }
 
 // Function for setting up shader program and VAO used for combining layer's textures. Requires to be called when context used is removed - e.g. when window is closed.
@@ -89,6 +90,7 @@ void RenderingThread::renderWindows() {
         while (!newWindowQueueIsEmpty()) {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
+                std::cout << "Adding new window to render loop: " << window->config.windowName << std::endl;
                 glfwMakeContextCurrent(window->getWindow());
                 setupTextureRender(window->quad, filePaths);
                 windows.push_back(window);
@@ -158,6 +160,7 @@ void RenderingThread::renderWindows() {
         }
         oldDelta = std::chrono::high_resolution_clock::now();
     } while (windows.size() > 0);
+    started = false;
 }
 
 void RenderingThread::addWindow(std::weak_ptr<Window> windowPtr) {

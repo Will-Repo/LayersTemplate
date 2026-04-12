@@ -73,7 +73,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     auto window2 = std::make_shared<Window>();    
                     struct Window::Configuration* win2conf = &window2->config;
                     win2conf->windowName = "Statistics";
-                    win2conf->windowDesc = "Basic statists screen";
+                    win2conf->windowDesc = "Basic statistics screen";
                     win2conf->running = true;
                     //win2conf->inputHandlingRate = 0;
                     win2conf->inputHandlingRate = 60; //TODO: CHAnge back, to 0, but make 0 work
