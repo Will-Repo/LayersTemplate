@@ -26,8 +26,8 @@ void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     }
 
     // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
-    window->textRenderer.addFace("iosevka", "Iosevka.ttf", filePaths);
+    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
+    window->textRenderer.addFace("iosevka", filePaths->executablePath + "/" + filePaths->fontsPath + "/Iosevka.ttf");
 
     std::vector<float> borderVertices = getQuad(glm::vec2(0.0f), 1.95f, 1.95f, glm::vec3(0.5f));
     createVAO(VAOs[quads], borderVertices);
@@ -39,12 +39,13 @@ void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     glEnableVertexAttribArray(vColour);
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "passthrough.frag"},
-        {GL_NONE, NULL},
+        {GL_VERTEX_SHADER, "passthrough.vert", ShaderDataType::Path},
+        {GL_FRAGMENT_SHADER, "passthrough.frag", ShaderDataType::Path},
+        {GL_NONE, NULL, ShaderDataType::Path},
     };
 
-    programs[quads] = loadShaders(shaders, filePaths);
+    std::string path = filePaths->executablePath + "/" + filePaths->shadersPath;
+    programs[quads] = loadShaders(shaders, path);
 
     renderSetupComplete = true;
 }

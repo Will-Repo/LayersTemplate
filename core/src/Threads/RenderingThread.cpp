@@ -24,12 +24,14 @@ void RenderingThread::startRendering() {
 static void setupTextureRender(Window::Quad& data, FilePaths* paths) {
 // Make program object for rendering quad with textures to screen.
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "quad.vert"},
-        {GL_FRAGMENT_SHADER, "quad.frag"},
-        {GL_NONE, NULL},
+        {GL_VERTEX_SHADER, "quad.vert", ShaderDataType::Path},
+        {GL_FRAGMENT_SHADER, "quad.frag", ShaderDataType::Path},
+        {GL_NONE, NULL, ShaderDataType::Path},
     };
 
-    data.program = loadShadersCore(shaders, paths);
+    std::string path = paths->executablePath + "/" + paths->corePath + "/shaders";
+    std::cout << path << std::endl;
+    data.program = loadShaders(shaders, path);
 
     glGenVertexArrays(1, &data.VAO);
     glBindVertexArray(data.VAO);

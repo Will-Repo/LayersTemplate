@@ -25,32 +25,33 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     }
 
     // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
-    window->textRenderer.addFace("iosevka", "Iosevka.ttf", filePaths);
+    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
+    window->textRenderer.addFace("iosevka", filePaths->executablePath + "/" + filePaths->fontsPath + "/Iosevka.ttf");
 
     std::vector<float> vertices = {
-        -0.9f, -0.9f,  1.0f, 0.0f, 0.0f,
-         0.85f, -0.9f, 1.0f, 0.0f, 0.0f,
-        -0.9f,  0.85f, 1.0f, 0.0f, 0.0f,
-         0.9f, -0.85f, 1.0f, 0.0f, 0.0f,
-         0.9f,  0.9f,  1.0f, 0.0f, 0.0f,
-        -0.85f, 0.9f,  1.0f, 0.0f, 0.0f
+        -0.9f, -0.9f,  0.0f, 1.0f, 0.0f, 0.0f,
+         0.85f, -0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.9f,  0.85f, 0.0f, 1.0f, 0.0f, 0.0f,
+         0.9f, -0.85f, 0.0f, 1.0f, 0.0f, 0.0f,
+         0.9f,  0.9f,  0.0f, 1.0f, 0.0f, 0.0f,
+        -0.85f, 0.9f,  0.0f, 1.0f, 0.0f, 0.0f
     };
     createVAO(VAOs[dualTriangle], vertices);
     numVertices[dualTriangle] = 6;
-    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(vPosition);
-    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(vColour);
 
 
     ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "passthrough.frag"},
-        {GL_NONE, NULL},
+        {GL_VERTEX_SHADER, "passthrough.vert", ShaderDataType::Path},
+        {GL_FRAGMENT_SHADER, "passthrough.frag", ShaderDataType::Path},
+        {GL_NONE, NULL, ShaderDataType::Path},
     };
 
-    programs[dualTriangle] = loadShaders(shaders, filePaths);
+    std::string path = filePaths->executablePath + "/" + filePaths->shadersPath;
+    programs[dualTriangle] = loadShaders(shaders, path);
 
     renderSetupComplete = true;
 }

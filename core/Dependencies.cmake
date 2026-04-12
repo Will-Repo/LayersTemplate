@@ -102,7 +102,7 @@ FetchContent_Declare(
     general_utils
     GIT_REPOSITORY https://github.com/Will-Repo/General-Utilities.git
     # GIT_TAG main
-    GIT_TAG 59c8af11e04b4f1a6feaeaf642119f134f2af897
+    GIT_TAG 9aa8daa15d5ec613f1175e37afd7b2f7d42157e7
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(general_utils)  
@@ -113,9 +113,23 @@ message(STATUS "Set up general_utils")
 FetchContent_Declare(
     opengl_utils
     GIT_REPOSITORY https://github.com/Will-Repo/OpenGL-Utilities.git
-    GIT_TAG 70a93e5ba3d97a8cfdc8fb6fb4c70f64560e572d
+    GIT_TAG c9978afd721eb99c583e3a85fe9f0a13a3baf890
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(opengl_utils)  
 set(OPENGL_UTILS_INCLUDE_DIR ${opengl_utils_SOURCE_DIR}/src)
 message(STATUS "Set up opengl_utils")
+
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG e0b52347c6e52de2827ec957a9ebf00ce3c54f79
+    GIT_SHALLOW TRUE
+)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(assimp)
+set(ASSIMP_INCLUDE_DIR ${assimp_SOURCE_DIR}/src)
+message(STATUS "Set up assimp")

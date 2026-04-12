@@ -20,7 +20,7 @@ void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
         exit(1);
     }
 
-    window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
+    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
 
     renderSetupComplete = true;
 }
