@@ -102,7 +102,7 @@ FetchContent_Declare(
     general_utils
     GIT_REPOSITORY https://github.com/Will-Repo/General-Utilities.git
     # GIT_TAG main
-    GIT_TAG e59e06a3aeea8139dee09bc9cae7360ee69aa026
+    GIT_TAG 59c8af11e04b4f1a6feaeaf642119f134f2af897
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(general_utils)  

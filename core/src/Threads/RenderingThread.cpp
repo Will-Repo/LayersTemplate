@@ -15,6 +15,7 @@ RenderingThread::~RenderingThread() {
 }
 
 void RenderingThread::startRendering() {
+    started = true;
     thread = std::thread(&RenderingThread::renderWindows, this);
 }
 

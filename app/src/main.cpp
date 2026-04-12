@@ -17,6 +17,7 @@ int main() {
     appconf->paths.srcPath = "../../app/src";
     appconf->paths.shadersPath = "../../app/shaders";
     appconf->paths.fontsPath = "../../app/fonts";
+    appconf->paths.assetsPath = "../../app/assets";
     appconf->paths.corePath = "../../core";
 
     /* WINDOW 1 SETUP */

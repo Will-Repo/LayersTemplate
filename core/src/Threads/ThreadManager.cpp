@@ -66,20 +66,26 @@ void ThreadManager::startAllThreads() {
 void ThreadManager::startLayerUpdating() {
     for (auto& [id, group] : updateThreadGroups) {
         // Start all update threads.
-        group->startUpdating();
+        if (!group->started) {
+            group->startUpdating();
+        }
     }
 }
 
 void ThreadManager::startWindowRendering() {
     for (auto& [id, group] : renderingThreadGroups) {
         // Start each thread group's rendering.
-        group->startRendering();
+        if (!group->started) {
+            group->startRendering();
+        }
     }
 }
 
 void ThreadManager::startHandlingInputs() {
     for (auto& [id, group] : inputThreadGroups) {
         // Start each thread group's input handling.
-        group->startEventHandling();
+        if (!group->started) {
+            group->startEventHandling();
+        }
     }
 }

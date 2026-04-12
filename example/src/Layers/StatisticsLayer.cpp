@@ -8,6 +8,9 @@
 #include "FilePaths.h"
 #include "renderingUtilities.h"
 #include <glm/glm.hpp>
+#include "Event.h"
+#include "KeyEvent.h"
+#include "Application.h"
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 StatisticsLayer::StatisticsLayer() {}
@@ -53,6 +56,24 @@ void StatisticsLayer::onUpdate(float timestep) {
 }
 
 void StatisticsLayer::onEvent(std::shared_ptr<Event> event) {
+    std::cout << "EVENT" << std::endl;
+    // Close window if I is pressed.
+    if (event->type == EventType::KeyEvent) {
+        auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
+        if (keyEvent->action == GLFW_PRESS) {
+            switch(keyEvent->key) {
+                case (GLFW_KEY_I): {
+                    std::cout << "I pressed, stats window should close." << std::endl;
+
+                    window->getApplication()->removeWindow("Statistics");                    
+                    keyEvent->handled = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+    }
 
 }
 

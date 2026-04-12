@@ -14,6 +14,7 @@ UpdateThread::~UpdateThread() {
 }
 
 void UpdateThread::startUpdating() {
+    started = true;
     thread = std::thread(&UpdateThread::updateLayers, this);
 }
 

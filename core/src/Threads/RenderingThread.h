@@ -33,6 +33,7 @@ class RenderingThread {
             std::lock_guard<std::mutex> lock(mutex); 
             return newWindowQueue.empty();
         }
+        bool started = false;
     private:
         std::vector<std::weak_ptr<Window>> windows;
         std::thread thread;

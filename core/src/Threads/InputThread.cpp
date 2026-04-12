@@ -15,6 +15,7 @@ InputThread::~InputThread() {
 }
 
 void InputThread::startEventHandling() {
+    started = true;
     thread = std::thread(&InputThread::handleEvents, this);
 }
 

@@ -32,6 +32,7 @@ class UpdateThread {
             std::lock_guard<std::mutex> lock(mutex); 
             return newLayerQueue.empty();
         }
+        bool started = false;
     private:
         std::vector<std::weak_ptr<Layer>> layers;
         std::thread thread;

@@ -34,6 +34,19 @@ void Application::addWindow(std::shared_ptr<Window> window) {
     threadManager.addInputWindow(window);
 
     windowStack.push_back(std::move(window));
+
+    // Start new threads.
+    if (setup) {
+        // Start any new threads.
+        threadManager.startAllThreads();
+    }
+}
+
+void Application::removeWindow(std::string windowName) {
+    std::cout << "Erasing window: " << windowName << std::endl;
+    std::erase_if(windowStack, [&](const std::shared_ptr<Window>& windowPtr) {
+        return (windowPtr->config.windowName == windowName);
+    });
 }
 
 void Application::run() {
@@ -58,6 +71,7 @@ void Application::run() {
 
     // Start logic update threads.
     threadManager.startAllThreads();
+    setup = true;
 
 
     float frameTime = 1.0 / config.recieveInputsLimit;

@@ -162,6 +162,7 @@ Each window has a default set of callbacks, that pass event objects to the Input
 * Sort these problems into issues, and to-do sections/colours.
 * Current rendering very inefficient, creates rect for fbos every frame.
 * Currently layers must manually set window, and confirm setup is complete, either document this or make better system (this->window = window, renderSetupComplete = true).
+* Stats layer not displaying if other thread groups set.
 
 ## Bugs and known issues
 

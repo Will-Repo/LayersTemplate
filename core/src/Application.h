@@ -21,9 +21,12 @@ class Application {
         };
         Configuration config;
         void addWindow(std::shared_ptr<Window> window);
+        void removeWindow(std::string windowName);
+        //TODO: Add remove window function that takes in window name.
         void run();
     private:
         std::vector<std::shared_ptr<Window>> windowStack;
         bool running = true;
         ThreadManager threadManager;
+        bool setup = false;
 };
