@@ -29,21 +29,24 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     window->textRenderer.addFace("iosevka", "Iosevka.ttf", filePaths);
 
     std::vector<float> vertices = {
-        -0.9, -0.9,
-        0.85, -0.9,
-        -0.9, 0.85,
-        0.9, -0.85,
-        0.9, 0.9,
-        -0.85, 0.9
+        -0.9f, -0.9f,  1.0f, 0.0f, 0.0f,
+         0.85f, -0.9f, 1.0f, 0.0f, 0.0f,
+        -0.9f,  0.85f, 1.0f, 0.0f, 0.0f,
+         0.9f, -0.85f, 1.0f, 0.0f, 0.0f,
+         0.9f,  0.9f,  1.0f, 0.0f, 0.0f,
+        -0.85f, 0.9f,  1.0f, 0.0f, 0.0f
     };
     createVAO(VAOs[dualTriangle], vertices);
     numVertices[dualTriangle] = 6;
-    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
     glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glEnableVertexAttribArray(vColour);
+
 
     ShaderInfo shaders[] = {
         {GL_VERTEX_SHADER, "passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "red.frag"},
+        {GL_FRAGMENT_SHADER, "passthrough.frag"},
         {GL_NONE, NULL},
     };
 

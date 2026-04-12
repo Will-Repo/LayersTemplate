@@ -29,16 +29,18 @@ void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
     window->textRenderer.addFace("bitcount", "Bitcount.ttf", filePaths);
     window->textRenderer.addFace("iosevka", "Iosevka.ttf", filePaths);
 
-    std::vector<float> borderVertices = getQuad(glm::vec2(0.0), 1.95, 1.95);
+    std::vector<float> borderVertices = getQuad(glm::vec2(0.0f), 1.95f, 1.95f, glm::vec3(0.5f));
     createVAO(VAOs[quads], borderVertices);
     bindEBO(getQuadEBO());
     numVertices[quads] = 6;
-    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(vPosition);
+    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(vPosition);    
+    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glEnableVertexAttribArray(vColour);
 
     ShaderInfo shaders[] = {
         {GL_VERTEX_SHADER, "passthrough.vert"},
-        {GL_FRAGMENT_SHADER, "red.frag"},
+        {GL_FRAGMENT_SHADER, "passthrough.frag"},
         {GL_NONE, NULL},
     };
 
