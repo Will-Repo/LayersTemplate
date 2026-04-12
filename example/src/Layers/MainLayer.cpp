@@ -67,8 +67,16 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
         if (keyEvent->action == GLFW_PRESS) {
             switch(keyEvent->key) {
                 case (GLFW_KEY_I): {
-                    std::cout << "I pressed, stats window should open." << std::endl;
+                    std::cout << "I pressed, stats window should open/close." << std::endl;
 
+                    // If window is already open, close it.
+                    if (window->getApplication()->hasWindow("Statistics")) {
+                        window->getApplication()->removeWindow("Statistics");                    
+                        keyEvent->handled = true;
+                        break;
+                    }
+
+                    // If window is not open, open it.
                     /* WINDOW 2 SETUP */
                     auto window2 = std::make_shared<Window>();    
                     struct Window::Configuration* win2conf = &window2->config;

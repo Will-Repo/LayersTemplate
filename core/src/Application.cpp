@@ -52,6 +52,15 @@ void Application::removeWindow(std::string windowName) {
     });
 }
 
+bool Application::hasWindow(std::string windowName) {
+    for (const auto& windowPtr : windowStack) {
+        if (windowPtr->config.windowName == windowName) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Application::run() {
     if (windowStack.size() == 0) {
         std::cout << "The application requires at least one window to run." << std::endl;

@@ -22,7 +22,7 @@ class Application {
         Configuration config;
         void addWindow(std::shared_ptr<Window> window);
         void removeWindow(std::string windowName);
-        //TODO: Add remove window function that takes in window name.
+        bool hasWindow(std::string windowName);
         void run();
     private:
         std::vector<std::shared_ptr<Window>> windowStack;
