@@ -11,6 +11,7 @@
 #include "KeyEvent.h"
 #include "Layers/StatisticsLayer.h"
 #include "Application.h"
+#include "Model.h"
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 MainLayer::MainLayer() {}
@@ -52,6 +53,10 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filePaths) {
 
     std::string path = filePaths->executablePath + "/" + filePaths->shadersPath;
     programs[dualTriangle] = loadShaders(shaders, path);
+
+    // Render world - sphere boundary.
+    Model world = Model(filePaths->executablePath + "/" + filePaths->assetsPath + "/sphere.obj");
+    models[sphere] = world;
 
     renderSetupComplete = true;
 }
@@ -123,6 +128,8 @@ void MainLayer::onRender(FilePaths* filePaths) {
     glUseProgram(programs[dualTriangle]);
     glBindVertexArray(VAOs[dualTriangle]);
     glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
+
+    models[sphere].drawModel(modelPrograms[sphere]);
 
     window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
     window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);

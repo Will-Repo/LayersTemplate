@@ -1,5 +1,3 @@
-include(Dependencies.cmake)
-
 file(GLOB CORE_SRC
     src/*.cpp
     src/utility/*.cpp
@@ -10,7 +8,7 @@ file(GLOB CORE_SRC
 
 add_library(core STATIC ${CORE_SRC})
 
-target_link_libraries(core PUBLIC 
+target_link_libraries(core PUBLIC
     glm glew_s glfw OpenAL freetype OpenGL-Utils General-Utils 
 )
 

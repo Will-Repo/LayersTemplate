@@ -1,9 +1,9 @@
+#pragma once 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Layer.h"
 #include "FilePaths.h"
-
-#pragma once 
+#include "Model.h"
 
 class MainLayer : public Layer {
     public:
@@ -19,4 +19,8 @@ class MainLayer : public Layer {
         GLuint numVertices[numVAOs];
         enum Attribute_IDs {vPosition, vColour}; //Default/common values, can use others if necessary.
         GLuint programs[numVAOs];
+
+        enum Model_IDS {sphere, numModels};
+        Model models[numModels];
+        unsigned int modelPrograms[numModels];
 };  

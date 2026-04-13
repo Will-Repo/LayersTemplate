@@ -6,9 +6,7 @@ file(GLOB APP_SRC
 
 add_executable(app ${APP_SRC})
 
-include(Dependencies.cmake)
-
-target_link_libraries(app PUBLIC 
+target_link_libraries(app PRIVATE 
     core # Utils are linked if enabled in dependencies.cmake
 )
 
