@@ -1,9 +1,16 @@
 #pragma once 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "Layer.h"
 #include "FilePaths.h"
 #include "Model.h"
+
+struct Camera {
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+};
 
 class MainLayer : public Layer {
     public:
@@ -23,4 +30,6 @@ class MainLayer : public Layer {
         enum Model_IDS {sphere, numModels};
         Model models[numModels];
         unsigned int modelPrograms[numModels];
+
+        Camera camera;
 };  

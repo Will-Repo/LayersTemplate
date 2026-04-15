@@ -1,5 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "MainLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
@@ -38,21 +41,32 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     glEnableVertexAttribArray(vPosition);
     glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(vColour);
-
     ShaderInfo shaders[] = {
         {GL_VERTEX_SHADER, "passthrough.vert", ShaderDataType::Path},
         {GL_FRAGMENT_SHADER, "passthrough.frag", ShaderDataType::Path},
         {GL_NONE, NULL, ShaderDataType::Path},
     };
-
     std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     programs[dualTriangle] = loadShaders(shaders, path);
 
     // Render world - sphere boundary.
     Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/sphere.obj");
     models[sphere] = world;
-    // use passthrough program for now, as sphere doesn't need textures.
-    modelPrograms[sphere] = loadShaders(shaders, path);
+    ShaderInfo mvpShaders[] = {
+        {GL_VERTEX_SHADER, "mvp.vert", ShaderDataType::Path},
+        {GL_FRAGMENT_SHADER, "mvp.frag", ShaderDataType::Path},
+        {GL_NONE, NULL, ShaderDataType::Path},
+    };
+    modelPrograms[sphere] = loadShaders(mvpShaders, path);
+    camera.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
+    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glUseProgram(modelPrograms[sphere]);
+    int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
+    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
+    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
 
     renderSetupComplete = true;
 }
@@ -121,9 +135,9 @@ void MainLayer::onRender() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render dual triangles background.
-    glUseProgram(programs[dualTriangle]);
-    glBindVertexArray(VAOs[dualTriangle]);
-    glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
+    //glUseProgram(programs[dualTriangle]);
+    //glBindVertexArray(VAOs[dualTriangle]);
+    //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
     glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
