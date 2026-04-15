@@ -21,13 +21,15 @@ class Layer {
         virtual void loadRenderData(Window* window, FilePaths* filePaths) {}; // Called when layer is added to window.
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(std::shared_ptr<Event> event) {};
-        virtual void onRender(FilePaths* filePaths) {};
+        virtual void onRender() {};
+        void setupLayer(Window* window, FilePaths* filepaths);
         configuration config;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
         unsigned int renderTexture;
         unsigned int framebuffer;
         Window* window;
+        FilePaths* filepaths;
         bool renderSetupComplete = false;
     private:
 };

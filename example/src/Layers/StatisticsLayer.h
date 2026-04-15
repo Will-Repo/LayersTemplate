@@ -12,7 +12,7 @@ class StatisticsLayer : public Layer {
         void loadRenderData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;
-        void onRender(FilePaths* filePaths) override;
+        void onRender() override;
     private:
         enum VAO_IDs {quads, numVAOs}; //Position in enum is number of VAOs.
         GLuint VAOs[numVAOs];

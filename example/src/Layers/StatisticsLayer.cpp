@@ -15,19 +15,12 @@
 
 StatisticsLayer::StatisticsLayer() {}
 
-void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {    
-    this->window = window;
-
-    // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
-    setUpFramebuffer(&framebuffer, &renderTexture);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "Framebuffer not complete." << std::endl;
-        exit(1);
-    }
+void StatisticsLayer::loadRenderData(Window* window, FilePaths* filepaths) {    
+    setupLayer(window, filepaths);
 
     // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
-    window->textRenderer.addFace("iosevka", filePaths->executablePath + "/" + filePaths->fontsPath + "/Iosevka.ttf");
+    window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
+    window->textRenderer.addFace("iosevka", filepaths->executablePath + "/" + filepaths->fontsPath + "/Iosevka.ttf");
 
     std::vector<float> borderVertices = getQuad(glm::vec2(0.0f), 1.95f, 1.95f, glm::vec3(0.5f));
     createVAO(VAOs[quads], borderVertices);
@@ -44,7 +37,7 @@ void StatisticsLayer::loadRenderData(Window* window, FilePaths* filePaths) {
         {GL_NONE, NULL, ShaderDataType::Path},
     };
 
-    std::string path = filePaths->executablePath + "/" + filePaths->shadersPath;
+    std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     programs[quads] = loadShaders(shaders, path);
 
     renderSetupComplete = true;
@@ -78,7 +71,7 @@ void StatisticsLayer::onEvent(std::shared_ptr<Event> event) {
     }
 }
 
-void StatisticsLayer::onRender(FilePaths* filePaths) {
+void StatisticsLayer::onRender() {
     // Bind framebuffer - with texture as colour attachement.
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
@@ -92,7 +85,7 @@ void StatisticsLayer::onRender(FilePaths* filePaths) {
     glBindVertexArray(VAOs[quads]);
     glDrawElements(GL_TRIANGLES, numVertices[quads], GL_UNSIGNED_INT, 0);
 
-    window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
-    window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
+    window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filepaths);
 }
 

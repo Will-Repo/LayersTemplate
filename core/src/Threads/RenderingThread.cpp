@@ -125,7 +125,7 @@ void RenderingThread::renderWindows() {
                         if (timestep >= (1.0 / layer->config.renderingFrameLimit)) {
                             layer->lastRendered = now;
                             // Update the stored texture of the layer.
-                            layer->onRender(filePaths); 
+                            layer->onRender(); 
                         }
                     }
     

@@ -12,7 +12,7 @@ class DebugLayer : public Layer {
         void loadRenderData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;
-        void onRender(FilePaths* filePaths) override; 
+        void onRender() override; 
     private:
         bool showDebugInfo = false;
 };  

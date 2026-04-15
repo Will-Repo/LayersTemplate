@@ -16,18 +16,13 @@
 
 MainLayer::MainLayer() {}
 
-void MainLayer::loadRenderData(Window* window, FilePaths* filePaths) {
-    this->window = window;
+void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
-    setUpFramebuffer(&framebuffer, &renderTexture);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cout << "Framebuffer not complete." << std::endl;
-        exit(1);
-    }
+    setupLayer(window, filepaths);
 
     // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
-    window->textRenderer.addFace("iosevka", filePaths->executablePath + "/" + filePaths->fontsPath + "/Iosevka.ttf");
+    window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
+    window->textRenderer.addFace("iosevka", filepaths->executablePath + "/" + filepaths->fontsPath + "/Iosevka.ttf");
 
     std::vector<float> vertices = {
         -0.9f, -0.9f,  0.0f, 1.0f, 0.0f, 0.0f,
@@ -51,12 +46,16 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filePaths) {
         {GL_NONE, NULL, ShaderDataType::Path},
     };
 
-    std::string path = filePaths->executablePath + "/" + filePaths->shadersPath;
+    std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     programs[dualTriangle] = loadShaders(shaders, path);
 
     // Render world - sphere boundary.
-    Model world = Model(filePaths->executablePath + "/" + filePaths->assetsPath + "/sphere.obj");
+    Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/sphere.obj");
     models[sphere] = world;
+    // use passthrough program for now, as sphere doesn't need textures.
+    modelPrograms[sphere] = loadShaders(shaders, path);
+
+    glEnable(GL_DEPTH_TEST);
 
     renderSetupComplete = true;
 }
@@ -116,22 +115,23 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
     }
 }
 
-void MainLayer::onRender(FilePaths* filePaths) {
+void MainLayer::onRender() {
     // Bind framebuffer - with texture as colour attachement.
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render dual triangles background.
     glUseProgram(programs[dualTriangle]);
     glBindVertexArray(VAOs[dualTriangle]);
     glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
+    glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
 
-    window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filePaths);
-    window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filePaths);
+    //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
+    //window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filepaths);
 }
 

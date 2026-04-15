@@ -11,8 +11,8 @@
 
 DebugLayer::DebugLayer() {}
 
-void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
-    this->window = window;
+void DebugLayer::loadRenderData(Window* window, FilePaths* filepaths) {
+    setupLayer(window, filepaths);
 
     setUpFramebuffer(&framebuffer, &renderTexture);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -20,7 +20,7 @@ void DebugLayer::loadRenderData(Window* window, FilePaths* filePaths) {
         exit(1);
     }
 
-    window->textRenderer.addFace("bitcount", filePaths->executablePath + "/" + filePaths->fontsPath + "/Bitcount.ttf");
+    window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
 
     renderSetupComplete = true;
 }
@@ -52,7 +52,7 @@ void DebugLayer::onEvent(std::shared_ptr<Event> event) {
     }
 }
 
-void DebugLayer::onRender(FilePaths* filePaths) {
+void DebugLayer::onRender() {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
 
@@ -60,6 +60,6 @@ void DebugLayer::onRender(FilePaths* filePaths) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     if (showDebugInfo) {
-        window->textRenderer.renderText("bitcount", "Debug Info", 10, 10, 0.5f, glm::vec3(0, 255, 0), filePaths);
+        window->textRenderer.renderText("bitcount", "Debug Info", 10, 10, 0.5f, glm::vec3(0, 255, 0), filepaths);
     }
 }
