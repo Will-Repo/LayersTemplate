@@ -17,7 +17,7 @@ struct configuration {
 class Layer {
     public:
         Layer() {};
-        virtual ~Layer() {}; //Close resourses.
+        virtual ~Layer(); //Close resourses.
         virtual void loadRenderData(Window* window, FilePaths* filePaths) {}; // Called when layer is added to window.
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(std::shared_ptr<Event> event) {};

@@ -39,7 +39,6 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(vColour);
 
-
     ShaderInfo shaders[] = {
         {GL_VERTEX_SHADER, "passthrough.vert", ShaderDataType::Path},
         {GL_FRAGMENT_SHADER, "passthrough.frag", ShaderDataType::Path},
@@ -54,8 +53,6 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     models[sphere] = world;
     // use passthrough program for now, as sphere doesn't need textures.
     modelPrograms[sphere] = loadShaders(shaders, path);
-
-    glEnable(GL_DEPTH_TEST);
 
     renderSetupComplete = true;
 }

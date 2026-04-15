@@ -108,6 +108,7 @@ void RenderingThread::renderWindows() {
                     //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
                     //std::cout << "Window: " << window->getWindow() << "." << std::endl;
                     glfwMakeContextCurrent(window->getWindow());
+                    glEnable(GL_DEPTH_TEST);
 
                     glBindFramebuffer(GL_FRAMEBUFFER, 0);
                     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
