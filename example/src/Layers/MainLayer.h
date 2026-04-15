@@ -32,4 +32,5 @@ class MainLayer : public Layer {
         unsigned int modelPrograms[numModels];
 
         Camera camera;
+        bool mvpChanged = false;
 };  

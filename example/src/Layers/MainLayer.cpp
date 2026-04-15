@@ -57,16 +57,13 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
         {GL_FRAGMENT_SHADER, "mvp.frag", ShaderDataType::Path},
         {GL_NONE, NULL, ShaderDataType::Path},
     };
-    modelPrograms[sphere] = loadShaders(mvpShaders, path);
+    modelPrograms[sphere] = loadShaders(mvpShaders, path);    
+    // Set MVP matrix initial values.
+    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, 0.0f));
     camera.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, -3.0f));
-    glUseProgram(modelPrograms[sphere]);
-    int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
-    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
-    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
+    mvpChanged = true;
+
+    glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     renderSetupComplete = true;
 }
@@ -119,6 +116,31 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 }
+                // Movement
+                case (GLFW_KEY_W): {
+                    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, 0.1f));
+                    mvpChanged = true;
+                    keyEvent->handled = true;
+                    break;
+                }
+                case (GLFW_KEY_A): {
+                    camera.view = glm::translate(camera.view, glm::vec3(0.1f, 0.0f, 0.0f));
+                    mvpChanged = true;
+                    keyEvent->handled = true;
+                    break;
+                }
+                case (GLFW_KEY_S): {
+                    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, -0.1f));
+                    mvpChanged = true;
+                    keyEvent->handled = true;
+                    break;
+                }
+                case (GLFW_KEY_D): {
+                    camera.view = glm::translate(camera.view, glm::vec3(-0.1f, 0.0f, 0.1f));
+                    mvpChanged = true;
+                    keyEvent->handled = true;
+                    break;
+                }
                 default:
                     break;
             }
@@ -140,6 +162,15 @@ void MainLayer::onRender() {
     //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
     glUseProgram(modelPrograms[sphere]);
+    if (mvpChanged) {
+        int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
+        uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
+        uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
+        mvpChanged = false;
+    }
     models[sphere].drawModel(modelPrograms[sphere]);
 
     //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
