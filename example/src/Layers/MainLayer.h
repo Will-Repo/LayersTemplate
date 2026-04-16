@@ -5,17 +5,15 @@
 #include "Layer.h"
 #include "FilePaths.h"
 #include "Model.h"
+#include "Car.h"
 
 struct Camera {
-    glm::vec3 position = glm::vec3(0.0f, 0.4f, 2.0f);
+    glm::vec3 initialPosition = glm::vec3(0.0f, 0.4f, 2.0f);
+    glm::vec3 position = initialPosition;
 
-    // Direction camera is facing - -z is in front of camera so backwards.
-    glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
-    glm::vec3 up = glm::cross(right, front);
-    //glm::vec3 front = glm::normalize(target - position);
-    //glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
-    //glm::vec3 up = glm::cross(right, front);
+    glm::vec3 front;
+    glm::vec3 right;
+    glm::vec3 up;
 
     float speed = 3.0f;
 
@@ -45,7 +43,7 @@ class MainLayer : public Layer {
         void onEvent(std::shared_ptr<Event> event) override;
         void onRender() override;
     private:
-        enum VAO_IDs {dualTriangle, numVAOs}; //Position in enum is number of VAOs.
+        enum VAO_IDs {numVAOs}; //Position in enum is number of VAOs.
         GLuint VAOs[numVAOs];
         GLuint numVertices[numVAOs];
         enum Attribute_IDs {vPosition, vColour}; //Default/common values, can use others if necessary.
@@ -57,11 +55,14 @@ class MainLayer : public Layer {
 
         MVP mvp;
         Camera camera;
-        bool cameraChanged = false;
+        bool cameraAttached = true; // If camera is attached to car movement.
 
-        bool forwardHeld = false, leftHeld = false, backwardsHeld = false, rightHeld = false, downHeld = false, upHeld = false;
+        bool cameraForwardsHeld = false, cameraLeftHeld = false, cameraBackwardsHeld = false, cameraRightHeld = false, cameraDownHeld = false, cameraUpHeld = false;
         bool cameraSpeedIncreaseHeld = false, cameraSpeedDecreaseHeld = false;
 
         Mouse mouse;
         bool firstMouse = true;
+
+        Car car;
+        bool carForwardsHeld = false, carBackwardsHeld = false;
 };  

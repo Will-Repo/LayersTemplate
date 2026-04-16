@@ -24,32 +24,6 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setupLayer(window, filepaths);
 
-    // Load fonts. Function automatically checks if layer has been loaded already.
-    window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
-    window->textRenderer.addFace("iosevka", filepaths->executablePath + "/" + filepaths->fontsPath + "/Iosevka.ttf");
-
-    std::vector<float> vertices = {
-        -0.9f, -0.9f,  0.0f, 1.0f, 0.0f, 0.0f,
-         0.85f, -0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.9f,  0.85f, 0.0f, 1.0f, 0.0f, 0.0f,
-         0.9f, -0.85f, 0.0f, 1.0f, 0.0f, 0.0f,
-         0.9f,  0.9f,  0.0f, 1.0f, 0.0f, 0.0f,
-        -0.85f, 0.9f,  0.0f, 1.0f, 0.0f, 0.0f
-    };
-    createVAO(VAOs[dualTriangle], vertices);
-    numVertices[dualTriangle] = 6;
-    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
-    glEnableVertexAttribArray(vPosition);
-    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(vColour);
-    ShaderInfo shaders[] = {
-        {GL_VERTEX_SHADER, "passthrough.vert", ShaderDataType::Path},
-        {GL_FRAGMENT_SHADER, "passthrough.frag", ShaderDataType::Path},
-        {GL_NONE, NULL, ShaderDataType::Path},
-    };
-    std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
-    programs[dualTriangle] = loadShaders(shaders, path);
-
     // Render world - sphere boundary.
     Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/sphere.obj");
     models[sphere] = world;
@@ -57,7 +31,8 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
         {GL_VERTEX_SHADER, "mvp.vert", ShaderDataType::Path},
         {GL_FRAGMENT_SHADER, "mvp.frag", ShaderDataType::Path},
         {GL_NONE, NULL, ShaderDataType::Path},
-    };
+    };    
+    std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     modelPrograms[sphere] = loadShaders(mvpShaders, path);    
 
     Model object = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cube.obj");
@@ -66,7 +41,6 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
 
     // Set MVP matrix initial values.
     mvp.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-    cameraChanged = true;
 
     glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -78,29 +52,41 @@ MainLayer::~MainLayer() {
 }
 
 void MainLayer::onUpdate(float timestep) {
-    if (forwardHeld) {
-        camera.position += camera.front * camera.speed * timestep;
-        cameraChanged = true;
+    // Car
+    if (carForwardsHeld) {
+        //TODO: Need some check that all wheels are on the ground.
+        glm::vec3 direction = car.getDirection();
+        car.position += direction * car.speed * timestep;
+        if (cameraAttached)
+            camera.position += direction * car.speed * timestep;
     }
-    if (leftHeld) {
-        camera.position -= camera.right * camera.speed * timestep;
-        cameraChanged = true;
+    if (carBackwardsHeld) {
+        glm::vec3 direction = car.getDirection();
+        car.position -= direction * car.speed * timestep;
+        if (cameraAttached)
+            camera.position -= direction * car.speed * timestep;
     }
-    if (backwardsHeld) {
-        camera.position -= camera.front * camera.speed * timestep;
-        cameraChanged = true;
-    }
-    if (rightHeld) {
-        camera.position += camera.right * camera.speed * timestep;
-        cameraChanged = true;
-    }
-    if (downHeld) {
-        camera.position -= camera.up * camera.speed * timestep;
-        cameraChanged = true;
-    }
-    if (upHeld) {
-        camera.position += camera.up * camera.speed * timestep;
-        cameraChanged = true;
+
+    // Camera
+    if (!cameraAttached) {
+        if (cameraForwardsHeld) {
+            camera.position += camera.front * camera.speed * timestep;
+        }
+        if (cameraLeftHeld) {
+            camera.position -= camera.right * camera.speed * timestep;
+        }
+        if (cameraBackwardsHeld) {
+            camera.position -= camera.front * camera.speed * timestep;
+        }
+        if (cameraRightHeld) {
+            camera.position += camera.right * camera.speed * timestep;
+        }
+        if (cameraDownHeld) {
+            camera.position -= camera.up * camera.speed * timestep;
+        }
+        if (cameraUpHeld) {
+            camera.position += camera.up * camera.speed * timestep;
+        }
     }
     if (cameraSpeedIncreaseHeld) {
         camera.speed += 3.0f * timestep;
@@ -153,31 +139,44 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 }
-                // Movement
+
+                // Car Movement
                 case (GLFW_KEY_W): 
-                    forwardHeld = true;
-                    keyEvent->handled = true;
-                    break;
-                case (GLFW_KEY_A): 
-                    leftHeld = true;
+                    carForwardsHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
-                    backwardsHeld = true;
+                    carBackwardsHeld = true;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_D):
-                    rightHeld = true;
+
+                // Camera Movement
+                case (GLFW_KEY_UP): 
+                    cameraForwardsHeld = true;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_Q):
-                    downHeld = true;
+                case (GLFW_KEY_LEFT): 
+                    cameraLeftHeld = true;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_E):
-                    upHeld = true;
+                case (GLFW_KEY_DOWN): 
+                    cameraBackwardsHeld = true;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_RIGHT):
+                    cameraRightHeld = true;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_PAGE_UP):
+                    cameraDownHeld = true;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_PAGE_DOWN):
+                    cameraUpHeld = true;
+                    keyEvent->handled = true;
+                    break;
+
+                // Camera settings
                 case (GLFW_KEY_J):
                     cameraSpeedDecreaseHeld = true;
                     keyEvent->handled = true;
@@ -186,35 +185,62 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     cameraSpeedIncreaseHeld = true;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_L):
+                    // Reset camera to car.
+                    if (!cameraAttached) {
+                        //TODO: Need to add default offset.
+                        camera.position = car.position + camera.initialPosition;
+                        camera.yaw = car.yaw;
+                        camera.pitch = car.pitch;
+                        cameraAttached = true;
+                    } else {
+                        cameraAttached = false;
+                    }
+                    keyEvent->handled = true;
+                    break;
+
                 default:
                     break;
             }
         } else if (keyEvent->action == GLFW_RELEASE) {
             switch(keyEvent->key) {
-                case (GLFW_KEY_W):
-                    forwardHeld = false;
-                    keyEvent->handled = true;
-                    break; 
-                case (GLFW_KEY_A): 
-                    leftHeld = false;
+                // Car Movement
+                case (GLFW_KEY_W): 
+                    carForwardsHeld = false;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
-                    backwardsHeld = false;
+                    carBackwardsHeld = false;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_D):
-                    rightHeld = false;
+
+                // Camera Movement
+                case (GLFW_KEY_UP): 
+                    cameraForwardsHeld = false;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_Q):
-                    downHeld = false;
+                case (GLFW_KEY_LEFT): 
+                    cameraLeftHeld = false;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_E):
-                    upHeld = false;
+                case (GLFW_KEY_DOWN): 
+                    cameraBackwardsHeld = false;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_RIGHT):
+                    cameraRightHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_PAGE_UP):
+                    cameraDownHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_PAGE_DOWN):
+                    cameraUpHeld = false;
+                    keyEvent->handled = true;
+                    break;
+
+                // Camera settings
                 case (GLFW_KEY_J):
                     cameraSpeedDecreaseHeld = false;
                     keyEvent->handled = true;
@@ -223,7 +249,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     cameraSpeedIncreaseHeld = false;
                     keyEvent->handled = true;
                     break;
-
+                
                 default:
                     break;
             }
@@ -252,8 +278,6 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
         camera.pitch = std::min(camera.pitch, 89.9f);
         camera.pitch = std::max(camera.pitch, -89.9f);
 
-        cameraChanged = true;
-
         mousePositionEvent->handled = true; 
     }
 }
@@ -266,46 +290,32 @@ void MainLayer::onRender() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Render dual triangles background.
-    //glUseProgram(programs[dualTriangle]);
-    //glBindVertexArray(VAOs[dualTriangle]);
-    //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
-
-    if (cameraChanged) {
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-        direction.y = sin(glm::radians(camera.pitch));
-        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-        camera.front = glm::normalize(direction);
-        camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
-        camera.up = glm::normalize(glm::cross(camera.right, camera.front));
-
-        mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
-
-        glUseProgram(modelPrograms[sphere]);
-        int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
-        uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
-        uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
-
-        glUseProgram(modelPrograms[cube]);
-        uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
-        uniformLoc = glGetUniformLocation(modelPrograms[cube], "view");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
-        uniformLoc = glGetUniformLocation(modelPrograms[cube], "projection");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
-
-        cameraChanged = false;
-    }
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+    direction.y = sin(glm::radians(camera.pitch));
+    direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+    camera.front = glm::normalize(direction);
+    camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
+    camera.up = glm::normalize(glm::cross(camera.right, camera.front));
+    mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
+    glUseProgram(modelPrograms[sphere]);
+    int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
+    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
+    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
     glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
-    glUseProgram(modelPrograms[cube]);
-    models[cube].drawModel(modelPrograms[cube]);
 
-    //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
-    //window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filepaths);
+    glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
+    glUseProgram(modelPrograms[cube]);
+    uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model * carModel));
+    uniformLoc = glGetUniformLocation(modelPrograms[cube], "view");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
+    uniformLoc = glGetUniformLocation(modelPrograms[cube], "projection");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+    models[cube].drawModel(modelPrograms[cube]);
 }
 
