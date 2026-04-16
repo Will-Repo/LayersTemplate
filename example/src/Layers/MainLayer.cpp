@@ -78,25 +78,42 @@ MainLayer::~MainLayer() {
 
 void MainLayer::onUpdate(float timestep) {
     if (forwardHeld) {
-        camera.position -= camera.front * camera.speed;
-        camera.target -= camera.front * camera.speed;
+        camera.position -= camera.front * camera.speed * timestep;
+        camera.target -= camera.front * camera.speed * timestep;
         cameraChanged = true;
     }
     if (leftHeld) {
-        camera.position -= camera.right * camera.speed;
-        camera.target -= camera.right * camera.speed;
+        camera.position -= camera.right * camera.speed * timestep;
+        camera.target -= camera.right * camera.speed * timestep;
         //camera.right = glm::normalize(glm::cross(camera.up, camera.front));
         cameraChanged = true;
     }
     if (backwardsHeld) {
-        camera.position += camera.front * camera.speed;
-        camera.target += camera.front * camera.speed;
+        camera.position += camera.front * camera.speed * timestep;
+        camera.target += camera.front * camera.speed * timestep;
         cameraChanged = true;
     }
     if (rightHeld) {
-        camera.position += camera.right * camera.speed;
-        camera.target += camera.right * camera.speed;
+        camera.position += camera.right * camera.speed * timestep;
+        camera.target += camera.right * camera.speed * timestep;
         cameraChanged = true;
+    }
+    if (downHeld) {
+        camera.position -= camera.up * camera.speed * timestep;
+        camera.target -= camera.up * camera.speed * timestep;
+        cameraChanged = true;
+    }
+    if (upHeld) {
+        camera.position += camera.up * camera.speed * timestep;
+        camera.target += camera.up * camera.speed * timestep;
+        cameraChanged = true;
+    }
+    if (cameraSpeedIncreaseHeld) {
+        camera.speed += 3.0f * timestep;
+    }
+    if (cameraSpeedDecreaseHeld) {
+        camera.speed -= 3.0f * timestep;
+        camera.speed = std::max(camera.speed, 0.0f);
     }
 }
 
@@ -160,10 +177,20 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_Q):
-                    camera.speed -= 0.05;
+                    downHeld = true;
+                    keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_E):
-                    camera.speed += 0.05;
+                    upHeld = true;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_J):
+                    cameraSpeedDecreaseHeld = true;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_K):
+                    cameraSpeedIncreaseHeld = true;
+                    keyEvent->handled = true;
                     break;
                 default:
                     break;
@@ -184,6 +211,22 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     break;
                 case (GLFW_KEY_D):
                     rightHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_Q):
+                    downHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_E):
+                    upHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_J):
+                    cameraSpeedDecreaseHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_K):
+                    cameraSpeedIncreaseHeld = false;
                     keyEvent->handled = true;
                     break;
 

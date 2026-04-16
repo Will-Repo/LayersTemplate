@@ -14,7 +14,7 @@ struct Camera {
     glm::vec3 front = glm::normalize(position - target);
     glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);//glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), front));
     glm::vec3 up = glm::cross(front, right);
-    float speed = 0.05f;
+    float speed = 3.0f;
 };
 
 struct MVP {
@@ -46,5 +46,6 @@ class MainLayer : public Layer {
         Camera camera;
         bool cameraChanged = false;
 
-        bool forwardHeld = false, leftHeld = false, backwardsHeld = false, rightHeld = false;
+        bool forwardHeld = false, leftHeld = false, backwardsHeld = false, rightHeld = false, downHeld = false, upHeld = false;
+        bool cameraSpeedIncreaseHeld = false, cameraSpeedDecreaseHeld = false;
 };  
