@@ -59,9 +59,8 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     };
     modelPrograms[sphere] = loadShaders(mvpShaders, path);    
     // Set MVP matrix initial values.
-    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, 0.0f));
-    camera.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-    mvpChanged = true;
+    mvp.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
+    cameraChanged = true;
 
     glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -117,30 +116,37 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     break;
                 }
                 // Movement
-                case (GLFW_KEY_W): {
-                    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, 0.1f));
-                    mvpChanged = true;
+                case (GLFW_KEY_W): 
+                    camera.position += camera.direction * camera.speed;
+                    camera.target += camera.direction * camera.speed;
+                    cameraChanged = true;
                     keyEvent->handled = true;
                     break;
-                }
-                case (GLFW_KEY_A): {
-                    camera.view = glm::translate(camera.view, glm::vec3(0.1f, 0.0f, 0.0f));
-                    mvpChanged = true;
+                case (GLFW_KEY_A): 
+                    camera.position += camera.right * camera.speed;
+                    camera.target += camera.right * camera.speed;
+                    cameraChanged = true;
                     keyEvent->handled = true;
                     break;
-                }
-                case (GLFW_KEY_S): {
-                    camera.view = glm::translate(camera.view, glm::vec3(0.0f, 0.0f, -0.1f));
-                    mvpChanged = true;
+                case (GLFW_KEY_S): 
+                    camera.position -= camera.direction * camera.speed;
+                    camera.target -= camera.direction * camera.speed;
+                    cameraChanged = true;
                     keyEvent->handled = true;
                     break;
-                }
-                case (GLFW_KEY_D): {
-                    camera.view = glm::translate(camera.view, glm::vec3(-0.1f, 0.0f, 0.1f));
-                    mvpChanged = true;
+                case (GLFW_KEY_D):
+                    camera.position -= camera.right * camera.speed;
+                    camera.target -= camera.right * camera.speed;
+                    cameraChanged = true;
                     keyEvent->handled = true;
                     break;
-                }
+                case (GLFW_KEY_Q):
+                    camera.speed -= 0.05;
+                    break;
+                case (GLFW_KEY_E):
+                    camera.speed += 0.05;
+                    break;
+
                 default:
                     break;
             }
@@ -162,14 +168,15 @@ void MainLayer::onRender() {
     //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
     glUseProgram(modelPrograms[sphere]);
-    if (mvpChanged) {
+    if (cameraChanged) {
+        mvp.view = glm::lookAt(camera.position, camera.target, camera.up);
         int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.model));
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
         uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.view));
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
         uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
-        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(camera.projection));
-        mvpChanged = false;
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+        cameraChanged = false;
     }
     models[sphere].drawModel(modelPrograms[sphere]);
 
