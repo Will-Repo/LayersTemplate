@@ -12,6 +12,7 @@
 #include "renderingUtilities.h"
 #include "Event.h"
 #include "KeyEvent.h"
+#include "MousePositionEvent.h"
 #include "Layers/StatisticsLayer.h"
 #include "Application.h"
 #include "Model.h"
@@ -78,34 +79,27 @@ MainLayer::~MainLayer() {
 
 void MainLayer::onUpdate(float timestep) {
     if (forwardHeld) {
-        camera.position -= camera.front * camera.speed * timestep;
-        camera.target -= camera.front * camera.speed * timestep;
+        camera.position += camera.front * camera.speed * timestep;
         cameraChanged = true;
     }
     if (leftHeld) {
         camera.position -= camera.right * camera.speed * timestep;
-        camera.target -= camera.right * camera.speed * timestep;
-        //camera.right = glm::normalize(glm::cross(camera.up, camera.front));
         cameraChanged = true;
     }
     if (backwardsHeld) {
-        camera.position += camera.front * camera.speed * timestep;
-        camera.target += camera.front * camera.speed * timestep;
+        camera.position -= camera.front * camera.speed * timestep;
         cameraChanged = true;
     }
     if (rightHeld) {
         camera.position += camera.right * camera.speed * timestep;
-        camera.target += camera.right * camera.speed * timestep;
         cameraChanged = true;
     }
     if (downHeld) {
         camera.position -= camera.up * camera.speed * timestep;
-        camera.target -= camera.up * camera.speed * timestep;
         cameraChanged = true;
     }
     if (upHeld) {
         camera.position += camera.up * camera.speed * timestep;
-        camera.target += camera.up * camera.speed * timestep;
         cameraChanged = true;
     }
     if (cameraSpeedIncreaseHeld) {
@@ -235,6 +229,33 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
             }
         }
     }
+    // Check for if mouse moved to move camera.
+    if (event->type == EventType::MousePositionEvent) {
+        auto mousePositionEvent = std::dynamic_pointer_cast<MousePositionEvent>(event);
+        if (firstMouse) {
+            mouse.x = mousePositionEvent->xpos;
+            mouse.y = mousePositionEvent->ypos;
+            firstMouse = false;
+            return;
+        }
+        double xOffset = mousePositionEvent->xpos - mouse.x;
+        mouse.x = mousePositionEvent->xpos;
+        double yOffset = mousePositionEvent->ypos - mouse.y;
+        mouse.y = mousePositionEvent->ypos;
+
+        xOffset *= mouse.sensitivity;
+        yOffset *= mouse.sensitivity;
+
+        camera.yaw   += xOffset;
+        camera.pitch -= yOffset; 
+
+        camera.pitch = std::min(camera.pitch, 89.9f);
+        camera.pitch = std::max(camera.pitch, -89.9f);
+
+        cameraChanged = true;
+
+        mousePositionEvent->handled = true; 
+    }
 }
 
 void MainLayer::onRender() {
@@ -251,7 +272,15 @@ void MainLayer::onRender() {
     //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
     if (cameraChanged) {
-        mvp.view = glm::lookAt(camera.position, camera.target, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        direction.y = sin(glm::radians(camera.pitch));
+        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        camera.front = glm::normalize(direction);
+        camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        camera.up = glm::normalize(glm::cross(camera.right, camera.front));
+
+        mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
 
         glUseProgram(modelPrograms[sphere]);
         int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");

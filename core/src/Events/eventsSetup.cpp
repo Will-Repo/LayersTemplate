@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "KeyEvent.h"
 #include "CursorWindowEvent.h"
+#include "MousePositionEvent.h"
 #include "MouseButtonEvent.h"
 #include "ScrollEvent.h"
 
@@ -19,7 +20,7 @@ void setCallbacks(std::vector<std::shared_ptr<Window>>& windowStack) {
             glfwSetWindowUserPointer(window->getWindow(), userData);
 
             glfwSetKeyCallback(window->getWindow(), key_callback);
-            //glfwSetCursorPosCallback(window, cursor_position_callback); // Can just get cursor position through query.
+            glfwSetCursorPosCallback(window->getWindow(), cursor_position_callback); // Can just get cursor position through query.
             glfwSetCursorEnterCallback(window->getWindow(), cursor_enter_callback);
             glfwSetMouseButtonCallback(window->getWindow(), mouse_button_callback);
             glfwSetScrollCallback(window->getWindow(), scroll_callback);
@@ -33,6 +34,14 @@ void key_callback(GLFWwindow* glfwWindow, int key, int scancode, int action, int
     if (auto window = windowPtr->lock()) {
         auto keyEvent = std::make_shared<KeyEvent>(key, action);
         window->enqueueEvent(std::move(keyEvent));
+    }
+}
+
+void cursor_position_callback(GLFWwindow* glfwWindow, double xpos, double ypos) {
+    auto windowPtr = static_cast<std::weak_ptr<Window>*>(glfwGetWindowUserPointer(glfwWindow));
+    if (auto window = windowPtr->lock()) {
+        auto mousePositionEvent = std::make_shared<MousePositionEvent>(xpos, ypos);
+        window->enqueueEvent(std::move(mousePositionEvent));
     }
 }
 

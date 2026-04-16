@@ -8,19 +8,32 @@
 
 struct Camera {
     glm::vec3 position = glm::vec3(0.0f, 0.4f, 2.0f);
-    glm::vec3 target = glm::vec3(0.0f, 0.4f, 0.0f);
 
     // Direction camera is facing - -z is in front of camera so backwards.
-    glm::vec3 front = glm::normalize(position - target);
-    glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);//glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), front));
-    glm::vec3 up = glm::cross(front, right);
+    glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+    glm::vec3 up = glm::cross(right, front);
+    //glm::vec3 front = glm::normalize(target - position);
+    //glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+    //glm::vec3 up = glm::cross(right, front);
+
     float speed = 3.0f;
+
+    float yaw = -90.0f;
+    float pitch = 0.0f;
+    //float roll;
 };
 
 struct MVP {
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
+};
+
+struct Mouse {
+    double x = 0;
+    double y = 0;
+    float sensitivity = 0.1f;
 };
 
 class MainLayer : public Layer {
@@ -48,4 +61,7 @@ class MainLayer : public Layer {
 
         bool forwardHeld = false, leftHeld = false, backwardsHeld = false, rightHeld = false, downHeld = false, upHeld = false;
         bool cameraSpeedIncreaseHeld = false, cameraSpeedDecreaseHeld = false;
+
+        Mouse mouse;
+        bool firstMouse = true;
 };  

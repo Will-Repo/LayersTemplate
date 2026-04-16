@@ -3,6 +3,7 @@
 enum class EventType {
     KeyEvent,
     CursorWindowEvent,
+    MousePositionEvent,
     MouseButtonEvent,
     ScrollEvent
 };
