@@ -175,6 +175,10 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     cameraUpHeld = true;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_TAB):
+                    camera.yaw = -camera.yaw;
+                    keyEvent->handled = true;
+                    break;
 
                 // Camera settings
                 case (GLFW_KEY_J):
@@ -239,6 +243,11 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     cameraUpHeld = false;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_TAB):
+                    camera.yaw = -camera.yaw;
+                    keyEvent->handled = true;
+                    break;
+
 
                 // Camera settings
                 case (GLFW_KEY_J):
