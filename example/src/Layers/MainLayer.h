@@ -64,5 +64,5 @@ class MainLayer : public Layer {
         bool firstMouse = true;
 
         Car car;
-        bool carForwardsHeld = false, carBackwardsHeld = false;
+        bool carForwardsHeld = false, carLeftHeld = false, carBackwardsHeld = false, carRightHeld = false;
 };  

@@ -57,15 +57,18 @@ void MainLayer::onUpdate(float timestep) {
         //TODO: Need some check that all wheels are on the ground.
         glm::vec3 direction = car.getDirection();
         car.position += direction * car.speed * timestep;
-        if (cameraAttached)
-            camera.position += direction * car.speed * timestep;
+    }
+    if (carLeftHeld) {
+        car.yaw -= car.turnSpeed * timestep;
     }
     if (carBackwardsHeld) {
         glm::vec3 direction = car.getDirection();
         car.position -= direction * car.speed * timestep;
-        if (cameraAttached)
-            camera.position -= direction * car.speed * timestep;
     }
+    if (carRightHeld) {
+        car.yaw += car.turnSpeed * timestep;
+    }
+
 
     // Camera
     if (!cameraAttached) {
@@ -145,10 +148,19 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     carForwardsHeld = true;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_A): 
+                    carLeftHeld = true;
+                    keyEvent->handled = true;
+                    break;
                 case (GLFW_KEY_S): 
                     carBackwardsHeld = true;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_D): 
+                    carRightHeld = true;
+                    keyEvent->handled = true;
+                    break;
+
 
                 // Camera Movement
                 case (GLFW_KEY_UP): 
@@ -191,7 +203,8 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     break;
                 case (GLFW_KEY_L):
                     // Reset camera to car.
-                    if (!cameraAttached) {
+                    cameraAttached = !cameraAttached;
+                    /*if (!cameraAttached) {
                         //TODO: Need to add default offset.
                         camera.position = car.position + camera.initialPosition;
                         camera.yaw = car.yaw;
@@ -199,7 +212,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                         cameraAttached = true;
                     } else {
                         cameraAttached = false;
-                    }
+                    }*/
                     keyEvent->handled = true;
                     break;
 
@@ -213,8 +226,16 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     carForwardsHeld = false;
                     keyEvent->handled = true;
                     break;
+                case (GLFW_KEY_A): 
+                    carLeftHeld = false;
+                    keyEvent->handled = true;
+                    break;
                 case (GLFW_KEY_S): 
                     carBackwardsHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_D): 
+                    carRightHeld = false;
                     keyEvent->handled = true;
                     break;
 
@@ -299,14 +320,27 @@ void MainLayer::onRender() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    direction.y = sin(glm::radians(camera.pitch));
-    direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    camera.front = glm::normalize(direction);
-    camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
-    camera.up = glm::normalize(glm::cross(camera.right, camera.front));
-    mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
+    // If camera attached, use camera view. Else use fixed car view.
+    if (!cameraAttached) {
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        direction.y = sin(glm::radians(camera.pitch));
+        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        camera.front = glm::normalize(direction);
+        camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        camera.up = glm::normalize(glm::cross(camera.right, camera.front));
+        mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
+    } else {
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(car.yaw)) * cos(glm::radians(car.pitch));
+        direction.y = sin(glm::radians(car.pitch));
+        direction.z = sin(glm::radians(car.yaw)) * cos(glm::radians(car.pitch));
+        glm::vec3 front = glm::normalize(direction);
+        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        glm::vec3 up = glm::normalize(glm::cross(right, front));
+        glm::vec3 cameraPosition = car.position - (front * car.length * 10.0f) + (up * car.height * 5.0f);
+        mvp.view = glm::lookAt(cameraPosition, car.position + front, up);
+    }
     glUseProgram(modelPrograms[sphere]);
     int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));

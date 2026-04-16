@@ -16,6 +16,12 @@ class Car {
 
         //TODO: Add acceleration and stuff for forward speed using forces, rather than constant acceleration.
         float speed = 3.0f;
+        float turnSpeed = 20.0f;
         glm::vec3 getDirection();
+
+        // Currently 0.1 length cube.
+        float length = 0.1;
+        float width = 0.1;
+        float height = 0.1;
     private:
 };
