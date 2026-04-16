@@ -57,9 +57,11 @@ void DebugLayer::onRender() {
     glViewport(0, 0, 1920, 1080);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (showDebugInfo) {
+        glDisable(GL_DEPTH_TEST);
         window->textRenderer.renderText("bitcount", "Debug Info", 10, 10, 0.5f, glm::vec3(0, 255, 0), filepaths);
+        glEnable(GL_DEPTH_TEST);
     }
 }

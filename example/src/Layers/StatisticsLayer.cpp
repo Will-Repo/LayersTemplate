@@ -22,13 +22,13 @@ void StatisticsLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
     window->textRenderer.addFace("iosevka", filepaths->executablePath + "/" + filepaths->fontsPath + "/Iosevka.ttf");
 
-    std::vector<float> borderVertices = getQuad(glm::vec2(0.0f), 1.95f, 1.95f, glm::vec3(0.5f));
+    std::vector<float> borderVertices = getQuad(glm::vec2(0.0f), 1.95f, 1.95f, 0.0f, glm::vec3(0.5f));
     createVAO(VAOs[quads], borderVertices);
     bindEBO(getQuadEBO());
     numVertices[quads] = 6;
-    glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
     glEnableVertexAttribArray(vPosition);    
-    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glVertexAttribPointer(vColour, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(vColour);
 
     ShaderInfo shaders[] = {
@@ -78,14 +78,16 @@ void StatisticsLayer::onRender() {
 
     // Clear screen to transparent - allowing lower layers to be seen.
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render statistics border background.
     glUseProgram(programs[quads]);
     glBindVertexArray(VAOs[quads]);
     glDrawElements(GL_TRIANGLES, numVertices[quads], GL_UNSIGNED_INT, 0);
 
+    glDisable(GL_DEPTH_TEST);
     window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
     window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filepaths);
+    glEnable(GL_DEPTH_TEST);
 }
 

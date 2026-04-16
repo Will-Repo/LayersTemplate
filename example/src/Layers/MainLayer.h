@@ -7,8 +7,8 @@
 #include "Model.h"
 
 struct Camera {
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, 2.0f);
-    glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 position = glm::vec3(0.0f, 0.4f, 2.0f);
+    glm::vec3 target = glm::vec3(0.0f, 0.4f, 0.0f);
 
     // Direction camera is facing - -z is in front of camera so backwards.
     glm::vec3 front = glm::normalize(position - target);
