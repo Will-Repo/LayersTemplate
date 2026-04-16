@@ -9,11 +9,12 @@
 struct Camera {
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 2.0f);
     glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 direction = glm::normalize(target - position);
 
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); 
-    glm::vec3 right = glm::normalize(glm::cross(up, direction));
-    float speed = 1.0f;
+    // Direction camera is facing - -z is in front of camera so backwards.
+    glm::vec3 front = glm::normalize(position - target);
+    glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);//glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), front));
+    glm::vec3 up = glm::cross(front, right);
+    float speed = 0.05f;
 };
 
 struct MVP {
@@ -37,11 +38,13 @@ class MainLayer : public Layer {
         enum Attribute_IDs {vPosition, vColour}; //Default/common values, can use others if necessary.
         GLuint programs[numVAOs];
 
-        enum Model_IDS {sphere, numModels};
+        enum Model_IDS {sphere, cube, numModels};
         Model models[numModels];
         unsigned int modelPrograms[numModels];
 
         MVP mvp;
         Camera camera;
         bool cameraChanged = false;
+
+        bool forwardHeld = false, leftHeld = false, backwardsHeld = false, rightHeld = false;
 };  

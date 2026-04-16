@@ -58,6 +58,11 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
         {GL_NONE, NULL, ShaderDataType::Path},
     };
     modelPrograms[sphere] = loadShaders(mvpShaders, path);    
+
+    Model object = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cube.obj");
+    models[cube] = object;
+    modelPrograms[cube] = loadShaders(mvpShaders, path);    
+
     // Set MVP matrix initial values.
     mvp.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
     cameraChanged = true;
@@ -72,10 +77,32 @@ MainLayer::~MainLayer() {
 }
 
 void MainLayer::onUpdate(float timestep) {
-
+    if (forwardHeld) {
+        camera.position -= camera.front * camera.speed;
+        camera.target -= camera.front * camera.speed;
+        cameraChanged = true;
+    }
+    if (leftHeld) {
+        camera.position -= camera.right * camera.speed;
+        camera.target -= camera.right * camera.speed;
+        //camera.right = glm::normalize(glm::cross(camera.up, camera.front));
+        cameraChanged = true;
+    }
+    if (backwardsHeld) {
+        camera.position += camera.front * camera.speed;
+        camera.target += camera.front * camera.speed;
+        cameraChanged = true;
+    }
+    if (rightHeld) {
+        camera.position += camera.right * camera.speed;
+        camera.target += camera.right * camera.speed;
+        cameraChanged = true;
+    }
 }
 
 void MainLayer::onEvent(std::shared_ptr<Event> event) {
+    // Event timing:
+        // Movement should be limited by updates, but camera should be independent of this.
     // If event is open statistics key, open statistics window.
     if (event->type == EventType::KeyEvent) {
         auto keyEvent = std::dynamic_pointer_cast<KeyEvent>(event);
@@ -117,27 +144,19 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                 }
                 // Movement
                 case (GLFW_KEY_W): 
-                    camera.position += camera.direction * camera.speed;
-                    camera.target += camera.direction * camera.speed;
-                    cameraChanged = true;
+                    forwardHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_A): 
-                    camera.position += camera.right * camera.speed;
-                    camera.target += camera.right * camera.speed;
-                    cameraChanged = true;
+                    leftHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
-                    camera.position -= camera.direction * camera.speed;
-                    camera.target -= camera.direction * camera.speed;
-                    cameraChanged = true;
+                    backwardsHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_D):
-                    camera.position -= camera.right * camera.speed;
-                    camera.target -= camera.right * camera.speed;
-                    cameraChanged = true;
+                    rightHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_Q):
@@ -145,6 +164,27 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     break;
                 case (GLFW_KEY_E):
                     camera.speed += 0.05;
+                    break;
+                default:
+                    break;
+            }
+        } else if (keyEvent->action == GLFW_RELEASE) {
+            switch(keyEvent->key) {
+                case (GLFW_KEY_W):
+                    forwardHeld = false;
+                    keyEvent->handled = true;
+                    break; 
+                case (GLFW_KEY_A): 
+                    leftHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_S): 
+                    backwardsHeld = false;
+                    keyEvent->handled = true;
+                    break;
+                case (GLFW_KEY_D):
+                    rightHeld = false;
+                    keyEvent->handled = true;
                     break;
 
                 default:
@@ -167,18 +207,31 @@ void MainLayer::onRender() {
     //glBindVertexArray(VAOs[dualTriangle]);
     //glDrawArrays(GL_TRIANGLES, 0, numVertices[dualTriangle]);
 
-    glUseProgram(modelPrograms[sphere]);
     if (cameraChanged) {
-        mvp.view = glm::lookAt(camera.position, camera.target, camera.up);
+        mvp.view = glm::lookAt(camera.position, camera.target, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glUseProgram(modelPrograms[sphere]);
         int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
         glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
         uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
         glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
         uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
         glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+
+        glUseProgram(modelPrograms[cube]);
+        uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
+        uniformLoc = glGetUniformLocation(modelPrograms[cube], "view");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
+        uniformLoc = glGetUniformLocation(modelPrograms[cube], "projection");
+        glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+
         cameraChanged = false;
     }
+    glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
+    glUseProgram(modelPrograms[cube]);
+    models[cube].drawModel(modelPrograms[cube]);
 
     //window->textRenderer.renderText("bitcount", "Application Template", 800, 540, 0.5f, glm::vec3(0, 255, 0), filepaths);
     //window->textRenderer.renderText("iosevka", "In Development ...", 800, 520, 0.5f, glm::vec3(0, 255, 0), filepaths);

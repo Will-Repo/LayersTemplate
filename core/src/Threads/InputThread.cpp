@@ -58,7 +58,7 @@ void InputThread::handleEvents() {
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
                     // Check for new events, If so, pass event down all running layers until handled.
                     while(!window->eventQueueIsEmpty()) {
-                        std::cout << "Dequeueing event" << std::endl;
+                        //std::cout << "Dequeueing event" << std::endl;
                         // Dequeue an event
                         auto event = window->dequeueEvent();
                         // Handle the event
