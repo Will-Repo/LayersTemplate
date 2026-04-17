@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 #include "MainLayer.h"
 #include <iostream>
 #include "shaderLoader.h"
@@ -25,8 +27,6 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     setupLayer(window, filepaths);
 
     // Render world - sphere boundary.
-    Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/sphere.obj");
-    models[sphere] = world;
     ShaderInfo mvpShaders[] = {
         {GL_VERTEX_SHADER, "mvp.vert", ShaderDataType::Path},
         {GL_FRAGMENT_SHADER, "mvp.frag", ShaderDataType::Path},
@@ -34,10 +34,14 @@ void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
     };    
     std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     modelPrograms[sphere] = loadShaders(mvpShaders, path);    
-
-    Model object = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cube.obj");
-    models[cube] = object;
+    glUseProgram(modelPrograms[sphere]);
+    Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/world/world.obj");
+    models[sphere] = world;
+    
     modelPrograms[cube] = loadShaders(mvpShaders, path);    
+    glUseProgram(modelPrograms[cube]);
+    Model object = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cars/default/car.obj");
+    models[cube] = object;
 
     // Set MVP matrix initial values.
     mvp.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
@@ -56,20 +60,28 @@ void MainLayer::onUpdate(float timestep) {
     if (carForwardsHeld) {
         //TODO: Need some check that all wheels are on the ground.
         glm::vec3 direction = car.getDirection();
-        car.position += direction * car.speed * timestep;
+        glm::vec3 movement = glm::normalize(direction) * car.speed * timestep;
+        car.velocity += movement;
     }
     if (carLeftHeld) {
         car.yaw -= car.turnSpeed * timestep;
+        //TODO: Add max car yaw for turning.
     }
     if (carBackwardsHeld) {
         glm::vec3 direction = car.getDirection();
-        car.position -= direction * car.speed * timestep;
+        glm::vec3 movement = glm::normalize(direction) * car.speed * timestep;
+        car.velocity -= movement;
     }
     if (carRightHeld) {
         car.yaw += car.turnSpeed * timestep;
     }
 
+    // Apply friction - temp system.float friction = 5.0f;
+    float friction = 1.0f;
+    car.velocity *= expf(-friction * timestep);
 
+    car.position += car.velocity * timestep;
+    
     // Camera
     if (!cameraAttached) {
         if (cameraForwardsHeld) {
@@ -317,6 +329,9 @@ void MainLayer::onRender() {
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -331,22 +346,42 @@ void MainLayer::onRender() {
         camera.up = glm::normalize(glm::cross(camera.right, camera.front));
         mvp.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
     } else {
+        // Get normalised direction car is facing (ignoring pitch and roll).
         glm::vec3 direction;
-        direction.x = cos(glm::radians(car.yaw)) * cos(glm::radians(car.pitch));
-        direction.y = sin(glm::radians(car.pitch));
-        direction.z = sin(glm::radians(car.yaw)) * cos(glm::radians(car.pitch));
+        direction.x = cos(glm::radians(car.yaw));// * cos(glm::radians(car.pitch));
+        direction.y = 0.0f; //sin(glm::radians(car.pitch));
+        direction.z = sin(glm::radians(car.yaw));// * cos(glm::radians(car.pitch));
         glm::vec3 front = glm::normalize(direction);
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
         glm::vec3 up = glm::normalize(glm::cross(right, front));
-        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-        direction.y = sin(glm::radians(camera.pitch));
-        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-        camera.front = glm::normalize(direction);
-        camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
-        camera.up = glm::normalize(glm::cross(camera.right, camera.front));
-        glm::vec3 cameraPosition = car.position - (front * car.length * 10.0f) + (up * car.height * 5.0f);
-        mvp.view = glm::lookAt(cameraPosition, car.position + front + camera.front, up);
-    }
+
+        // Calculate rotation matrix to rotate camera about the car.
+        glm::mat4 rotation = glm::yawPitchRoll(
+            glm::radians(camera.yaw),
+            glm::radians(camera.pitch),
+            0.0f
+        );
+
+        // Create and rotate base offset - direction from camera to car.
+        glm::vec3 offset = glm::vec3(rotation * glm::vec4(0, 0, 1, 0));
+
+        // Rotate the camera relative to the car.
+        glm::mat4 carRotation = glm::rotate(
+            glm::mat4(1.0f),
+            glm::radians(180 - car.yaw),
+            glm::vec3(0, 1, 0)
+        );
+        glm::vec3 finalOffset = glm::vec3(carRotation * glm::vec4(offset, 0.0f));  
+
+
+        // Update view matrix to point from behind and above car, to car (accounting for mouse camera movement).
+        glm::vec3 cameraPosition = car.position - finalOffset * car.length * 5.0f + glm::vec3(0.0f, car.height * 2.5f, 0.0f);
+
+        // Look from new camera position to car.
+        //mvp.view = glm::lookAt(cameraPosition, car.position, up);
+        mvp.view = glm::lookAt(cameraPosition, car.position + front, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    }glDisable(GL_DEPTH_TEST);
     glUseProgram(modelPrograms[sphere]);
     int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
@@ -356,7 +391,7 @@ void MainLayer::onRender() {
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
     glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
-
+glEnable(GL_DEPTH_TEST);
     glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
     carModel = glm::rotate(carModel, glm::radians(-car.yaw), car.getUp()); 
     glUseProgram(modelPrograms[cube]);
