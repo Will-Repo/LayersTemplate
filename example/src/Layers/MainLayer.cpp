@@ -338,8 +338,14 @@ void MainLayer::onRender() {
         glm::vec3 front = glm::normalize(direction);
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
         glm::vec3 up = glm::normalize(glm::cross(right, front));
+        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        direction.y = sin(glm::radians(camera.pitch));
+        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        camera.front = glm::normalize(direction);
+        camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        camera.up = glm::normalize(glm::cross(camera.right, camera.front));
         glm::vec3 cameraPosition = car.position - (front * car.length * 10.0f) + (up * car.height * 5.0f);
-        mvp.view = glm::lookAt(cameraPosition, car.position + front, up);
+        mvp.view = glm::lookAt(cameraPosition, car.position + front + camera.front, up);
     }
     glUseProgram(modelPrograms[sphere]);
     int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
