@@ -352,6 +352,7 @@ void MainLayer::onRender() {
     models[sphere].drawModel(modelPrograms[sphere]);
 
     glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
+    carModel = glm::rotate(carModel, glm::radians(-car.yaw), car.getUp()); 
     glUseProgram(modelPrograms[cube]);
     uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model * carModel));

@@ -18,6 +18,8 @@ class Car {
         float speed = 3.0f;
         float turnSpeed = 20.0f;
         glm::vec3 getDirection();
+        glm::vec3 getRight();
+        glm::vec3 getUp();
 
         // Currently 0.1 length cube.
         float length = 0.1;
