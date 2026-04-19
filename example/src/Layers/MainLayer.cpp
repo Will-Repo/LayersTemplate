@@ -381,9 +381,21 @@ void MainLayer::onRender() {
         //mvp.view = glm::lookAt(cameraPosition, car.position, up);
         mvp.view = glm::lookAt(cameraPosition, car.position + front, glm::vec3(0.0f, 1.0f, 0.0f));
 
-    }glDisable(GL_DEPTH_TEST);
+    }
+    glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
+    carModel = glm::rotate(carModel, glm::radians(-car.yaw), car.getUp()); 
+    glUseProgram(modelPrograms[cube]);
+    int uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model * carModel));
+    uniformLoc = glGetUniformLocation(modelPrograms[cube], "view");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
+    uniformLoc = glGetUniformLocation(modelPrograms[cube], "projection");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+    models[cube].drawModel(modelPrograms[cube]);
+
+    glDepthMask(GL_FALSE);
     glUseProgram(modelPrograms[sphere]);
-    int uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
+    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
     uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
@@ -391,16 +403,7 @@ void MainLayer::onRender() {
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
     glUseProgram(modelPrograms[sphere]);
     models[sphere].drawModel(modelPrograms[sphere]);
-glEnable(GL_DEPTH_TEST);
-    glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
-    carModel = glm::rotate(carModel, glm::radians(-car.yaw), car.getUp()); 
-    glUseProgram(modelPrograms[cube]);
-    uniformLoc = glGetUniformLocation(modelPrograms[cube], "model");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model * carModel));
-    uniformLoc = glGetUniformLocation(modelPrograms[cube], "view");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
-    uniformLoc = glGetUniformLocation(modelPrograms[cube], "projection");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
-    models[cube].drawModel(modelPrograms[cube]);
-}
+    glDepthMask(GL_TRUE);
+
+    }
 
