@@ -9,6 +9,7 @@
 class Window;
 
 struct configuration {
+    std::string name;
     int updateFrameLimit = 60; // Times onUpdate called per second.    
     int updateThreadGroup = 0; // Thread group must all have same framerate, and if value higher than available threads, will join main thread.
     int renderingFrameLimit = 60; 
@@ -18,7 +19,7 @@ class Layer {
     public:
         Layer() {};
         virtual ~Layer(); //Close resourses.
-        virtual void loadRenderData(Window* window, FilePaths* filePaths) {}; // Called when layer is added to window.
+        virtual void loadData(Window* window, FilePaths* filePaths) {}; // Called when layer is added to window.
         virtual void onUpdate(float timestep) {};
         virtual void onEvent(std::shared_ptr<Event> event) {};
         virtual void onRender() {};

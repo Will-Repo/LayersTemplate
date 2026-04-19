@@ -6,6 +6,7 @@
 #include "FilePaths.h"
 #include "Model.h"
 #include "Car.h"
+#include <mutex>
 
 struct Camera {
     glm::vec3 initialPosition = glm::vec3(0.0f, 0.4f, 2.0f);
@@ -34,11 +35,17 @@ struct Mouse {
     float sensitivity = 0.1f;
 };
 
+struct DebugInfo {
+    float fps;
+};
+
 class MainLayer : public Layer {
     public:
         MainLayer();
         ~MainLayer();
-        void loadRenderData(Window* window, FilePaths* filePaths) override;
+        DebugInfo getDebugInfo();
+        void createDebugSnapshot();
+        void loadData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;
         void onRender() override;
@@ -65,4 +72,9 @@ class MainLayer : public Layer {
 
         Car car;
         bool carForwardsHeld = false, carLeftHeld = false, carBackwardsHeld = false, carRightHeld = false;
+
+        // Debug data.
+        std::mutex debugMutex;
+        DebugInfo debugInfo;
+        float timestep;
 };  

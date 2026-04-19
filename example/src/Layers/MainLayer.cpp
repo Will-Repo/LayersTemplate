@@ -18,11 +18,25 @@
 #include "Layers/StatisticsLayer.h"
 #include "Application.h"
 #include "Model.h"
+#include <mutex>
 // Base layer code from Addison Wesley OpenGL Redbook.
 
 MainLayer::MainLayer() {}
+            
+DebugInfo MainLayer::getDebugInfo() {
+    std::lock_guard<std::mutex> lock(debugMutex); 
 
-void MainLayer::loadRenderData(Window* window, FilePaths* filepaths) {
+    std::cout << debugInfo.fps << std::endl;
+    return debugInfo;
+}
+
+void MainLayer::createDebugSnapshot() {
+    std::lock_guard<std::mutex> lock(debugMutex); 
+
+    debugInfo.fps = 1.0f / timestep;
+}
+
+void MainLayer::loadData(Window* window, FilePaths* filepaths) {
     // Set up fbo to be rendered to - prevents mismatching fps causing layers to flicker (i.e. not be displayed on some frames).
     setupLayer(window, filepaths);
 
@@ -146,6 +160,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
 
                     // Add layers to window 2
                     auto stats = std::make_shared<StatisticsLayer>();
+                    stats->config.name = "statistics";
                     stats->config.updateFrameLimit = 5; // layer logic framerate.
                     stats->config.renderingFrameLimit = 5;
                     window2->addLayer(std::move(stats));
@@ -325,12 +340,12 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
 }
 
 void MainLayer::onRender() {
+    // Set debug data.
+    this->timestep = timestep;
+
     // Bind framebuffer - with texture as colour attachement.
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, 1920, 1080);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -393,6 +408,8 @@ void MainLayer::onRender() {
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
     models[cube].drawModel(modelPrograms[cube]);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     glDepthMask(GL_FALSE);
     glUseProgram(modelPrograms[sphere]);
     uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
@@ -405,5 +422,7 @@ void MainLayer::onRender() {
     models[sphere].drawModel(modelPrograms[sphere]);
     glDepthMask(GL_TRUE);
 
-    }
+    createDebugSnapshot();
+}
+
 

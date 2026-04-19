@@ -52,9 +52,17 @@ void InputThread::handleEvents() {
         for (auto it = windows.begin(); it != windows.end();) {
             // If window is not destroyed, handle its events. Else, destroy the window pointer.
             if (auto window = it->lock()) {
-                //std::cout << "Checking inputs for window: " << window->config.windowName << std::endl;
-                float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
+                if (window->config.inputHandlingRate == 0) {
+                    continue;
+                }
                 now = std::chrono::high_resolution_clock::now();
+                //std::cout << "Checking inputs for window: " << window->config.windowName << std::endl;
+                float windowHandlingTime;
+                if (window->config.inputHandlingRate < 0) {
+                    windowHandlingTime = 0;
+                }
+                else
+                    windowHandlingTime = 1.0 / window->config.inputHandlingRate;
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
                     // Check for new events, If so, pass event down all running layers until handled.
                     while(!window->eventQueueIsEmpty()) {

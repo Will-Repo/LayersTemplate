@@ -6,5 +6,7 @@
 
 ## To-do:
 Make debug layer have access to other layers data to display things like vectors.
-Make cube rotate when turning.
 Seperate car camera and unattached camera.
+Add pause button.
+Add imgui menu.
+Add gravity.

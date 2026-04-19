@@ -49,6 +49,7 @@ class Window {
             layerStack.push_back(std::move(layer));
         }
         std::vector<std::shared_ptr<Layer>> layerStack;
+        std::weak_ptr<Layer> getLayer(std::string name);
         TextRenderer textRenderer;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastRendered;
         std::chrono::time_point<std::chrono::high_resolution_clock> lastHandledInputs;

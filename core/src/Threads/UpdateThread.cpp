@@ -40,10 +40,19 @@ void UpdateThread::updateLayers() {
         for (auto it = layers.begin(); it != layers.end();) {
             // If window is not destroyed, handle its events. Else, destroy the window pointer.
             if (auto layer = it->lock()) {
+                if (layer->config.updateFrameLimit == 0) {
+                    continue;
+                }
                 // See if enough time has elapsed to call for update.
                 now = std::chrono::high_resolution_clock::now();
                 timestep = std::chrono::duration<float>(now - layer->lastUpdated).count();
-                if (timestep >= (1.0 / layer->config.updateFrameLimit)) {
+                float updateFrameLimit;
+                if (layer->config.updateFrameLimit < 0) {
+                    updateFrameLimit = 0;
+                }
+                else
+                    updateFrameLimit = 1.0 / layer->config.updateFrameLimit;
+                if (timestep >= updateFrameLimit) {
                     layer->lastUpdated = now;
                     layer->onUpdate(timestep);
                 }

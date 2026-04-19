@@ -37,6 +37,15 @@ GLFWwindow* Window::getWindow() {
     return window;
 }
 
+std::weak_ptr<Layer> Window::getLayer(std::string name) {
+    for (std::shared_ptr<Layer>& layer : layerStack) {
+        if (layer->config.name == name) {
+            return std::weak_ptr<Layer>(layer);
+        }
+    }
+    return std::weak_ptr<Layer>();
+}
+
 ALCdevice* Window::getAudioDevice() {
     return audioDevice;
 }

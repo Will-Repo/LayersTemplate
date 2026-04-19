@@ -102,8 +102,16 @@ void RenderingThread::renderWindows() {
         for (auto it = windows.begin(); it != windows.end();) {
             // Check if window has closed.
             if (auto window = it->lock()) {
-                float windowFrameTime = 1.0 / window->config.renderingFrameLimit;
+                if (window->config.renderingFrameLimit == 0) {
+                    continue;
+                }
                 now = std::chrono::high_resolution_clock::now();
+                float windowFrameTime;
+                if (window->config.renderingFrameLimit < 0) {
+                    windowFrameTime = 0;
+                }
+                else 
+                    windowFrameTime = 1.0 / window->config.renderingFrameLimit;
                 if (std::chrono::duration<float>(now - window->lastRendered).count() >= windowFrameTime) {            
                     //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
                     //std::cout << "Window: " << window->getWindow() << "." << std::endl;
@@ -118,7 +126,7 @@ void RenderingThread::renderWindows() {
                     for (auto& layer : window->layerStack) {
                         if (!layer->renderSetupComplete) {
                             std::cout << "Loading render data" << std::endl;
-                            layer->loadRenderData(window.get(), filePaths);
+                            layer->loadData(window.get(), filePaths);
                         }
                         // See if enough time has elapsed to call for update.
                         now = std::chrono::high_resolution_clock::now();

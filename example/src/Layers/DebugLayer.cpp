@@ -8,10 +8,12 @@
 #include "Event.h"
 #include "KeyEvent.h"
 #include "Window.h"
+#include "MainLayer.h"
+#include <memory>
 
 DebugLayer::DebugLayer() {}
 
-void DebugLayer::loadRenderData(Window* window, FilePaths* filepaths) {
+void DebugLayer::loadData(Window* window, FilePaths* filepaths) {
     setupLayer(window, filepaths);
 
     setUpFramebuffer(&framebuffer, &renderTexture);
@@ -22,6 +24,12 @@ void DebugLayer::loadRenderData(Window* window, FilePaths* filepaths) {
 
     window->textRenderer.addFace("bitcount", filepaths->executablePath + "/" + filepaths->fontsPath + "/Bitcount.ttf");
 
+    std::shared_ptr<Layer> layer = window->getLayer("game").lock();
+    game = std::dynamic_pointer_cast<MainLayer>(layer);
+    if (auto gamePtr = game.lock()) {
+        gameSnapshot = gamePtr->getDebugInfo();
+    }
+
     renderSetupComplete = true;
 }
 
@@ -30,7 +38,9 @@ DebugLayer::~DebugLayer() {
 }
 
 void DebugLayer::onUpdate(float timestep) {
-
+    if (auto gamePtr = game.lock()) {
+        gameSnapshot = gamePtr->getDebugInfo();
+    }
 }
 
 void DebugLayer::onEvent(std::shared_ptr<Event> event) {
@@ -61,7 +71,9 @@ void DebugLayer::onRender() {
 
     if (showDebugInfo) {
         glDisable(GL_DEPTH_TEST);
-        window->textRenderer.renderText("bitcount", "Debug Info", 10, 10, 0.5f, glm::vec3(0, 255, 0), filepaths);
+        window->textRenderer.renderText("bitcount", "Debug Info", 10, 1050, 0.5f, glm::vec3(0, 255, 0), filepaths);
+        std::string fps = "FPS: " + std::to_string((int)gameSnapshot.fps);
+        window->textRenderer.renderText("bitcount", fps, 10, 1020, 0.5f, glm::vec3(0, 255, 0), filepaths);
         glEnable(GL_DEPTH_TEST);
     }
 }

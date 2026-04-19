@@ -15,7 +15,7 @@
 
 StatisticsLayer::StatisticsLayer() {}
 
-void StatisticsLayer::loadRenderData(Window* window, FilePaths* filepaths) {    
+void StatisticsLayer::loadData(Window* window, FilePaths* filepaths) {    
     setupLayer(window, filepaths);
 
     // Load fonts. Function automatically checks if layer has been loaded already.

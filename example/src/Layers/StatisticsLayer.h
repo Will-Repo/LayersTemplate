@@ -9,7 +9,7 @@ class StatisticsLayer : public Layer {
     public:
         StatisticsLayer();
         ~StatisticsLayer();
-        void loadRenderData(Window* window, FilePaths* filePaths) override;
+        void loadData(Window* window, FilePaths* filePaths) override;
         void onUpdate(float timestep) override;
         void onEvent(std::shared_ptr<Event> event) override;
         void onRender() override;
