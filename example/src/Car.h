@@ -26,6 +26,5 @@ class Car {
         glm::vec3 getDirection();
         glm::vec3 getRight();
         glm::vec3 getUp();
-
-        private:
+    private:
 };

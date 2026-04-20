@@ -44,15 +44,26 @@ void MainLayer::loadData(Window* window, FilePaths* filepaths) {
         {GL_NONE, NULL, ShaderDataType::Path},
     };    
     std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
-    modelPrograms[sphere] = loadShaders(mvpShaders, path);    
-    glUseProgram(modelPrograms[sphere]);
-    Model world = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/world/world.obj");
-    models[sphere] = world;
-    
+    modelPrograms[world] = loadShaders(mvpShaders, path);    
+    glUseProgram(modelPrograms[world]);
+    Model worldModel = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/world/world.obj");
+    models[world] = worldModel;
+   
+    ShaderInfo debugShaders[] = {
+        {GL_VERTEX_SHADER, "mvp.vert", ShaderDataType::Path},
+        {GL_FRAGMENT_SHADER, "red.frag", ShaderDataType::Path},
+        {GL_NONE, NULL, ShaderDataType::Path},
+    };    
+    /* Load model mesh for debugging info - perhaps only show on debug menu */
+    modelPrograms[worldMesh] = loadShaders(debugShaders, path);    
+    glUseProgram(modelPrograms[worldMesh]);
+    Model worldMeshModel = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/world/worldMesh.obj");
+    models[worldMesh] = worldMeshModel;
+
     modelPrograms[cube] = loadShaders(mvpShaders, path);    
     glUseProgram(modelPrograms[cube]);
-    Model object = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cars/default/car.obj");
-    models[cube] = object;
+    Model cubeModel = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/cars/default/car.obj");
+    models[cube] = cubeModel;
 
     // Set MVP matrix initial values.
     mvp.projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
@@ -67,6 +78,8 @@ MainLayer::~MainLayer() {
 }
 
 void MainLayer::onUpdate(float timestep) {
+    // Check for collisions.
+
     // Car
     if (carForwardsHeld) {
         //TODO: Need some check that all wheels are on the ground.
@@ -394,8 +407,8 @@ void MainLayer::onRender() {
         // Look from new camera position to car.
         //mvp.view = glm::lookAt(cameraPosition, car.position, up);
         mvp.view = glm::lookAt(cameraPosition, car.position + front, glm::vec3(0.0f, 1.0f, 0.0f));
-
     }
+
     glm::mat4 carModel = glm::translate(glm::mat4(1.0f), car.position);
     carModel = glm::rotate(carModel, glm::radians(-car.yaw), car.getUp()); 
     glUseProgram(modelPrograms[cube]);
@@ -407,19 +420,33 @@ void MainLayer::onRender() {
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
     models[cube].drawModel(modelPrograms[cube]);
 
+    // Only render meshes being considered for collisions.
+    /*glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glUseProgram(modelPrograms[worldMesh]);
+    uniformLoc = glGetUniformLocation(modelPrograms[worldMesh], "model");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
+    uniformLoc = glGetUniformLocation(modelPrograms[worldMesh], "view");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
+    uniformLoc = glGetUniformLocation(modelPrograms[worldMesh], "projection");
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
+    glUseProgram(modelPrograms[worldMesh]);
+    models[worldMesh].drawModel(modelPrograms[worldMesh]);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     glDepthMask(GL_FALSE);
-    glUseProgram(modelPrograms[sphere]);
-    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "model");
+    glUseProgram(modelPrograms[world]);
+    uniformLoc = glGetUniformLocation(modelPrograms[world], "model");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.model));
-    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "view");
+    uniformLoc = glGetUniformLocation(modelPrograms[world], "view");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.view));
-    uniformLoc = glGetUniformLocation(modelPrograms[sphere], "projection");
+    uniformLoc = glGetUniformLocation(modelPrograms[world], "projection");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(mvp.projection));
-    glUseProgram(modelPrograms[sphere]);
-    models[sphere].drawModel(modelPrograms[sphere]);
+    glUseProgram(modelPrograms[world]);
+    models[world].drawModel(modelPrograms[world]);
     glDepthMask(GL_TRUE);
+
 
     createDebugSnapshot();
 }

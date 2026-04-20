@@ -56,7 +56,7 @@ class MainLayer : public Layer {
         enum Attribute_IDs {vPosition, vColour}; //Default/common values, can use others if necessary.
         GLuint programs[numVAOs];
 
-        enum Model_IDS {sphere, cube, numModels};
+        enum Model_IDS {world, cube, worldMesh, numModels};
         Model models[numModels];
         unsigned int modelPrograms[numModels];
 
