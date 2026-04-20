@@ -45,13 +45,14 @@ int main() {
     win1conf->inputHandlingGroup = 0;
     win1conf->renderingFrameLimit = -1;
     win1conf->renderingThreadGroup = 0; // Entirely seperate thread group than input handling groups.
-                                        
+    win1conf->vsync = false;
+
     // Declare and add layers to window 1.
     auto main = std::make_shared<MainLayer>();
     main->config.name = "game";
     main->config.updateFrameLimit = 120; // layer logic framerate.
     main->config.updateThreadGroup = 0; 
-    main->config.renderingFrameLimit = 60; // layer logic framerate.
+    main->config.renderingFrameLimit = -1; // layer logic framerate.
     window1->addLayer(std::move(main));
 
     auto debug = std::make_shared<DebugLayer>();

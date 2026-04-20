@@ -22,16 +22,30 @@ void InputThread::startEventHandling() {
 
 // Loop at max window render limit, but limit each window to its own, and each layer to its own limit.
 void InputThread::handleEvents() {
-    int maxHandlingLimit = 0;
+    int maxHandlingLimit = 0;    
+    bool frameSet = false; // Check for new windows at 10 fps if no window present, or only window renders at 0 fps, then use that window's fps.
     for (const auto& windowPtr : windows) {
+        frameSet = true;
         // Make shared pointer from weak pointer, if window has not closed.
         if (auto window = windowPtr.lock()) {
+            if (window->config.inputHandlingRate < 0) {
+                maxHandlingLimit = -1;
+                break;
+            }
             if (window->config.inputHandlingRate > maxHandlingLimit) {
                 maxHandlingLimit = window->config.inputHandlingRate;
             }
+
         }
     }
-    float frameTime = 1.0 / maxHandlingLimit;
+    float frameTime;
+    if (!frameSet || maxHandlingLimit == 0) {
+        frameTime = 1.0f / 10.0f;
+    } else if (maxHandlingLimit == -1) {
+        frameTime = 0;
+    } else {
+        frameTime = 1.0f / maxHandlingLimit;
+    }
 
     float deltaTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
@@ -46,6 +60,22 @@ void InputThread::handleEvents() {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
                 std::cout << "Adding new window to event loop: " << window->config.windowName << std::endl;
+                int frameLimit = window->config.inputHandlingRate;
+                if (!frameSet) {
+                    if (frameLimit < 0) {
+                        frameTime = 0;
+                    } else if (frameLimit > 0) {
+                        frameTime = 1.0f / frameLimit;
+                    }
+                } else {
+                    if (frameLimit < 0) {
+                        frameTime = 0;
+                    } else if (frameLimit > 0) {
+                        if (1.0f / frameLimit < frameTime) {
+                            frameTime = 1.0f / frameLimit;
+                        }
+                    }
+                }
                 windows.push_back(window);
             }
         }
@@ -57,12 +87,7 @@ void InputThread::handleEvents() {
                 }
                 now = std::chrono::high_resolution_clock::now();
                 //std::cout << "Checking inputs for window: " << window->config.windowName << std::endl;
-                float windowHandlingTime;
-                if (window->config.inputHandlingRate < 0) {
-                    windowHandlingTime = 0;
-                }
-                else
-                    windowHandlingTime = 1.0 / window->config.inputHandlingRate;
+                float windowHandlingTime = 1.0 / window->config.inputHandlingRate;
                 if (std::chrono::duration<float>(now - window->lastHandledInputs).count() >= windowHandlingTime) {            
                     // Check for new events, If so, pass event down all running layers until handled.
                     while(!window->eventQueueIsEmpty()) {

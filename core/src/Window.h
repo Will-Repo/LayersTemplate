@@ -36,6 +36,7 @@ class Window {
             int inputHandlingGroup = 0;
             int renderingFrameLimit = 60;
             int renderingThreadGroup = 0;
+            bool vsync = false;
         };
         // Data for rendering layers to the screen.
         struct Quad {

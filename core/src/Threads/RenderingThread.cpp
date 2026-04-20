@@ -71,15 +71,29 @@ static void setupTextureRender(Window::Quad& data, FilePaths* paths) {
 // Loop at max window render limit, but limit each window to its own, and each layer to its own limit.
 void RenderingThread::renderWindows() {
     int maxFrameLimit = 0;
+    bool frameSet = false; // Check for new windows at 10 fps if no window present, or only window renders at 0 fps, then use that window's fps.
     for (const auto& windowPtr : windows) {
+        frameSet = true;
         // Make shared pointer from weak pointer, if window has not closed.
         if (auto window = windowPtr.lock()) {
+            if (window->config.renderingFrameLimit < 0) {
+                maxFrameLimit = -1;
+                break;
+            }
             if (window->config.renderingFrameLimit > maxFrameLimit) {
                 maxFrameLimit = window->config.renderingFrameLimit;
             }
         }
     }
-    float frameTime = 1.0 / maxFrameLimit;
+
+    float frameTime;
+    if (!frameSet || maxFrameLimit == 0) {
+        frameTime = 1.0f / 10.0f;
+    } else if (maxFrameLimit == -1) {
+        frameTime = 0;
+    } else {
+        frameTime = 1.0f / maxFrameLimit;
+    }
 
     float deltaTime;
     std::chrono::time_point<std::chrono::high_resolution_clock> oldDelta;
@@ -93,7 +107,31 @@ void RenderingThread::renderWindows() {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
                 std::cout << "Adding new window to render loop: " << window->config.windowName << std::endl;
+                int frameLimit = window->config.renderingFrameLimit;
+                //TODO: Check if framelimit should overwrite current one.
+                if (!frameSet) {
+                    if (frameLimit < 0) {
+                        frameTime = 0;
+                    } else if (frameLimit > 0) {
+                        frameTime = 1.0f / frameLimit;
+                    }
+                } else {
+                    if (frameLimit < 0) {
+                        frameTime = 0;
+                    } else if (frameLimit > 0) {
+                        if (1.0f / frameLimit < frameTime) {
+                            frameTime = 1.0f / frameLimit;
+                        }
+                    }
+                }
+                std::cout << frameLimit << std::endl;
+                std::cout << frameTime << std::endl;
                 glfwMakeContextCurrent(window->getWindow());
+                if (window->config.vsync) {
+                    glfwSwapInterval(1);
+                } else {
+                    glfwSwapInterval(0);
+                }
                 setupTextureRender(window->quad, filePaths);
                 windows.push_back(window);
             }
@@ -106,12 +144,7 @@ void RenderingThread::renderWindows() {
                     continue;
                 }
                 now = std::chrono::high_resolution_clock::now();
-                float windowFrameTime;
-                if (window->config.renderingFrameLimit < 0) {
-                    windowFrameTime = 0;
-                }
-                else 
-                    windowFrameTime = 1.0 / window->config.renderingFrameLimit;
+                float windowFrameTime = 1.0 / window->config.renderingFrameLimit;
                 if (std::chrono::duration<float>(now - window->lastRendered).count() >= windowFrameTime) {            
                     //std::cout << "Making window " << window->config.windowName << " current." << std::endl;
                     //std::cout << "Window: " << window->getWindow() << "." << std::endl;

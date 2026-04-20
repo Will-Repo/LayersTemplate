@@ -76,5 +76,6 @@ class MainLayer : public Layer {
         // Debug data.
         std::mutex debugMutex;
         DebugInfo debugInfo;
+        std::chrono::time_point<std::chrono::high_resolution_clock> lastUpdated;
         float timestep;
 };  

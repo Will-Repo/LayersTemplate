@@ -46,12 +46,7 @@ void UpdateThread::updateLayers() {
                 // See if enough time has elapsed to call for update.
                 now = std::chrono::high_resolution_clock::now();
                 timestep = std::chrono::duration<float>(now - layer->lastUpdated).count();
-                float updateFrameLimit;
-                if (layer->config.updateFrameLimit < 0) {
-                    updateFrameLimit = 0;
-                }
-                else
-                    updateFrameLimit = 1.0 / layer->config.updateFrameLimit;
+                float updateFrameLimit = 1.0 / layer->config.updateFrameLimit;
                 if (timestep >= updateFrameLimit) {
                     layer->lastUpdated = now;
                     layer->onUpdate(timestep);

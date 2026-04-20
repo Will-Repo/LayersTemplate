@@ -25,14 +25,11 @@ MainLayer::MainLayer() {}
             
 DebugInfo MainLayer::getDebugInfo() {
     std::lock_guard<std::mutex> lock(debugMutex); 
-
-    std::cout << debugInfo.fps << std::endl;
     return debugInfo;
 }
 
 void MainLayer::createDebugSnapshot() {
     std::lock_guard<std::mutex> lock(debugMutex); 
-
     debugInfo.fps = 1.0f / timestep;
 }
 
@@ -341,7 +338,9 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
 
 void MainLayer::onRender() {
     // Set debug data.
-    this->timestep = timestep;
+    std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
+    timestep = std::chrono::duration<float>(now - lastUpdated).count();
+    lastUpdated = now;
 
     // Bind framebuffer - with texture as colour attachement.
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
