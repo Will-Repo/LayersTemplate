@@ -133,3 +133,21 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 set(ASSIMP_INCLUDE_DIR ${assimp_SOURCE_DIR}/src)
 message(STATUS "Set up assimp")
+
+# Bullet physics engine.
+find_package(Bullet QUIET)
+if (NOT Bullet_FOUND)
+    FetchContent_Declare(
+        Bullet
+    	GIT_REPOSITORY	https://github.com/bulletphysics/bullet3.git
+        GIT_TAG master	
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(Bullet)
+    set(BULLET_INCLUDE_DIR ${bullet_SOURCE_DIR}/src)
+endif()
+set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
+set(BUILD_BULLET3 OFF CACHE BOOL "" FORCE)
+set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
+set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)

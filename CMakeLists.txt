@@ -13,4 +13,5 @@ add_subdirectory(core)
 set(DIR "app" CACHE STRING "Project directory to build")
 
 message(STATUS "Adding ${DIR} project")
+
 add_subdirectory(${DIR}) # Links with core so must be done secondarily.

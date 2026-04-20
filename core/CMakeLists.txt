@@ -9,9 +9,9 @@ file(GLOB CORE_SRC
 add_library(core STATIC ${CORE_SRC})
 
 target_link_libraries(core PUBLIC
-    glm glew_s glfw OpenAL freetype OpenGL-Utils General-Utils 
+    glm glew_s glfw OpenAL freetype OpenGL-Utils General-Utils BulletSoftBody BulletDynamics BulletCollision Bullet3Common BulletInverseDynamics LinearMath
 )
 
 target_include_directories(core PUBLIC 
-    src src/utility src/Threads src/Events vendor ${GLM_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${OPENALSOFT_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${WHEREAMI_INCLUDE_DIR} ${GENERAL_UTILS_INCLUDE_DIR} ${OPENGL_UTILS_INCLUDE_DIR}
+    src src/utility src/Threads src/Events vendor ${GLM_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${OPENALSOFT_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIR} ${WHEREAMI_INCLUDE_DIR} ${GENERAL_UTILS_INCLUDE_DIR} ${OPENGL_UTILS_INCLUDE_DIR} ${BULLET_INCLUDE_DIR}
 )
