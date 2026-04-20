@@ -70,10 +70,15 @@ void DebugLayer::onRender() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (showDebugInfo) {
-        glDisable(GL_DEPTH_TEST);
-        window->textRenderer.renderText("bitcount", "Debug Info", 10, 1050, 0.5f, glm::vec3(0, 255, 0), filepaths);
         std::string fps = "FPS: " + std::to_string((int)gameSnapshot.fps);
-        window->textRenderer.renderText("bitcount", fps, 10, 1020, 0.5f, glm::vec3(0, 255, 0), filepaths);
+        std::string position = "Position: " + std::to_string((int)gameSnapshot.position.x) + ", " + std::to_string((int)gameSnapshot.position.y) + ", " + std::to_string((int)gameSnapshot.position.z);
+        std::string rotation = "Rotation: " + std::to_string((int)gameSnapshot.rotation.x) + ", " + std::to_string((int)gameSnapshot.rotation.y) + ", " + std::to_string((int)gameSnapshot.rotation.z);
+
+        glDisable(GL_DEPTH_TEST);
+        window->textRenderer.renderText("bitcount", "Debug Info", 10, 1050, 0.5f, glm::vec3(255, 0, 0), filepaths);
+        window->textRenderer.renderText("bitcount", fps, 10, 1020, 0.5f, glm::vec3(255, 0, 0), filepaths);
+        window->textRenderer.renderText("bitcount", position, 10, 990, 0.5f, glm::vec3(255, 0, 0), filepaths);
+        window->textRenderer.renderText("bitcount", rotation, 10, 960, 0.5f, glm::vec3(255, 0, 0), filepaths);
         glEnable(GL_DEPTH_TEST);
     }
 }

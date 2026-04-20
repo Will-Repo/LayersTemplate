@@ -11,7 +11,7 @@ class Car : public Vehicle {
         float width = 0.7f;
         float height = 0.5f;
 
-        float mass = 1000;
+        float mass = 100;
     private:
 };
 

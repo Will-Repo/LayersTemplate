@@ -31,8 +31,22 @@ DebugInfo MainLayer::getDebugInfo() {
 }
 
 void MainLayer::createDebugSnapshot() {
+    btTransform transform;
+    {
+        std::lock_guard<std::mutex> lock(physicsMutex); 
+        carBody->getMotionState()->getWorldTransform(transform);
+    }
     std::lock_guard<std::mutex> lock(debugMutex); 
+    //FPS
     debugInfo.fps = 1.0f / timestep;
+    //POSITION
+    btVector3 pos = transform.getOrigin();
+    debugInfo.position = glm::vec3(pos.x(), pos.y(), pos.z());
+    //ROTATION
+    btQuaternion carRotation = transform.getRotation();
+    btScalar yaw, pitch, roll;
+    carRotation.getEulerZYX(yaw, pitch, roll);
+    debugInfo.rotation = glm::vec3(yaw, pitch, roll);
 }
 
 void MainLayer::physicsSetup() {
@@ -51,9 +65,9 @@ void MainLayer::physicsSetup() {
     //using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* worldMotionState = new btDefaultMotionState(groundTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, worldMotionState, worldPhysics);
-    btRigidBody* body = new btRigidBody(rbInfo);
+    worldBody = new btRigidBody(rbInfo);
     //add the body to the dynamics world
-    dynamicsWorld->addRigidBody(body);
+    dynamicsWorld->addRigidBody(worldBody);
 
     // Set up car
     btCollisionShape* carShape = new btBoxShape(btVector3(car.width * 0.5f, car.height * 0.5f, car.length * 0.5f));
@@ -62,6 +76,7 @@ void MainLayer::physicsSetup() {
     carTransform.setOrigin(btVector3(car.startingPosition.x, car.startingPosition.y, car.startingPosition.z));
     btVector3 inertia(0, 0, 0);
     carShape->calculateLocalInertia(car.mass, inertia);
+    std::cout << inertia.x() << inertia.y() << inertia.z() <<std::endl;
     btDefaultMotionState* carMotionState = new btDefaultMotionState(carTransform);
     btRigidBody::btRigidBodyConstructionInfo info(car.mass, carMotionState, carShape, inertia);
     carBody = new btRigidBody(info);
@@ -119,8 +134,8 @@ void MainLayer::onUpdate(float timestep) {
         // Car
         btTransform transform;
         carBody->getMotionState()->getWorldTransform(transform);
-        btVector3 forward = transform.getBasis() * btVector3(0, 0, -1);
-        if (carForwardsHeld) {
+        btVector3 forward = transform.getBasis() * btVector3(1, 0, 0);
+        if (carForwardsHeld) {carBody->activate(true);
             //TODO: Need some check that all wheels are on the ground.
             btVector3 velocity = carBody->getLinearVelocity();
             if (velocity.length() < car.maxSpeed) {
@@ -136,13 +151,20 @@ void MainLayer::onUpdate(float timestep) {
         /*if (carLeftHeld) {
             car.yaw -= car.turnSpeed * timestep;
             //TODO: Add max car yaw for turning.
-        }
+        }*/
         if (carBackwardsHeld) {
-            glm::vec3 direction = car.getDirection();
-            glm::vec3 movement = glm::normalize(direction) * car.speed * timestep;
-            car.velocity -= movement;
+            btVector3 velocity = carBody->getLinearVelocity();
+            if (velocity.length() < car.maxSpeed) {
+                carBody->applyCentralForce(-forward * car.engineForce);
+            }
+            // Clamp velocity to max
+            velocity = carBody->getLinearVelocity();
+            if (velocity.length() > car.maxSpeed) {
+                velocity = velocity.normalized() * car.maxSpeed;
+                carBody->setLinearVelocity(velocity);
+            }
         }
-        if (carRightHeld) {
+        /*if (carRightHeld) {
             car.yaw += car.turnSpeed * timestep;
         }*/
     }
@@ -407,19 +429,26 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
 
 void MainLayer::renderScene(MVP matrix) {
     // Get model matrix for the entire world to be rendered.
-    btTransform transform;
+    btTransform carTransform;
+    btTransform worldTransform;
     {
         std::lock_guard<std::mutex> lock(physicsMutex); 
-        carBody->getMotionState()->getWorldTransform(transform);
+        carBody->getMotionState()->getWorldTransform(carTransform);
+        worldBody->getMotionState()->getWorldTransform(worldTransform);
     }
-    btScalar model[16];
-    transform.getOpenGLMatrix(model);
+    btScalar carModel[16];
+    carTransform.getOpenGLMatrix(carModel);
+    btScalar worldModel[16];
+    worldTransform.getOpenGLMatrix(worldModel);
+
 
     // Render opaque objects.
     // Render car.
+    glm::mat4 carModelMatrix = glm::make_mat4(carModel);
+    carModelMatrix = glm::translate(carModelMatrix, glm::vec3(0, car.height * 0.5f, 0));
     glUseProgram(modelPrograms[player]);
     int uniformLoc = glGetUniformLocation(modelPrograms[player], "model");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, model);
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(carModelMatrix));
     uniformLoc = glGetUniformLocation(modelPrograms[player], "view");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(matrix.view));
     uniformLoc = glGetUniformLocation(modelPrograms[player], "projection");
@@ -433,7 +462,7 @@ void MainLayer::renderScene(MVP matrix) {
     glDepthMask(GL_FALSE);
     glUseProgram(modelPrograms[world]);
     uniformLoc = glGetUniformLocation(modelPrograms[world], "model");
-    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, model);
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, worldModel);
     uniformLoc = glGetUniformLocation(modelPrograms[world], "view");
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, glm::value_ptr(matrix.view));
     uniformLoc = glGetUniformLocation(modelPrograms[world], "projection");

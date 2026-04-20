@@ -40,6 +40,8 @@ struct Mouse {
 
 struct DebugInfo {
     float fps;
+    glm::vec3 position;
+    glm::vec3 rotation;
 };
 
 class MainLayer : public Layer {
@@ -75,6 +77,8 @@ class MainLayer : public Layer {
 
         Mouse mouse;
         bool firstMouse = true;
+        
+        btRigidBody* worldBody;
 
         // Mvp for car.
         MVP mvp;
