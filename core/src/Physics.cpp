@@ -6,6 +6,10 @@
 #include <iostream>
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btAlignedObjectArray.h"
+#include "BulletCollision/CollisionShapes/btTriangleInfoMap.h"
+#include "BulletCollision/CollisionShapes/btTriangleMeshShape.h"
+#include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
+#include "BulletCollision/CollisionDispatch/btInternalEdgeUtility.h"
 
 void processMesh(aiMesh* mesh, const aiScene* scene, btTriangleMesh* colliderMesh) {
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
@@ -41,7 +45,7 @@ btCollisionShape* Physics::addStaticMap(std::string path) {
 
     Assimp::Importer importer;
     // TODO: DO i need all this for this.
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph | aiProcess_PreTransformVertices | aiProcess_FlipUVs);
 
     // If scene creation failed, flag error.
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -52,8 +56,8 @@ btCollisionShape* Physics::addStaticMap(std::string path) {
     // Start recursively processing nodes.
     processNode(scene->mRootNode, scene, collider.mesh);
 
-    collider.collision = new btBvhTriangleMeshShape(collider.mesh, true);
-    colliders.push_back(collider);
+    collider.collision = new btBvhTriangleMeshShape(collider.mesh, true, true);
 
+    colliders.push_back(collider);
     return colliders.back().collision;
 }

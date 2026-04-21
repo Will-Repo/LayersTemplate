@@ -4,7 +4,7 @@
 
 struct StaticCollider {
     btTriangleMesh* mesh;
-    btCollisionShape* collision;
+    btBvhTriangleMeshShape* collision;
 };
 
 class Physics {
