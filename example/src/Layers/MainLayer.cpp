@@ -90,8 +90,8 @@ void MainLayer::physicsSetup() {
     carBody->setActivationState(DISABLE_DEACTIVATION);
     carBody->setFriction(0.5f);
     carBody->setDamping(0.2f, 0.1f); 
-    //carBody->setCcdMotionThreshold(1e-7);
-    //carBody->setCcdSweptSphereRadius(0.5f);
+    carBody->setCcdMotionThreshold(1e-7);
+    carBody->setCcdSweptSphereRadius(0.5f);
     dynamicsWorld->addRigidBody(carBody);
     // Add vehicle object
     btRaycastVehicle::btVehicleTuning tuning;
@@ -114,7 +114,7 @@ void MainLayer::physicsSetup() {
         wheel.m_suspensionStiffness = 40.0f;
         wheel.m_wheelsDampingCompression = 8.0f;
         wheel.m_wheelsDampingRelaxation = 12.0f;
-        wheel.m_frictionSlip = 150.0f;
+        wheel.m_frictionSlip = 250.0f;
         wheel.m_rollInfluence = 0.1f;
         wheel.m_wheelDirectionCS = wheelDirection;
         wheel.m_wheelAxleCS = wheelAxle;
@@ -175,35 +175,45 @@ void MainLayer::onUpdate(float timestep) {
         carBody->getMotionState()->getWorldTransform(transform);
         btVector3 forward = transform.getBasis() * btVector3(-1, 0, 0);
 
-        vehicle->applyEngineForce(0, 2);
-        vehicle->applyEngineForce(0, 3);
+        float force;
         if (carForwardsHeld) {
-            vehicle->applyEngineForce(car.engineForce, 2);
-            vehicle->applyEngineForce(car.engineForce, 3);
-            btVector3 velocity = carBody->getLinearVelocity();
-            // Clamp velocity to max
-            if (velocity.length() > car.maxSpeed) {
-                velocity = velocity.normalized() * car.maxSpeed;
-                carBody->setLinearVelocity(velocity);
-            }
-        }        
-        if (carBackwardsHeld) {
-            vehicle->applyEngineForce(-car.engineForce, 2);
-            vehicle->applyEngineForce(-car.engineForce, 3);
-            btVector3 velocity = carBody->getLinearVelocity();
-            // Clamp velocity to max
-            if (velocity.length() > car.maxSpeed) {
-                velocity = velocity.normalized() * car.maxSpeed;
-                carBody->setLinearVelocity(-velocity);
-            }
+            if (carBackwardsHeld)
+                force = 0;
+            else 
+                force = car.engineForce; 
+        } else if (carBackwardsHeld) {
+            force = -car.engineForce; 
+        } else {
+            force = 0;
+            vehicle->applyEngineForce(0, 2);
+            vehicle->applyEngineForce(0, 3);
         }
+        vehicle->applyEngineForce(force, 2);
+        vehicle->applyEngineForce(force, 3);
+        btVector3 velocity = carBody->getLinearVelocity();
+        // Clamp velocity to max
+        if (velocity.length() > car.maxSpeed) {
+            velocity = velocity.normalized() * car.maxSpeed;
+            if (force >= 0)
+                carBody->setLinearVelocity(velocity);
+            else
+                carBody->setLinearVelocity(-velocity);
+        }
+
+        float angle;
+        if (carLeftHeld) {
+            if (carRightHeld)
+                angle = 0;
+            else
+                angle = car.steeringAngle;
+        } else if (carRightHeld) {
+            angle = -car.steeringAngle;
+        } else {
+            angle = 0;
+        }
+        vehicle->setSteeringValue(angle, 0);
+        vehicle->setSteeringValue(angle, 1);     
     }
-
-    // Apply friction - temp system.float friction = 5.0f;
-    /*float friction = 1.0f;
-    car.velocity *= expf(-friction * timestep);
-
-    car.position += car.velocity * timestep;*/
     
     // Camera
     if (!cameraAttached) {
@@ -244,7 +254,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
         if (keyEvent->action == GLFW_PRESS) {
             switch(keyEvent->key) {
                 case (GLFW_KEY_I): {
-                    std::cout << "I pressed, stats window should open/close." << std::endl;
+                    //std::cout << "I pressed, stats window should open/close." << std::endl;
 
                     // If window is already open, close it.
                     if (window->getApplication()->hasWindow("Statistics")) {
@@ -284,10 +294,8 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     carForwardsHeld = true;
                     keyEvent->handled = true;
                     break;
-                case (GLFW_KEY_A): 
-                    vehicle->setSteeringValue(car.steeringAngle, 0);
-                    vehicle->setSteeringValue(car.steeringAngle, 1);     
-                    //carLeftHeld = true;
+                case (GLFW_KEY_A):  
+                    carLeftHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
@@ -295,12 +303,16 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_D): 
-                    vehicle->setSteeringValue(-car.steeringAngle, 0);
-                    vehicle->setSteeringValue(-car.steeringAngle, 1);     
-                    //carRightHeld = true;
+                    carRightHeld = true;
                     keyEvent->handled = true;
                     break;
-
+                case (GLFW_KEY_SPACE): {
+                    btTransform transform = carBody->getWorldTransform();
+                    btVector3 up = transform.getBasis().getColumn(1);
+                    carBody->applyCentralImpulse(up * car.jumpForce);
+                    keyEvent->handled = true;
+                    break;
+                }
 
                 // Camera Movement
                 case (GLFW_KEY_UP): 
@@ -367,9 +379,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_A): 
-                    vehicle->setSteeringValue(0, 0);
-                    vehicle->setSteeringValue(0, 1);     
-                    //carLeftHeld = false;
+                    carLeftHeld = false;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
@@ -377,9 +387,7 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_D): 
-                    vehicle->setSteeringValue(0, 0);
-                    vehicle->setSteeringValue(0, 1);     
-                    //carRightHeld = false;
+                    carRightHeld = false;
                     keyEvent->handled = true;
                     break;
 
@@ -526,9 +534,9 @@ void MainLayer::onRender() {
     // If camera attached, use camera view. Else use fixed car view.
     if (!cameraAttached) {
         glm::vec3 direction;
-        direction.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        direction.x = cos(glm::radians(camera.yaw - 90)) * cos(glm::radians(camera.pitch));
         direction.y = sin(glm::radians(camera.pitch));
-        direction.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
+        direction.z = sin(glm::radians(camera.yaw - 90)) * cos(glm::radians(camera.pitch));
         camera.front = glm::normalize(direction);
         camera.right = glm::normalize(glm::cross(camera.front, glm::vec3(0.0f, 1.0f, 0.0f)));
         camera.up = glm::normalize(glm::cross(camera.right, camera.front));

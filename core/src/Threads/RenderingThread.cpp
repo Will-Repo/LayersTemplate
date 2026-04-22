@@ -30,7 +30,7 @@ static void setupTextureRender(Window::Quad& data, FilePaths* paths) {
     };
 
     std::string path = paths->executablePath + "/" + paths->corePath + "/shaders";
-    std::cout << path << std::endl;
+    //std::cout << path << std::endl;
     data.program = loadShaders(shaders, path);
 
     glGenVertexArrays(1, &data.VAO);
@@ -106,7 +106,7 @@ void RenderingThread::renderWindows() {
         while (!newWindowQueueIsEmpty()) {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
-                std::cout << "Adding new window to render loop: " << window->config.windowName << std::endl;
+                //std::cout << "Adding new window to render loop: " << window->config.windowName << std::endl;
                 int frameLimit = window->config.renderingFrameLimit;
                 //TODO: Check if framelimit should overwrite current one.
                 if (!frameSet) {
@@ -124,8 +124,8 @@ void RenderingThread::renderWindows() {
                         }
                     }
                 }
-                std::cout << frameLimit << std::endl;
-                std::cout << frameTime << std::endl;
+                //std::cout << frameLimit << std::endl;
+                //std::cout << frameTime << std::endl;
                 glfwMakeContextCurrent(window->getWindow());
                 if (window->config.vsync) {
                     glfwSwapInterval(1);
@@ -158,7 +158,7 @@ void RenderingThread::renderWindows() {
                     // Render each layer, if its passed their frame time.
                     for (auto& layer : window->layerStack) {
                         if (!layer->renderSetupComplete) {
-                            std::cout << "Loading render data" << std::endl;
+                            //std::cout << "Loading render data" << std::endl;
                             layer->loadData(window.get(), filePaths);
                         }
                         // See if enough time has elapsed to call for update.

@@ -50,7 +50,7 @@ void DebugLayer::onEvent(std::shared_ptr<Event> event) {
         if (keyEvent->action == GLFW_PRESS) {
             switch(keyEvent->key) {
                 case (GLFW_KEY_O): {
-                    std::cout << "O pressed, debug info should show." << std::endl;
+                    //std::cout << "O pressed, debug info should show." << std::endl;
                     showDebugInfo ^= true; // flip value
                     keyEvent->handled = true;
                     break;

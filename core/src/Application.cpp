@@ -23,7 +23,7 @@ Application::Application() {
 }
 
 void Application::addWindow(std::shared_ptr<Window> window) {
-    std::cout << "Added window: " << window->config.windowName << "." << std::endl;
+    //std::cout << "Added window: " << window->config.windowName << "." << std::endl;
     window->createWindow();
     window->linkApplication(this);
     for (const auto& layer : window->layerStack) {
@@ -46,7 +46,7 @@ void Application::addWindow(std::shared_ptr<Window> window) {
 }
 
 void Application::removeWindow(std::string windowName) {
-    std::cout << "Erasing window: " << windowName << std::endl;
+    //std::cout << "Erasing window: " << windowName << std::endl;
     std::erase_if(windowStack, [&](const std::shared_ptr<Window>& windowPtr) {
         return (windowPtr->config.windowName == windowName);
     });
@@ -110,7 +110,7 @@ void Application::run() {
                 windowStack[i].reset();
                 windowStack.erase(windowStack.begin() + i);
                 --numWindows;
-                std::cout << "Closed window." << std::endl;
+                //std::cout << "Closed window." << std::endl;
                 continue;
             }
             

@@ -11,12 +11,12 @@ Window::Window() {
 }
 
 Window::~Window() {
-    std::cout << "Destroyed window object" << std::endl;
+    //std::cout << "Destroyed window object" << std::endl;
     glfwDestroyWindow(window);
 }
 
 void Window::createWindow() {
-    std::cout << "Creating window." << std::endl;
+    //std::cout << "Creating window." << std::endl;
     window = glfwCreateWindow(config.width, config.height, config.windowName.c_str(), NULL, NULL);
     //TODO: Error check
     if (!window) {

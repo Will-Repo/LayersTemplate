@@ -59,7 +59,7 @@ void InputThread::handleEvents() {
         while (!newWindowQueueIsEmpty()) {
             auto windowPtr = dequeueNewWindow();
             if (auto window = windowPtr.lock()) {
-                std::cout << "Adding new window to event loop: " << window->config.windowName << std::endl;
+                //std::cout << "Adding new window to event loop: " << window->config.windowName << std::endl;
                 int frameLimit = window->config.inputHandlingRate;
                 if (!frameSet) {
                     if (frameLimit < 0) {
