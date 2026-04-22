@@ -71,8 +71,8 @@ void DebugLayer::onRender() {
 
     if (showDebugInfo) {
         std::string fps = "FPS: " + std::to_string((int)gameSnapshot.fps);
-        std::string position = "Position: " + std::to_string((int)gameSnapshot.position.x) + ", " + std::to_string((int)gameSnapshot.position.y) + ", " + std::to_string((int)gameSnapshot.position.z);
-        std::string rotation = "Rotation: " + std::to_string((int)gameSnapshot.rotation.x) + ", " + std::to_string((int)gameSnapshot.rotation.y) + ", " + std::to_string((int)gameSnapshot.rotation.z);
+        std::string position = "Position: " + std::to_string((float)gameSnapshot.position.x) + ", " + std::to_string((float)gameSnapshot.position.y) + ", " + std::to_string((float)gameSnapshot.position.z);
+        std::string rotation = "Rotation: " + std::to_string((float)gameSnapshot.rotation.x) + ", " + std::to_string((float)gameSnapshot.rotation.y) + ", " + std::to_string((float)gameSnapshot.rotation.z);
 
         glDisable(GL_DEPTH_TEST);
         window->textRenderer.renderText("bitcount", "Debug Info", 10, 1050, 0.5f, glm::vec3(255, 0, 0), filepaths);

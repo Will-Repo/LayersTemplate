@@ -58,8 +58,9 @@ void MainLayer::physicsSetup() {
     dynamicsWorld->setGravity(btVector3(0, car.gravity, 0));
 
     // Set up map
-    btCollisionShape* worldPhysics = physics.addStaticMap(filepaths->executablePath + "/" + filepaths->assetsPath + "/worlds/world2/worldMesh.obj");
+    /*btCollisionShape* worldPhysics = physics.addStaticMap(filepaths->executablePath + "/" + filepaths->assetsPath + "/worlds/world2/worldMesh.obj");*/
     //worldPhysics->setMargin(0.1f);
+    btCollisionShape* worldPhysics = new btBoxShape(btVector3(10, 0, 10));
     collisionShapes.push_back(worldPhysics);        
     btTransform groundTransform;
     groundTransform.setIdentity();
@@ -75,22 +76,49 @@ void MainLayer::physicsSetup() {
     dynamicsWorld->addRigidBody(worldBody);
 
     // Set up car
-    btCollisionShape* carShape = new btBoxShape(btVector3(car.width * 0.5f, car.height * 0.5f, car.length * 0.5f));
+    // Add chassis.
+    btCollisionShape* chassisShape = new btBoxShape(btVector3(car.width * 0.5f, car.height * 0.5f, car.length * 0.5f));
     //carShape->setMargin(0.1f);
     btTransform carTransform;
     carTransform.setIdentity();
     carTransform.setOrigin(btVector3(car.startingPosition.x, car.startingPosition.y, car.startingPosition.z));
     btVector3 inertia(0, 0, 0);
-    carShape->calculateLocalInertia(car.mass, inertia);
-    //std::cout << inertia.x() << inertia.y() << inertia.z() <<std::endl;
+    chassisShape->calculateLocalInertia(car.mass, inertia);
     btDefaultMotionState* carMotionState = new btDefaultMotionState(carTransform);
-    btRigidBody::btRigidBodyConstructionInfo info(car.mass, carMotionState, carShape, inertia);
+    btRigidBody::btRigidBodyConstructionInfo info(car.mass, carMotionState, chassisShape, inertia);
     carBody = new btRigidBody(info);
     carBody->setActivationState(DISABLE_DEACTIVATION);
     carBody->setFriction(0.5f);
-    carBody->setCcdMotionThreshold(1e-7);
-    carBody->setCcdSweptSphereRadius(0.5f);
+    //carBody->setCcdMotionThreshold(1e-7);
+    //carBody->setCcdSweptSphereRadius(0.5f);
     dynamicsWorld->addRigidBody(carBody);
+    // Add vehicle object
+    btRaycastVehicle::btVehicleTuning tuning;
+    btVehicleRaycaster* raycaster = new btDefaultVehicleRaycaster(dynamicsWorld);
+    vehicle = new btRaycastVehicle(tuning, carBody, raycaster);
+    vehicle->setCoordinateSystem(0, 1, 2); 
+    dynamicsWorld->addVehicle(vehicle);
+    // Add wheels.
+    float suspensionRestLength = car.height * 0.25f;
+    float wheelRadius = car.length * 0.2f;
+    btVector3 wheelDirection(0, -1, 0);
+    btVector3 wheelAxle(-1, 0, 0);
+    btVector3 wheelPositions[4] = {btVector3(-car.width * 0.4f, -car.height * 0.4f,  car.length * 0.4f), btVector3(car.width * 0.4f, -car.height * 0.4f,  car.length * 0.4f), btVector3(-car.width * 0.4f, -car.height * 0.4f, -car.length * 0.4f), btVector3( car.width * 0.4f, -car.height * 0.4f, -car.length * 0.4f)};
+    for (int i = 0; i < 4; i++) {
+        bool isFront = (i < 2);
+        vehicle->addWheel(wheelPositions[i], wheelDirection, wheelAxle, suspensionRestLength, wheelRadius, tuning, isFront);
+    }
+    for (int i = 0; i < 4; i++) {
+        btWheelInfo& wheel = vehicle->getWheelInfo(i);
+        wheel.m_suspensionStiffness = 40.0f;
+        wheel.m_wheelsDampingCompression = 8.0f;
+        wheel.m_wheelsDampingRelaxation = 12.0f;
+        wheel.m_frictionSlip = 1.0f;
+        wheel.m_rollInfluence = 0.01f;
+        wheel.m_wheelDirectionCS = wheelDirection;
+        wheel.m_wheelAxleCS = wheelAxle;
+        wheel.m_suspensionRestLength1 = suspensionRestLength;    
+    }
 }
 
 void MainLayer::renderingSetup() {
@@ -103,7 +131,7 @@ void MainLayer::renderingSetup() {
     std::string path = filepaths->executablePath + "/" + filepaths->shadersPath;
     modelPrograms[world] = loadShaders(mvpShaders, path);    
     glUseProgram(modelPrograms[world]);
-    Model worldModel = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/worlds/world2/world.obj");
+    Model worldModel = Model(filepaths->executablePath + "/" + filepaths->assetsPath + "/worlds/world3/Untitled.obj");
     models[world] = worldModel;
 
     modelPrograms[player] = loadShaders(mvpShaders, path);    
@@ -146,7 +174,7 @@ void MainLayer::onUpdate(float timestep) {
         carBody->getMotionState()->getWorldTransform(transform);
         btVector3 forward = transform.getBasis() * btVector3(-1, 0, 0);
         if (carForwardsHeld) {
-            carBody->activate(true);
+            /*carBody->activate(true);
             //TODO: Need some check that all wheels are on the ground.
             btVector3 velocity = carBody->getLinearVelocity();
             if (velocity.length() < car.maxSpeed) {
@@ -157,28 +185,13 @@ void MainLayer::onUpdate(float timestep) {
             if (velocity.length() > car.maxSpeed) {
                 velocity = velocity.normalized() * car.maxSpeed;
                 carBody->setLinearVelocity(velocity);
-            }
-        }
-        if (carLeftHeld) {
-            carBody->activate(true);
-            carBody->applyTorque(btVector3(0, 50, 0));
+            }*/
+            vehicle->applyEngineForce(car.engineForce, 2);
+            vehicle->applyEngineForce(car.engineForce, 3);
         }
         if (carBackwardsHeld) {
-            carBody->activate(true);
-            btVector3 velocity = carBody->getLinearVelocity();
-            if (velocity.length() < car.maxSpeed) {
-                carBody->applyCentralForce(-forward * car.engineForce);
-            }
-            // Clamp velocity to max
-            velocity = carBody->getLinearVelocity();
-            if (velocity.length() > car.maxSpeed) {
-                velocity = velocity.normalized() * car.maxSpeed;
-                carBody->setLinearVelocity(velocity);
-            }
-        }
-        if (carRightHeld) {
-            carBody->activate(true);
-            carBody->applyTorque(btVector3(0, -50, 0));
+            vehicle->applyEngineForce(-car.engineForce, 2);
+            vehicle->applyEngineForce(-car.engineForce, 3);
         }
     }
 
@@ -268,7 +281,9 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_A): 
-                    carLeftHeld = true;
+                    vehicle->setSteeringValue(car.steeringAngle, 0);
+                    vehicle->setSteeringValue(car.steeringAngle, 1);     
+                    //carLeftHeld = true;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
@@ -276,7 +291,9 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_D): 
-                    carRightHeld = true;
+                    vehicle->setSteeringValue(-car.steeringAngle, 0);
+                    vehicle->setSteeringValue(-car.steeringAngle, 1);     
+                    //carRightHeld = true;
                     keyEvent->handled = true;
                     break;
 
@@ -346,7 +363,9 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_A): 
-                    carLeftHeld = false;
+                    vehicle->setSteeringValue(0, 0);
+                    vehicle->setSteeringValue(0, 1);     
+                    //carLeftHeld = false;
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_S): 
@@ -354,7 +373,9 @@ void MainLayer::onEvent(std::shared_ptr<Event> event) {
                     keyEvent->handled = true;
                     break;
                 case (GLFW_KEY_D): 
-                    carRightHeld = false;
+                    vehicle->setSteeringValue(0, 0);
+                    vehicle->setSteeringValue(0, 1);     
+                    //carRightHeld = false;
                     keyEvent->handled = true;
                     break;
 
@@ -527,7 +548,7 @@ void MainLayer::onRender() {
         glm::quat carQuat(carRotation.w(), carRotation.x(), carRotation.y(), carRotation.z());
 
         // Rotate the camera relative to the car, based on mouse and car position.          
-        glm::vec3 finalOffset = -carQuat * offset;
+        glm::vec3 finalOffset = carQuat * offset;
 
         // Get car position
         btVector3 pos = transform.getOrigin();
@@ -537,7 +558,7 @@ void MainLayer::onRender() {
         glm::vec3 cameraPosition = glmPos - finalOffset * car.length * 5.0f + glm::vec3(0.0f, car.height * 2.5f, 0.0f);
 
         // Get unit vector to front of car.
-        btVector3 forward = transform.getBasis() * btVector3(-1, 0, 0);
+        btVector3 forward = transform.getBasis() * btVector3(0, 0, 1);
         glm::vec3 front = glm::normalize(glm::vec3(forward.x(),forward.y(),forward.z()));
 
         // Look from new camera position to car.

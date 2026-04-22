@@ -25,7 +25,7 @@ struct Camera {
 
     float speed = 3.0f;
 
-    float yaw = -90.0f;
+    float yaw = 0.0f;
     float pitch = 0.0f;
     //float roll;
 
@@ -88,6 +88,8 @@ class MainLayer : public Layer {
         btRigidBody* carBody;
         // Input flags.
         bool carForwardsHeld = false, carLeftHeld = false, carBackwardsHeld = false, carRightHeld = false;
+        
+        btRaycastVehicle* vehicle;
 
         // Debug data.
         std::mutex debugMutex;

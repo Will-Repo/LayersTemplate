@@ -7,10 +7,11 @@ class Car : public Vehicle {
         Car() = default;
 
         // Currently 0.1 length cube.
-        float length = 1.0f;
-        float width = 0.7f;
-        float height = 0.5f;
+        float length = 0.6f;
+        float width = 0.42f;
+        float height = 0.3f;
 
+        float steeringAngle = 0.5f * length / width;
         float mass = 100;
     private:
 };
