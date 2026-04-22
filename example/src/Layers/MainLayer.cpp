@@ -89,6 +89,7 @@ void MainLayer::physicsSetup() {
     carBody = new btRigidBody(info);
     carBody->setActivationState(DISABLE_DEACTIVATION);
     carBody->setFriction(0.5f);
+    carBody->setDamping(0.2f, 0.1f); 
     //carBody->setCcdMotionThreshold(1e-7);
     //carBody->setCcdSweptSphereRadius(0.5f);
     dynamicsWorld->addRigidBody(carBody);
@@ -113,8 +114,8 @@ void MainLayer::physicsSetup() {
         wheel.m_suspensionStiffness = 40.0f;
         wheel.m_wheelsDampingCompression = 8.0f;
         wheel.m_wheelsDampingRelaxation = 12.0f;
-        wheel.m_frictionSlip = 1.0f;
-        wheel.m_rollInfluence = 0.01f;
+        wheel.m_frictionSlip = 150.0f;
+        wheel.m_rollInfluence = 0.1f;
         wheel.m_wheelDirectionCS = wheelDirection;
         wheel.m_wheelAxleCS = wheelAxle;
         wheel.m_suspensionRestLength1 = suspensionRestLength;    
@@ -173,25 +174,28 @@ void MainLayer::onUpdate(float timestep) {
         btTransform transform;
         carBody->getMotionState()->getWorldTransform(transform);
         btVector3 forward = transform.getBasis() * btVector3(-1, 0, 0);
+
+        vehicle->applyEngineForce(0, 2);
+        vehicle->applyEngineForce(0, 3);
         if (carForwardsHeld) {
-            /*carBody->activate(true);
-            //TODO: Need some check that all wheels are on the ground.
+            vehicle->applyEngineForce(car.engineForce, 2);
+            vehicle->applyEngineForce(car.engineForce, 3);
             btVector3 velocity = carBody->getLinearVelocity();
-            if (velocity.length() < car.maxSpeed) {
-                carBody->applyCentralForce(forward * car.engineForce);
-            }
             // Clamp velocity to max
-            velocity = carBody->getLinearVelocity();
             if (velocity.length() > car.maxSpeed) {
                 velocity = velocity.normalized() * car.maxSpeed;
                 carBody->setLinearVelocity(velocity);
-            }*/
-            vehicle->applyEngineForce(car.engineForce, 2);
-            vehicle->applyEngineForce(car.engineForce, 3);
-        }
+            }
+        }        
         if (carBackwardsHeld) {
             vehicle->applyEngineForce(-car.engineForce, 2);
             vehicle->applyEngineForce(-car.engineForce, 3);
+            btVector3 velocity = carBody->getLinearVelocity();
+            // Clamp velocity to max
+            if (velocity.length() > car.maxSpeed) {
+                velocity = velocity.normalized() * car.maxSpeed;
+                carBody->setLinearVelocity(-velocity);
+            }
         }
     }
 
